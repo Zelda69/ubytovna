@@ -1,0 +1,29 @@
+{define title}
+    <a n:href="default"><i class="fa fa-arrow-up" aria-hidden="true"></i> Správce pokojů</a> -
+    Detail pokoje {$room->name}
+{/define}
+{define description}Description{/define}
+{block content}
+
+<h2>Informace o pokoji</h2>
+{snippetArea wrapper}
+    {control roomForm}
+{/snippetArea}
+
+<h2>Fotogalerie pokoje</h2>
+Pozn. první nahraná fotka je označena jako defaultní
+<h3>Nahrání nového obrázku</h3>
+{control roomGalleryForm}
+<br>
+<h3>Aktuální obrázky</h3>
+<div class="room-gallery">
+    {foreach $gallery as $g}
+        <section id="gallery">
+            <header><h1>Fotogalerie - {$g['name']}</h1></header>
+            {foreach $g['img'] as $img}
+                <a href="{$basePath}/{$img['path']}" data-lightbox="room-gallery">
+                    <img class="gallery" src="{$basePath}/{$img['thumb']}" title="{$img['desc']}" alt="{$img['desc']}"></a>
+            {/foreach}
+        </section>
+    {/foreach}
+</div>

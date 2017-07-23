@@ -1,0 +1,32 @@
+{
+	"name": "zmlcak/ubytovna",
+	"description": "Bakalářská aplikace k bakalářské práci Webový ubytovací systém",
+	"type": "project",
+	"require": {
+		"php": ">=7.1.0",
+		"nette/application": "^2.4.4",
+		"nette/bootstrap": "^2.4.3",
+		"nette/caching": "^2.5",
+		"nette/database": "^2.4",
+		"nette/di": "^2.4",
+		"nette/finder": "^2.4",
+		"nette/forms": "^2.4",
+		"nette/http": "^2.4",
+		"nette/mail": "^2.4",
+		"nette/robot-loader": "^2.4 || ^3.0",
+		"nette/safe-stream": "^2.3",
+		"nette/security": "^2.4",
+		"nette/utils": "^2.4",
+		"latte/latte": "^2.4",
+		"tracy/tracy": "^2.4",
+		"dg/adminer-custom": "^1.6",
+		"brabijan/images": "@dev",
+		"minetro/recaptcha": "2.0.0",
+		"tinymce/tinymce": "^4.6",
+		"carrooi/images-manager": "^4.0"
+	},
+	"require-dev": {
+		"nette/tester": "^1.6"
+	},
+	"minimum-stability": "stable"
+}

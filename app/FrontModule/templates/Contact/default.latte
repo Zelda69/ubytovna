@@ -1,0 +1,33 @@
+{define title}Kontakt{/define}
+{define description}Kontaktní informace.{/define}
+{block content}
+{*AIzaSyBaJV2nMXgb33q-y4U6CbXhr_eGqc7de_s*}
+{var $a = '753 63 Střítež nad Ludinou 236, Česká republika'}
+<div style="float: left">
+    <iframe src="//www.google.com/maps/embed/v1/place?q={$a|replace:' ','+'}
+      &zoom=17
+      &key=AIzaSyBaJV2nMXgb33q-y4U6CbXhr_eGqc7de_s">
+    </iframe>
+    {*
+    <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d82744.1069910233!2d17.71701405!3d49.6024007!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1scs!2scz!4v1497823441122"
+            width="400" height="300" frameborder="0" style="border:0" allowfullscreen></iframe>*}
+</div>
+<div style="float: left; margin-left: 50px;">
+    <section>
+        <header><h1>Adresa</h1></header>
+        Střítež nad Ludinou <br>
+        Střítež nad Ludinou <br>
+        753 63<br>
+        Česká republika<br>
+        {$a}<br>
+        {$a|replace:' ','+'}
+    </section>
+</div>
+
+<br style="clear: both;">
+<br>
+<br>
+<h1>Kontaktní formulář</h1>
+<p>Kontaktujte nás odesláním formuláře níže.</p>
+{* Formulář pro kontakt. *}
+{control contactForm}

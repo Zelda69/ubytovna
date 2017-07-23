@@ -1,0 +1,31 @@
+{block title}Můj profil{/block}
+{block description}Informace o mém profilu{/block}
+{block content}
+Tohle je profilová stránka
+
+<h3>Změna hesla</h3>
+{control editPasswordForm}
+
+<h3>Změna ostatních údajů</h3>
+E-mail: {$user->getIdentity()->email} (nelze změnit)<br>
+{control editProfilForm}
+{*
+
+{snippet wholeList}
+    <ul n:snippet="itemsContainer">
+        {foreach $list as $id => $item}
+            <li n:snippet="item-$id">{$item} <a n:href="update! $id">update</a></li>
+        {/foreach}
+    </ul>
+{/snippet}
+<a class="ajax" n:href="add!">Add</a>
+
+
+{$ip}
+{foreach $p as $d}
+{$d}<br>
+{/foreach}
+
+<a href="{$basePath}/images/room/1/051.jpg" data-lightbox="gallery"><img src="{$basePath}/images/thumbs/room/1/051.png" title="Popisek" alt="Alt"></a>
+
+<a href="{$basePath}/images/room/1/052.jpg" data-lightbox="gallery"><img src="{$basePath}/images/thumbs/room/1/052.png" title="Popisek" alt="Alt"></a>*}

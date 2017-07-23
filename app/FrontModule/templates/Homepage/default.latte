@@ -1,0 +1,25 @@
+{define title}Úvodní stránka{/define}
+{define description}Úvodní stránka webové aplikace{/define}
+{block content}
+
+<div id="homepage_wrapper">
+    <div class="homepage-api">
+        {* Ověření kapacity *}
+        {control vacancyForm}
+
+        {* Facebook API *}
+        <iframe src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fstarastrelnice.hranice%2F&tabs=timeline%2Cevents%2Cmessages&width=340&height=500&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true&appId=273509183056698"
+                width="340" height="500" style="border:none;overflow:hidden;margin-top:10px;"></iframe>
+
+        {* Fotogalerie *}
+        <div id="PhotogalleryBanner" style="background-image: url({$basePath}/{$img['path']});">
+            <a n:href=":Front:Accommodation:#gallery" class="link">
+                <div class="heading">Fotogalerie</div>
+            </a>
+        </div>
+    </div>
+
+    <div id="lipsum">
+        {$info['homepage']|noescape}
+    </div>
+</div>

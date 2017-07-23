@@ -1,0 +1,125 @@
+{**
+ * @param string   $basePath cesta k webovému obsahu např. CSS souborům
+ * @param array    $flashes  pole zpráv
+ *}
+
+<!DOCTYPE html>
+<html lang="cs-cz">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Ubytovna - {include title|striptags}</title>
+    <meta name="description" content="{include description|striptags}"/>
+
+    {block css}
+        <link rel="stylesheet" type="text/css" href="{$basePath}/css/FontAwesome/css/font-awesome.min.css">
+        <link rel="stylesheet" type="text/css" href="{$basePath}/lightbox/css/lightbox.css">
+        <link rel="stylesheet" href="{$basePath}/css/style.css" type="text/css"/>
+        <link rel="stylesheet" href="{$basePath}/css/edit_style.css" type="text/css"/>
+        <link rel="stylesheet" href="{$basePath}/css/rating/themes/fontawesome-stars.css" type="text/css"/>
+    {/block}
+
+    {block head}
+
+    {/block}
+</head>
+
+<body>
+<nav>
+    <div class="menu__wrapper">
+        <h1 class="menu__nadpis"><a class="menu__nadpis--a" n:href=":Front:Homepage:">Ubytovna</a></h1>
+        <button id="tlacitko-telefon" class="menu__TelefonTlacitko"><i class="fa fa-bars"></i></button>
+        <div class="menu__pc-telefon--overeni"></div>
+        <div class="menu__telefon">
+            <ul class="menu__ul menu__hlavniMenu">
+                <li n:class="$presenter->isLinkCurrent('Homepage:*') ? 'menu__polozka menu__polozka--aktivni' : 'menu__polozka'">
+                    <a class="menu__odkaz" n:href=":Front:Homepage:">Úvod</a>
+                </li>
+
+                <li n:class="$presenter->isLinkCurrent('Room:*') ? 'menu__polozka menu__polozka--aktivni' : 'menu__polozka'">
+                    <a class="menu__odkaz" n:href=":Front:Room:">Vyhledat pokoj</a>
+                </li>
+
+                <li n:class="$presenter->isLinkCurrent('Accommodation:default') ? 'menu__polozka menu__polozka--aktivni' : 'menu__polozka'">
+                    <a class="menu__odkaz" n:href=":Front:Accommodation:">Informace o zařízení</a>
+                </li>
+
+                <li n:class="$presenter->isLinkCurrent('Accommodation:contact') ? 'menu__polozka menu__polozka--aktivni' : 'menu__polozka'">
+                    <a class="menu__odkaz" n:href=":Front:Accommodation:contact">Kontakt</a>
+                </li>
+                {if $user->isLoggedIn()}
+                    <li n:class="$presenter->isLinkCurrent('Reservation:my') ? 'menu__polozka menu__polozka--aktivni' : 'menu__polozka'">
+                        <a class="menu__odkaz" n:href=":Front:Reservation:my">Moje rezervace</a>
+                    </li>
+                {/if}
+            </ul>
+
+            <ul class="menu__ul menu__PrihlaseniMenu">
+                {if !$user->isLoggedIn()}
+                    <li n:class="$presenter->isLinkCurrent('Administration:login') ? 'menu__polozka menu__polozka--aktivni' : 'menu__polozka'">
+                        <a class="menu__odkaz" n:href=":Front:Administration:login">Přihlášení</a>
+                    </li>
+                    <li n:class="$presenter->isLinkCurrent('Administration:register') ? 'menu__polozka menu__polozka--aktivni' : 'menu__polozka'">
+                        <a class="menu__odkaz" n:href=":Front:Administration:register">Registrace</a>
+                    </li>
+                {else}
+                    <li n:class="$presenter->isLinkCurrent('Administration:profil') ? 'menu__polozka menu__polozka--aktivni' : 'menu__polozka'">
+                        <a class="menu__odkaz" n:href=":Front:Administration:profil">
+                            <i class="fa fa-user fa-2x"
+                               aria-hidden="true"></i> {$user->getIdentity()->getData()['name']}
+                        </a>
+                    </li>
+                    <li class="menu__polozka">
+                        <a class="menu__odkaz" n:href=":Front:Administration:logout">
+                            <i class="fa fa-sign-out fa-2x" aria-hidden="true"></i>
+                        </a>
+                    </li>
+
+                {/if}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<main>
+    {* Výpis zpráv. *}
+    {*<p n:foreach="$flashes as $flash" class="message">{$flash->message}</p>*}
+    {foreach $flashes as $flash}
+        <div class="flash {$flash->type}">{$flash->message}</div>
+    {/foreach}
+
+    <section>
+        <header>
+            <h1>{include title}</h1>
+        </header>
+            {include content} {* Vložení obsahu do šablony. *}
+    </section>
+
+</main>
+
+<div onclick="scrollUp();" id="scrollUp" style="display: none;"><i class="fa fa-arrow-up" aria-hidden="true"></i>
+</div>
+
+<footer>
+    <a href="https://nette.org/cs/"><img src="{$basePath}/images/loga/nette.png" alt="Nette logo"
+                                         title="Zobrazit stránky projektu nette"></a>
+    <br class="clear">
+    <div class="copyright">© 2017 Zbyněk Mlčák | <a n:href=":Back:Homepage:">Administrace</a></div>
+</footer>
+
+{block scripts}
+    <script src="{$basePath}/js/jquery-3.2.1.min.js"></script>
+    <script src='https://www.google.com/recaptcha/api.js'></script>
+    <script src="{$basePath}/js/moment.min.js"></script>
+    <script src="{$basePath}/js/netteForms.min.js"></script>
+    <script src="{$basePath}/js/nette.ajax.js"></script>
+    <script src="{$basePath}/js/main.js"></script>
+    <script src="{$basePath}/js/menu.js"></script>
+    <script src="{$basePath}/js/scrollUp.js"></script>
+    <script src="{$basePath}/lightbox/js/lightbox.js"></script>
+    <script src="{$basePath}/js/jquery.barrating.min.js"></script>
+    {if $presenter->isLinkCurrent('Accommodation:contact')}
+        <script src="{$basePath}/js/maps.js"></script>
+    {/if}
+{/block}
+</body>
+</html>

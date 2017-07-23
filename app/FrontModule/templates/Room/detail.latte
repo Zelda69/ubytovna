@@ -1,0 +1,64 @@
+{define title}{$room['name']} - detail{/define}
+{define description}Informace o pokoji {$room['name']}{/define}
+{block content}
+
+<div class="room-detail clear">
+    {* Hlavní obrázek *}
+    <div style="float: left;">
+        {if !is_null($room->image_id)}
+            <a href="{$basePath}/images/{$room->image->path}" data-lightbox="room-gallery">
+                <img src="{$basePath}/images/thumbs/{$room->image->path}" alt="{$room->image->description}"
+                     title="{$room->image->description}"></a>
+        {else}
+            <img src="{$basePath}/images/noimage.png" alt="Obrázek" title="Obrázek je momentálně nedostupný.">
+        {/if}
+    </div>
+    {* Popis *}
+    <div class="pole">
+        <h1 class="nazev">{$room->name}</h1>
+        <h6>Cena {$room->price} Kč</h6> | <span class="green">{$room->type->name}</span>
+        <br>Možnost přistýlky: {$room->extra_beds == 0 ? 'Ne' : 'Ano, maximálně '.$room->extra_beds}
+        <p style="width:400px;">Popis: {$room->description}</p>
+        <div class="room-detail-services">
+            Služby:
+            {foreach $services as $service}
+                <span title="{$service->service->name}">{$service->service->image|noescape} {$service->service->name}</span>
+            {/foreach}
+        </div>
+
+
+        {snippet room-detail-reservation}
+            Ověření kapacity:
+            {form vacancyConfirmForm class => 'ajax'}
+                <ul class="errors" n:if="$form->hasErrors()">
+                    <li n:foreach="$form->errors as $error">{$error}</li>
+                </ul>
+                {input from} - {input to} {input submit}
+            {/form}
+            <span n:class="!is_null($isAvaible) ? room-detail-res-but : room-detail-res-but-no">
+                {if $isAvaible}
+                    Pokoj je v zadaném období možné rezervovat.
+                    <a n:href=":Front:Reservation:new $room->id,$from,$to"><input type="button" value="Rezervovat"></a>
+                {else}
+                    Pokoj je bohužel v zadaném období obsazen. Zkuste jiné období.
+                {/if}
+            </span>
+        {/snippet}
+
+
+    </div>
+
+</div>
+
+{* Ostatní fotky *}
+<div class="room-gallery">
+    {foreach $gallery as $g}
+        <section id="gallery">
+            <header><h1>Fotogalerie - {$g['name']}</h1></header>
+            {foreach $g['img'] as $img}
+                <a href="{$basePath}/{$img['path']}" data-lightbox="room-gallery">
+                    <img class="gallery" src="{$basePath}/{$img['thumb']}" title="{$img['desc']}" alt="{$img['desc']}"></a>
+            {/foreach}
+        </section>
+    {/foreach}
+</div>

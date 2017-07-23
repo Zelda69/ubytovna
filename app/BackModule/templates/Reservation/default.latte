@@ -1,0 +1,50 @@
+{define title}Rezervace seznam{/define}
+{define description}Description{/define}
+{block content}
+
+
+<table class="default">
+    <thead>
+    <tr>
+        <th>Datum rezervace</th>
+        <th>Období</th>
+        <th>Kdo</th>
+        <th>Pokoj</th>
+        <th>Cena</th>
+        <th>Stav</th>
+        <th>&nbsp;</th>
+    </tr>
+    </thead>
+    <tbody>
+
+    {foreach $reservations as $reservation}
+        {if $reservation->date_from > date('Y-m-j')}
+            {var $stav = 'Před příjezdem'}
+        {elseif $reservation->date_from >= date('Y-m-j') && $reservation->date_to > date('Y-m-j')}
+            {var $stav = 'Probíhající'}
+        {else}
+            {var $stav = 'Ukončená'}
+        {/if}
+
+        <tr>
+            <td>{$reservation->reservation_date|date:'H:i j. n. Y'}</td>
+            <td>{$reservation->date_from|date:'j. n. Y'} - {$reservation->date_to|date:'j. n. Y'}</td>
+            <td>{$reservation->user->name}</td>
+            <td><a n:href=":Front:Room:detail $reservation->room->id">{$reservation->room->name}</a></td>
+            <td>{$reservation->room->price * date_diff($reservation->date_from, $reservation->date_to)->format('%d')|number} Kč</td>
+            <td>{$stav}</td>
+            <td></td>
+        </tr>
+        {if !is_null($reservation->note) && $reservation->note !== ''}
+            <tr>
+                <td colspan="7" style="text-align: center; font-size: 0.8em;">Poznámka {$reservation->note}</td>
+            </tr>
+        {/if}
+    {/foreach}
+
+    {if $reservations->count() == 0}
+        <tr><td colspan="7" style="text-align: center;">Nenalezeny žádné rezervace.</td></tr>
+    {/if}
+
+    </tbody>
+</table>

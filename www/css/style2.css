@@ -1,0 +1,127 @@
+body {
+	font-family: verdana, serif;
+	font-size: 14px;
+	width: 900px;
+	margin: 0 auto;
+}
+
+h1 {
+	text-align: center;
+	color: #444444;
+	text-shadow: 3px 3px 3px #aaaaaa;
+}
+
+footer {
+	font-size: 11px;
+	text-align: center;
+	padding-top: 20px;
+}
+
+article {
+	text-shadow: 3px 3px 3px #aaaaaa;
+}
+
+nav ul {
+	list-style-type: none;
+}
+
+nav li {
+	float: left;
+	margin-right: 15px;
+}
+
+nav a {
+	background: #6FA4F8;
+	color: white;
+	padding: 5px 10px;
+	border-radius: 10px;
+	text-decoration: none;
+	border: none;
+}
+
+nav a:hover {
+	background: #2976f8;
+	color: #EEEEEE;
+	text-decoration: none;
+}
+
+input[type="submit"] {
+	background: #6FA4F8;
+	color: white;
+	padding: 5px 10px;
+	border-radius: 10px;
+	border: 0;
+}
+
+input[type="submit"]:hover {
+	background: #2976f8;
+	color: #EEEEEE;
+	cursor: pointer;
+}
+
+input[type="text"], input[type="email"], input[type="password"] {
+	width: 250px;
+	border-radius: 5px;
+	border: 1px solid #aaaaaa;
+	padding: 0.3em;
+}
+
+input[type="submit"] {
+	padding: 10px 25px;
+	display: block;
+	margin: 20px auto 0;
+	font-weight: bold;
+}
+
+textarea {
+	border-radius: 5px;
+	border: 1px solid #aaaaaa;
+	width: 483px;
+	height: 90px;
+}
+
+.message {
+	border: 1px solid #9DC2F8;
+	background: #DBE8F8;
+	padding: 3px;
+}
+
+#ajax-spinner {
+	margin: 15px 0 0 15px;
+	padding: 13px;
+	background: white url('../images/spinner.gif') no-repeat 50% 50%;
+	font-size: 0;
+	z-index: 123456;
+	display: none;
+}
+
+div.flash {
+	color: black;
+	background: #FFF9D7;
+	border: 1px solid #E2C822;
+	padding: 1em;
+	margin: 1em 0;
+}
+
+a[href^="#error:"] {
+	background: red;
+	color: white;
+}
+
+form th, form td {
+	vertical-align: top;
+	font-weight: normal;
+}
+
+form th {
+	text-align: right;
+}
+
+form .required label {
+	font-weight: bold;
+}
+
+form .error {
+	color: #D00;
+	font-weight: bold;
+}

@@ -1,0 +1,92 @@
+{define title}Kontaktní informace{/define}
+{define description}Kontaktní informace.{/define}
+{block content}
+<!DOCTYPE html>
+<html>
+<head>
+    <script>
+        var address = {implode(',', $info['adress'])}
+    </script>
+</head>
+<body onload="initialize()">
+<br>
+Nenašli jste na našich webových stránkách informace, které potřebujete? Máte další dotazy? V tom případě nás neváhejte
+kontaktovat, jsme tu pro Vás a rádi Vám zodpovíme všechny Vaše dotazy, případně sjednáme schůzku, kde si náš hotel
+prohlédněte.<br><br>
+
+<div id="map">
+    <script async defer
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBaJV2nMXgb33q-y4U6CbXhr_eGqc7de_s">
+    </script>
+</div>
+
+<div class="contact_box">
+    <div class="contact_left">
+        <section>
+            <header><h2>Recepce</h2></header>
+            <table class="default">
+                <tr>
+                    <th colspan="2">Provozní doba</th>
+                </tr>
+                {var $days = array('Pondělí', 'Úterý', 'Středa', 'Čtvrtek', 'Pátek', 'Sobota', 'Neděle')}
+                {foreach $info['reception_hours'] as $op}
+                    <tr>
+                        <td>{$days[$iterator->counter - 1]}</td>
+                        <td>{$op[0]} - {$op[1]}</td>
+                    </tr>
+                {/foreach}
+            </table>
+        </section>
+    </div>
+
+    <div class="contact_right">
+        <section>
+            <header><h2>Adresa</h2></header>
+            <table class="default">
+                {foreach $info['adress'] as $adresa}
+                    <tr>
+                        <td>{$adresa}</td>
+                    </tr>
+                {/foreach}
+            </table>
+        </section>
+
+        <section>
+            <header><h2>Kontaktní informace</h2></header>
+            <table class="default">
+                <tr>
+                    <td>Telefon:</td>
+                    <td> {$info['phone']}</td>
+                </tr>
+                <tr>
+                    <td>Email:</td>
+                    <td><a href="mailto:{$info['email']}">{$info['email']}</a></td>
+                </tr>
+            </table>
+        </section>
+    </div>
+    <div class="contact_right">
+        <section>
+            <header><h2>Provozovatel</h2></header>
+            <table class="default">
+                {foreach $info['operator'] as $op}
+                    <tr>
+                        <td>{$op}</td>
+                    </tr>
+                {/foreach}
+            </table>
+        </section>
+    </div>
+    <br style="clear: both;">
+</div>
+
+<br style="clear: both;">
+
+<h1>Kontaktujte nás</h1>
+<p>Kontaktujte nás odesláním formuláře níže.</p>
+
+{* Formulář pro kontakt. *}
+
+{control contactForm}
+</body>
+</html>

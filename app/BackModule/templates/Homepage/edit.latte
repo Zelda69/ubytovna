@@ -1,0 +1,23 @@
+{define title}Editace základních údajů{/define}
+{define description}Description{/define}
+{block content}
+
+{control infoEditForm}
+
+<h2>Fotogalerie</h2>
+
+<h3>Nahrání nového obrázku</h3>
+{control galleryForm}
+
+<h3>Aktuální obrázky</h3>
+<div class="room-gallery">
+    {foreach $gallery as $g}
+        <section id="gallery">
+            <header><h1>Fotogalerie - {$g['name']}</h1></header>
+            {foreach $g['img'] as $img}
+                <a href="{$basePath}/{$img['path']}" data-lightbox="room-gallery">
+                    <img class="gallery" src="{$basePath}/{$img['thumb']}" title="{$img['desc']}" alt="{$img['desc']}"></a>
+            {/foreach}
+        </section>
+    {/foreach}
+</div>

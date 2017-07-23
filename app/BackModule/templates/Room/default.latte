@@ -1,0 +1,39 @@
+{define title}Správa pokojů{/define}
+{define description}Description{/define}
+{block content}
+
+<section id="newRoom">
+    <header>
+        <h3>Nový pokoj</h3>
+    </header>
+        {control roomForm}
+</section>
+
+<section id="existRooms">
+    <header>
+        <h3>Existující pokoje</h3>
+    </header>
+
+    <table class="default">
+        <thead>
+        <tr>
+            <th>Označení pokoje</th>
+            <th>Typ pokoje</th>
+            <th>Přistýlky</th>
+            <th>Cena</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        {foreach $rooms as $room}
+            <tr>
+                <td>{$room->name}</td>
+                <td>{$room->type->name}</td>
+                <td>{$room->extra_beds}</td>
+                <td>{$room->price|number} Kč</td>
+                <td><a n:href="Room:detail $room->id">Detail</a></td>
+            </tr>
+        {/foreach}
+        </tbody>
+    </table>
+</section>

@@ -1,0 +1,448 @@
+/*@font-face {
+    font-family: track;
+    src: url("../font/Track.otf") format("opentype");
+    src: url("../font/Track.eot") format("eot"), url("../font/Track.woff") format("woff"), url("../font/Track.svg") format("svg"), url("../font/Track.ttf") format("truetype");
+}
+
+*/
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: verdana, serif;
+    font-size: 0.9em;
+    background-color: #fff;
+    min-height: 100%;
+}
+
+main {
+    width: 80%;
+    margin: 0 auto 30px;
+    text-align: justify;
+    padding-top: 70px;
+    min-height: calc(100vh - 13.7em); /*-16.1em*/
+}
+
+nav {
+    position: fixed;
+    width: 100%;
+    float: left;
+    height: 50px;
+    background-color: #3498db;
+    border-bottom: 5px solid #2c8ac8;
+    z-index: 1000;
+}
+
+footer {
+    color: #BCBCBC;
+    padding: 10px 0;
+    margin-bottom: -10px;
+    border-top: 1px dashed #fff;
+    background-color: #0c3957;
+    text-align: center;
+    width: 100%;
+}
+
+.copyright {
+    text-align: center;
+    border-top: 1px dashed #fff;
+    margin: 0 0 -10px;
+    padding: 5px 0;
+    background-color: rgba(15, 15, 15, 0.5);
+}
+
+.menu__nadpis {
+    color: white;
+    float: left;
+    line-height: 55px;
+    height: 50px;
+}
+
+.menu__wrapper {
+    width: 1200px;
+    margin: 0 auto;
+}
+
+.menu__ul {
+    list-style: none;
+    height: 50px;
+    float: left;
+    margin-left: 20px;
+}
+
+.menu__nadpis--a {
+    color: white;
+    text-decoration: none;
+}
+
+.menu__polozka {
+    height: 50px;
+    cursor: pointer;
+    background-color: transparent;
+    box-sizing: border-box;
+    float: left;
+    transition: background-color .3s;
+    -webkit-transition: background-color .3s;
+    -moz-transition: background-color .3s;
+    -o-transition: background-color .3s;
+}
+
+.menu__polozka:hover {
+    background-color: #2c8ac8;
+}
+
+.menu__polozka--aktivni {
+    background-color: #2c8ac8;
+}
+
+.menu__odkaz {
+    color: white;
+    height: 50px;
+    padding-right: 15px;
+    line-height: 55px;
+    padding-left: 15px;
+    box-sizing: border-box;
+    cursor: pointer;
+    display: block;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.menu__TelefonTlacitko {
+    display: none;
+    float: right;
+    outline: none;
+    border: none 0 transparent;
+    background-color: transparent;
+    height: 50px;
+    font-size: 25px;
+    cursor: pointer;
+    color: white;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.menu__hlavniMenu {
+    float: left;
+}
+
+.menu__PrihlaseniMenu {
+    float: right;
+}
+
+.menu__pc-telefon--overeni {
+    display: block;
+}
+
+#scrollUp {
+    width: 60px;
+    height: 40px;
+    background-color: #0066ff;
+    opacity: 0.9;
+    position: fixed;
+    right: 30px;
+    bottom: 50px;
+    border-radius: 10px;
+    text-align: center;
+    padding-top: 10px;
+    color: white;
+    display: none;
+    cursor: pointer;
+    font-size: 2em;
+}
+
+div.flash {
+    color: black;
+    background: #FFF9D7;
+    border: 1px solid #E2C822;
+    padding: 1em;
+    margin: 1em 0;
+}
+
+a[href^="#error:"] {
+    background: red;
+    color: white;
+}
+
+/*
+-Respozivita
+*/
+
+@media (max-width: 1250px) {
+    .menu__wrapper {
+        width: 1045px;
+    }
+
+    #menu__TelefonTlacitko {
+        display: none;
+    }
+
+    .menu__pc-telefon--overeni {
+        display: block;
+    }
+}
+
+@media (max-width: 1065px) {
+    .menu__wrapper {
+        width: 800px;
+    }
+
+    .menu__pc {
+        display: none;
+    }
+
+    .menu__pc-telefon--overeni {
+        display: none;
+    }
+
+    .menu__TelefonTlacitko {
+        display: block;
+    }
+
+    .menu__telefon {
+        width: 100%;
+        height: 100%;
+        z-index: 9999999;
+        overflow: auto;
+        display: none;
+        top: 50px;
+        left: 0;
+        position: fixed;
+        background-color: #3498db;
+    }
+
+    .menu__telefon--aktivni .menu__ul .menu__polozka {
+        width: 100%;
+        line-height: 50px;
+        text-align: center;
+        border-bottom: 1px solid #2c8ac8;
+    }
+
+    .menu__telefon--aktivni .menu__ul {
+        width: 100%;
+        float: left;
+        height: auto;
+        margin-left: 0
+    }
+}
+
+@media (max-width: 830px) {
+    .menu__wrapper {
+        width: 700px;
+    }
+}
+
+@media (max-width: 730px) {
+    .menu__wrapper {
+        width: 600px;
+    }
+}
+
+@media (max-width: 630px) {
+    .menu__wrapper {
+        width: 500px;
+    }
+}
+
+@media (max-width: 530px) {
+    .menu__wrapper {
+        width: 400px;
+    }
+}
+
+@media (max-width: 430px) {
+    .menu__wrapper {
+        width: 300px;
+    }
+}
+
+@media (max-width: 330px) {
+    .menu__wrapper {
+        width: 270px;
+    }
+
+}
+
+.fa-user, .fa-sign-out {
+    color: #ffffff;
+}
+
+footer img {
+    width: 100px;
+}
+
+.center {
+    text-align: center;
+}
+
+table.center {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+input[type=text], input[type=password], input[type=number], input[type=date],
+input[type=email] {
+    padding: 6px 10px;
+    margin: 4px 0;
+    box-sizing: border-box;
+    border: 3px solid #ccc;
+    -webkit-transition: 0.5s;
+    transition: 0.5s;
+    outline: none;
+    border-radius: 10px;
+}
+
+input[type=text], input[type=password], input[type=number], input[type=date],
+input[type=email]:focus {
+    border: 3px solid #555;
+}
+
+textarea {
+    width: 100%;
+    height: 150px;
+    padding: 6px 10px;
+    box-sizing: border-box;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    background-color: #f8f8f8;
+    resize: none;
+    -webkit-transition: 0.5s;
+    transition: 0.5s;
+    outline: none;
+}
+
+textarea:focus {
+    border: 3px solid #555;
+}
+
+select {
+    width: 100%;
+    padding: 8px 10px;
+    border: none;
+    border-radius: 10px;
+    background-color: #f1f1f1;
+}
+
+input[type=button], input[type=submit], input[type=reset] {
+    background-color: #3484d2;
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    text-decoration: none;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 10px;
+}
+
+.required {
+    color: red;
+}
+
+form th {
+    /*font-size: 1.2em;*/
+    padding-right: 4px;
+}
+
+.clear {
+    clear: both;
+}
+
+.error {
+    background-color: #ffd7d7 !important;
+    color: #ff0000 !important;
+    border-color: #ff0000 !important;
+}
+
+img.gallery {
+    border: 6px solid white;
+}
+
+#map {
+    height: 400px;
+    width: 100%;
+    margin-bottom: 12px;
+}
+
+table.homepage-table {
+    margin: 7px;
+}
+
+fieldset.homepage-fieldset {
+    width: 340px;
+}
+
+.homepage-api {
+    float: left;
+    margin-right: 10px;
+}
+
+.link {
+    display: block;
+    width: 100%;
+    height: 88px;
+    line-height: 88px;
+    text-align: center;
+    color: white;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-size: 23px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.81);
+    -webkit-transition: all, 400ms, ease-in-ease-out;
+    -moz-transition: all, 400ms, ease-in-ease-out;
+    -ms-transition: all, 400ms, ease-in-ease-out;
+    -o-transition: all, 400ms, ease-in-ease-out;
+    transition: all, 400ms, ease-in-ease-out;
+}
+
+.link:hover {
+    background: rgba(255, 255, 255, 0.4)
+}
+
+.room-detail {
+    display: inline-block;
+    width: 100%;
+}
+
+.room-detail img {
+    margin-right: 10px;
+}
+
+#snippet--room-detail-reservation {
+
+}
+
+#snippet--room-detail-reservation .room-detail-res-but {
+    display: inline;
+}
+
+#snippet--room-detail-reservation .room-detail-res-but-no {
+    display: none;
+}
+
+.pole {
+    border-left: 1px solid #606060;
+    padding-left: 10px;
+    margin-left: 20px;
+    float: left;
+    min-height: 100px;
+}
+
+#room-filter-table {
+    margin: 10px;
+    display: none;
+}
+
+#room-filter-fieldset {
+    cursor: pointer;
+    color: #2c8ac8;
+    font-size: 1.1em;
+    padding: 10px;
+}
+
+#homepage_wrapper {
+    clear: both;
+    width: 100%;
+    display: inline-block;
+}

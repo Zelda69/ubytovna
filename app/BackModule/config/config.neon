@@ -1,0 +1,19 @@
+# Konfigurační soubor pro BackModule.
+
+parameters:
+    # Presentery.
+    ahome: Back:Homepage
+    aroom: Back:Room
+    areservation: Back:Reservation
+
+# Nastavení služeb dále přístupných pomocí DI v rámci celé aplikace.
+services:
+    # Managers
+    security.authorizator:
+            setup:
+                    - addResource(%ahome%)
+                    - addResource(%aroom%)
+                    - addResource(%areservation%)
+                    - allow(%admin%, %areservation%)
+                    - allow(%admin%, %ahome%)
+                    - allow(%admin%, %aroom%)

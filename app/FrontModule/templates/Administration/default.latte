@@ -1,0 +1,8 @@
+{define title}Administrace webu{/define}
+{define description}Administrace webu.{/define}
+{block content}
+<p>Vítejte v administraci! Jste přihlášeni jako <b>{$username}</b>.</p>
+<p n:if="!$admin">Nemáte administrátorská oprávnění, požádejte administrátora webu, aby vám je přidělil.</p>
+<h2><a n:href=":Front:Article:editor">Editor článků</a></h2>
+<h2><a n:href=":Front:Article:list">Seznam článků</a></h2>
+<h2><a n:href=":Front:Administration:logout">Odhlásit</a></h2>

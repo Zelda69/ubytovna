@@ -1,0 +1,41 @@
+# Konfigurační soubor pro FrontModule.
+
+parameters:
+    # Presentery.
+    home: Front:Homepage
+    administration: Front:Administration
+    article: Front:Article
+    contact: Front:Contact
+    accommodation: Front:Accommodation
+    room: Front:Room
+    reservation: Front:Reservation
+
+# Nastavení služeb dále přístupných pomocí DI v rámci celé aplikace.
+services:
+    # Managers
+    - App\FrontModule\Model\ArticleManager
+    - App\FrontModule\Model\AccommodationManager
+    - App\FrontModule\Model\RoomManager
+    - App\FrontModule\Model\ServiceManager
+    - App\FrontModule\Model\ReservationManager
+    security.authorizator: # Nastavení zdrojů a pravidel přístupu k nim v rámci CoreModule pomocí statického ACL.
+            setup:
+                    - addResource(%administration%)
+                    - addResource(%article%)
+                    - addResource(%contact%)
+                    - addResource(%home%)
+                    - addResource(%accommodation%)
+                    - addResource(%room%)
+                    - addResource(%reservation%)
+                    - allow(%guest%, %administration%, 'login')
+                    - allow(%guest%, %administration%, 'register')
+                    - allow(%guest%, %article%, 'default')
+                    - allow(%guest%, %article%, 'list')
+                    - allow(%guest%, %contact%)
+                    - allow(%guest%, %home%)
+                    - allow(%guest%, %accommodation%)
+                    - allow(%guest%, %room%)
+                    - allow(%guest%, %reservation%)
+                    - allow(%member%, %administration%, 'profil')
+                    - allow(%member%, %administration%, 'default')
+                    - allow(%member%, %administration%, 'logout')
