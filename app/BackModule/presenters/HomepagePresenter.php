@@ -11,13 +11,12 @@ use App\FrontModule\Model\AccommodationManager;
 use App\Model\ImageManager;
 use App\Presenters\BasePresenter;
 use Nette\Application\UI\Form;
-use Nette\Database\UniqueConstraintViolationException;
 use Nette\Utils\ArrayHash;
 
 class HomepagePresenter extends BasePresenter {
     /** @var AccommodationManager */
     private $accommodationManager;
-    /** @var ImageManager  */
+    /** @var ImageManager */
     private $myimageManager;
 
     /** @var \Carrooi\ImagesManager\ImagesManager @inject */
@@ -60,6 +59,12 @@ class HomepagePresenter extends BasePresenter {
             ->setRequired('Musíte vyplnit provozovatele')
             ->setDefaultValue($this->br2nl(implode('<br>', $this->accommodationManager->getOperator())));
         $form->addTextArea('content', 'O zařízení')->setDefaultValue($this->accommodationManager->getAbout());
+        $form->addText('DPH', 'Sazba DPH:')
+            ->setHtmlType('number')
+            ->setRequired('Musíte zadat hodnotu DPH!')
+            ->addRule(Form::INTEGER, 'DPH musí být číslo!')
+            ->addRule(Form::RANGE, 'Sazba DPH musí být od %d do %d!', [0, 100])
+            ->setDefaultValue($this->accommodationManager->getDPH());
         $form->addSubmit('save', 'Uložit informace');
         $form->onSuccess[] = [$this, 'infoEditFormSucceeded'];
 

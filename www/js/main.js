@@ -49,6 +49,10 @@ $(function () {
         return true;
     };
 
+    if(filter) {
+        $('#room-filter-table').show();
+    }
+
     $("#room-filter-fieldset").on("click", function(){
         $('#room-filter-table').toggle();
     });

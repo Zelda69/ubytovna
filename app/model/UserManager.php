@@ -16,7 +16,7 @@ class UserManager extends BaseManager implements IAuthenticator {
 
     const TABLE_NAME = 'user';
     const COLUMN_ID = 'id';
-    const COLUMN_NAME = 'username', COLUMN_PASSWORD_HASH = 'password', COLUMN_EMAIL = 'email', COLUMN_ROLE = 'role';
+    const COLUMN_NAME = 'username', COLUMN_PASSWORD_HASH = 'password', COLUMN_ROLE = 'role';
 
 
     /**
@@ -32,7 +32,7 @@ class UserManager extends BaseManager implements IAuthenticator {
 
         // Vykoná dotaz nad databází a vrátí první řádek výsledku nebo false, pokud uživatel neexistuje.
         $user = $this->database->table(self::TABLE_NAME)
-            ->whereOr([self::COLUMN_NAME => $username, self::COLUMN_EMAIL => $username])
+            ->where([self::COLUMN_NAME => $username])
             ->fetch();
 
         // Ověření uživatele.

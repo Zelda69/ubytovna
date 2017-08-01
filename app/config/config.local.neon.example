@@ -1,0 +1,12 @@
+parameters:
+
+
+database:
+	dsn: 'mysql:host=127.0.0.1;dbname=bakalarka'
+	user: root
+	password:
+	options:
+		lazy: yes
+		options: [PDO::MYSQL_ATTR_COMPRESS = true]
+		debugger: true        # debugger bar panel
+		explain:      true        # explain queries in debugger bar

@@ -48,7 +48,10 @@ class HomepagePresenter extends BasePresenter {
 
     public function vacancyFormSucceeded($form, $values) {
         /* Pokud je formulář validní, přesměruj jej na výběr pokojů */
-        $this->redirect(':Front:Room:filter', $values->from, $values->to);
+        $_SESSION['filter']['use'] = TRUE;
+        $_SESSION['filter']['from'] = $values->from;
+        $_SESSION['filter']['to'] = $values->to;
+        $this->redirect(':Front:Room:');
     }
 
     public function renderDefault() {

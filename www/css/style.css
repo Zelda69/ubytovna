@@ -341,7 +341,7 @@ input[type=button], input[type=submit], input[type=reset] {
 }
 
 form th {
-    /*font-size: 1.2em;*/
+    font-size: 0.9em;
     padding-right: 4px;
 }
 
@@ -436,9 +436,9 @@ fieldset.homepage-fieldset {
 
 #room-filter-fieldset {
     cursor: pointer;
-    color: #2c8ac8;
-    font-size: 1.1em;
-    padding: 10px;
+ /* color: #2c8ac8;
+	font-size: 1.1em;
+    padding: 10px; */
 }
 
 #homepage_wrapper {

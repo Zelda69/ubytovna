@@ -54,6 +54,12 @@
             </ul>
 
             <ul class="menu__ul menu__PrihlaseniMenu">
+                {if (isset($_SESSION['reservation']) && strtotime($_SESSION['reservation']) > time())}
+                <li n:class="$presenter->isLinkCurrent('Reservation:default') || $presenter->isLinkCurrent('Reservation:new')  ? 'menu__polozka menu__polozka--aktivni' : 'menu__polozka'">
+                    <a class="menu__odkaz" n:href=":Front:Reservation:"><i class="fa fa-shopping-cart" aria-hidden="true"></i> <span id="reservation_expired"></span></a>
+                </li>
+                {/if}
+
                 {if !$user->isLoggedIn()}
                     <li n:class="$presenter->isLinkCurrent('Administration:login') ? 'menu__polozka menu__polozka--aktivni' : 'menu__polozka'">
                         <a class="menu__odkaz" n:href=":Front:Administration:login">Přihlášení</a>
@@ -65,7 +71,7 @@
                     <li n:class="$presenter->isLinkCurrent('Administration:profil') ? 'menu__polozka menu__polozka--aktivni' : 'menu__polozka'">
                         <a class="menu__odkaz" n:href=":Front:Administration:profil">
                             <i class="fa fa-user fa-2x"
-                               aria-hidden="true"></i> {$user->getIdentity()->getData()['name']}
+                               aria-hidden="true"></i> {$user->getIdentity()->getData()['username']}
                         </a>
                     </li>
                     <li class="menu__polozka">
@@ -91,7 +97,7 @@
         <header>
             <h1>{include title}</h1>
         </header>
-            {include content} {* Vložení obsahu do šablony. *}
+        {include content} {* Vložení obsahu do šablony. *}
     </section>
 
 </main>
@@ -117,9 +123,14 @@
     <script src="{$basePath}/js/scrollUp.js"></script>
     <script src="{$basePath}/lightbox/js/lightbox.js"></script>
     <script src="{$basePath}/js/jquery.barrating.min.js"></script>
-    {if $presenter->isLinkCurrent('Accommodation:contact')}
-        <script src="{$basePath}/js/maps.js"></script>
+{if $presenter->isLinkCurrent('Accommodation:contact')}
+    <script src="{$basePath}/js/maps.js"></script>
+{/if}
+    {if (isset($_SESSION['reservation']) && strtotime($_SESSION['reservation']) > time())}
+        <script>var reservation_expired = {$_SESSION['reservation']};</script>
+        <script src="{$basePath}/js/reservation_counter.js"></script>
     {/if}
+    <script>var filter = {isset($_SESSION['filter']['use']) ? $_SESSION['filter']['use'] : false};</script>
 {/block}
 </body>
 </html>

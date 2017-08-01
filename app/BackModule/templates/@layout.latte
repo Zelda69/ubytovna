@@ -32,6 +32,10 @@
         <div class="menu__telefon">
             <ul class="menu__ul menu__hlavniMenu">
 
+                <li n:class="$presenter->isLinkCurrent('Reservation:*') ? 'menu__polozka menu__polozka--aktivni' : 'menu__polozka'">
+                    <a class="menu__odkaz" n:href=":Back:Reservation:">Rezervace</a>
+                </li>
+
                 <li n:class="$presenter->isLinkCurrent('Homepage:edit') ? 'menu__polozka menu__polozka--aktivni' : 'menu__polozka'">
                     <a class="menu__odkaz" n:href=":Back:Homepage:edit">Základní informace</a>
                 </li>
@@ -41,11 +45,11 @@
                 </li>
 
                 <li n:class="$presenter->isLinkCurrent('Room:*') ? 'menu__polozka menu__polozka--aktivni' : 'menu__polozka'">
-                    <a class="menu__odkaz" n:href=":Back:Room:">Správce pokojů</a>
+                    <a class="menu__odkaz" n:href=":Back:Room:">Pokoje</a>
                 </li>
 
-                <li n:class="$presenter->isLinkCurrent('Reservation:*') ? 'menu__polozka menu__polozka--aktivni' : 'menu__polozka'">
-                    <a class="menu__odkaz" n:href=":Back:Reservation:">Správce rezervací</a>
+                <li n:class="$presenter->isLinkCurrent('Guests:*') ? 'menu__polozka menu__polozka--aktivni' : 'menu__polozka'">
+                    <a class="menu__odkaz" n:href=":Back:Guests:">Hosté</a>
                 </li>
 
             </ul>

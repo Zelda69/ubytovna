@@ -28,6 +28,7 @@ services:
 	router: App\RouterFactory::createRouter # router
 	- App\Forms\UserForms # Továrnička na uživatelské formuláře - login a register.
 	- App\Model\ImageManager
+	- App\Model\GuestManager
 	security.authorizator: # Nastavení zdrojů a pravidel přístupu k nim v rámci celé aplikace pomocí statického ACL.
 	    setup:
 	        - addResource(%error%)

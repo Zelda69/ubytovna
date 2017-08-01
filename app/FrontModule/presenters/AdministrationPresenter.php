@@ -7,6 +7,7 @@
 namespace App\FrontModule\Presenters;
 
 use App\Forms\UserForms;
+use App\Model\GuestManager;
 use App\Model\UserManager;
 use Nette\Application\UI\Form;
 use Nette\Security\Passwords;
@@ -24,6 +25,7 @@ class AdministrationPresenter extends BaseFrontPresenter {
     /** @var UserForms Továrnička na uživatelské formuláře. */
     private $userFormsFactory;
     private $userManager;
+    private $guestManager;
 
     /** @var array Společné instrukce pro přihlašovací a registrační formuláře. */
     private $instructions;
@@ -35,11 +37,13 @@ class AdministrationPresenter extends BaseFrontPresenter {
      *
      * @param UserForms $userForms automaticky injektovaná třída továrničky na uživatelské formuláře
      * @param UserManager $userManager
+     * @param GuestManager $guestManager
      */
-    public function __construct(UserForms $userForms, UserManager $userManager) {
+    public function __construct(UserForms $userForms, UserManager $userManager, GuestManager $guestManager) {
         parent::__construct();
         $this->userManager = $userManager;
         $this->userFormsFactory = $userForms;
+        $this->guestManager = $guestManager;
     }
 
     /** Volá se před každou akcí presenteru a inicializuje společné proměnné. */
@@ -129,14 +133,14 @@ class AdministrationPresenter extends BaseFrontPresenter {
     }
 
     protected function createComponentEditProfilForm() {
-        $user_data = $this->getUser()->getIdentity();
+        $user_data = $this->guestManager->get($this->getUser()->getId());
         $form = new Form();
         //$form->addEmail('email', 'E-mail')->setRequired('Musíte vyplnit email!')->setDefaultValue($user_data->email);
         $form->addText('name', 'Jméno a příjmení')
             ->setRequired('Musíte vyplnit jméno!')
             ->setDefaultValue($user_data->name);
         $form->addText('birthday', 'Datum narození')->setHtmlType('date')->setDefaultValue($user_data->birthday);
-        $form->addText('birthday_place', 'Místo narození')->setDefaultValue($user_data->birthday_place);
+        $form->addText('birthday_place', 'Místo narození')->setDefaultValue($user_data->birthplace);
         $form->addText('phone', 'Telefonní číslo')
             ->setRequired('Musíte vyplnit telefon!')
             ->setDefaultValue($user_data->phone);
@@ -151,7 +155,7 @@ class AdministrationPresenter extends BaseFrontPresenter {
     }
 
     public function editProfilFormSucceeded($form, $values) {
-        $this->userManager->changeProfil($this->getUser()->getId(), $values);
+        $this->guestManager->update($this->getUser()->getId(), $values);
         $this->flashMessage('Změny byly úspěšně uloženy');
         $this->redirect('this');
     }

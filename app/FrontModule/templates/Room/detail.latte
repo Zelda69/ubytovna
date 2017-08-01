@@ -15,34 +15,39 @@
     </div>
     {* Popis *}
     <div class="pole">
-        <h1 class="nazev">{$room->name}</h1>
-        <h6>Cena {$room->price} Kč</h6> | <span class="green">{$room->type->name}</span>
-        <br>Možnost přistýlky: {$room->extra_beds == 0 ? 'Ne' : 'Ano, maximálně '.$room->extra_beds}
-        <p style="width:400px;">Popis: {$room->description}</p>
+        <h3 class="nazev">{$room->type->name}</h3>
+        <h5>Cena za 1 noc: {$room->price|number} Kč</h5>
+        <br>Možnost přistýlky: {$room->extra_beds == 0 ? 'Ne' : 'Ano, maximálně '.$room->extra_beds}<br>
         <div class="room-detail-services">
             Služby:
             {foreach $services as $service}
                 <span title="{$service->service->name}">{$service->service->image|noescape} {$service->service->name}</span>
             {/foreach}
         </div>
+        <br>
+
+        <p style="width:400px;">Popis: {$room->description}</p><br>
 
 
         {snippet room-detail-reservation}
-            Ověření kapacity:
+            <h4>Ověření kapacity:</h4>
+            <span n:class="!is_null($isAvaible) ? room-detail-res-but : room-detail-res-but-no">
+                {if $isAvaible}
+                    Pokoj je v období {date('j. n. Y', strtotime($from))} - {date('j. n. Y', strtotime($to))} možné rezervovat.
+                    {form multipleReservationForm-$room->id}
+                        {input reservate}
+                    {/form}
+                {else}
+                    Pokoj je bohužel v zadaném období již obsazen. Zkuste jiné období.
+                {/if}
+            </span>
+
             {form vacancyConfirmForm class => 'ajax'}
                 <ul class="errors" n:if="$form->hasErrors()">
                     <li n:foreach="$form->errors as $error">{$error}</li>
                 </ul>
                 {input from} - {input to} {input submit}
             {/form}
-            <span n:class="!is_null($isAvaible) ? room-detail-res-but : room-detail-res-but-no">
-                {if $isAvaible}
-                    Pokoj je v zadaném období možné rezervovat.
-                    <a n:href=":Front:Reservation:new $room->id,$from,$to"><input type="button" value="Rezervovat"></a>
-                {else}
-                    Pokoj je bohužel v zadaném období obsazen. Zkuste jiné období.
-                {/if}
-            </span>
         {/snippet}
 
 

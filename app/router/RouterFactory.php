@@ -17,6 +17,16 @@ class RouterFactory
 	public static function createRouter()
 	{
 		$router = new RouteList();
+        $router[] = new Route('administrace/hoste/<action>', array(
+            'presenter' => 'Back:Guests',
+            'action' => array(
+                Route::FILTER_TABLE => array(
+                    'prehled' => 'default',
+                    'detail' => 'detail',
+                ),
+                Route::FILTER_STRICT => true
+            )
+        ));
         $router[] = new Route('administrace/rezervace/<action>', array(
             'presenter' => 'Back:Reservation',
             'action' => array(

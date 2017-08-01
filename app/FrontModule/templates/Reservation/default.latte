@@ -1,7 +1,128 @@
-{define title}Seznam rezervací{/define}
+{define title}Nová rezervace{/define}
 {define description}Rezervace{/define}
 {block content}
 
-Jojo, obecné rezervace
+{if $reservation}
 
-{print_r($reservation)}
+    {if $step === 0}
+        <h3>Základní informace o rezervaci</h3>
+        Datum příjezdu: {date('j. n. Y', strtotime($reservation->date_from))}<br>
+        Datum odjezdu: {date('j. n. Y', strtotime($reservation->date_to))}<br><br>
+
+        Upozornění: Prosím pokračujte v rezervaci. Pokud nebudete pokračovat v rezervaci déle než 15 minut, bude rezervace zrušena. Zbývající čas se Vám zobrazuje v horní liště.
+        <br><br>
+
+        <h3>Seznam rezervovaných pokojů</h3>
+        <table class="default">
+            <tbody>
+            <tr>
+                <th>Pokoj<br><h6>(typ)</h6></th>
+                <th>Počet nocí</th>
+                <th>Cena<br><h6>(cena za 1 noc)</h6></th>
+                <th></th>
+            </tr>
+            {var $price_total = 0}
+            {foreach $rooms as $room}
+                <tr>
+                    <td>
+                        {$room->room->name}
+                        <br>
+                        <h6>{$room->room->type->name}</h6>
+                    </td>
+                    <td>{$nights} {$nights_word}</td>
+                    <td>
+                        {$room->room->price * $nights|number} Kč<br>
+                        <h6>({$room->room->price|number} Kč)</h6>
+                    </td>
+                    <td><a n:href="zrusit! $room->room_id"><i class="fa fa-trash" aria-hidden="true"
+                                                              title="Zrušit rezervaci"></i></a></td>
+                </tr>
+                {php $price_total += $room->room->price * $nights}
+            {/foreach}
+            <tr>
+                <td></td>
+                <td style="text-align:right; font-weight: bold;">Cena celkem:</td>
+                <td><strong>{$price_total|number} Kč</strong></td>
+                <td></td>
+            </tr>
+
+            </tbody>
+        </table>
+        <div class="reservation_action">
+            <a n:href="NextStep!"><input type="button" value="Pokračovat v rezervaci (krok 1 / 3)"></a>
+            {form cancelAllForm style => "float: left;"}
+                {input cancel}
+            {/form}
+            <a n:href="Room:"><input type="button" value="Rezervovat další pokoje" style="float: right;"></a>
+        </div>
+    {elseif $step == 1}
+        <h3>Údaje o ubytovaném</h3>
+        <a n:href="PreviousStep!"><input type="button" value="Vrátit se na předchozí krok"></a><br><br>
+
+        Tip: Máte u nás uživateský účet? Přihlaste se a nechte svá data automaticky doplnit!<br><br>
+
+        {control aboutUserForm}
+
+    {elseif $step == 2}
+        <div class="clear">
+            {form cancelAllForm style => "float: right;"}
+                {input cancel}
+            {/form}
+
+            <a n:href="PreviousStep!"><input type="button" value="Vrátit se a upravit rezervaci"></a><br><br>
+        </div>
+
+
+        <h3>Shrnutí rezervace</h3>
+        Datum příjezdu: {date('j. n. Y', strtotime($reservation->date_from))}<br>
+        Datum odjezdu: {date('j. n. Y', strtotime($reservation->date_to))}<br>
+        Počet nocí: {$nights}<br><br>
+
+        {$guest['name']}<br>
+        {$guest['email']}<br>
+        {$guest['phone']}<br>
+        {$guest['street']}<br>
+        {$guest['city']}<br>
+        {$guest['state']}
+
+        <br><br>
+
+        <h3>Seznam rezervovaných pokojů</h3>
+        <table class="default">
+            <tbody>
+            <tr>
+                <th>Pokoj<br><h6>(typ)</h6></th>
+                <th>Počet nocí</th>
+                <th>Cena<br><h6>(cena za 1 noc)</h6></th>
+            </tr>
+            {var $price_total = 0}
+            {foreach $rooms as $room}
+                <tr>
+                    <td>
+                        {$room->room->name}
+                        <br>
+                        <h6>{$room->room->type->name}</h6>
+                    </td>
+                    <td>{$nights} {$nights_word}</td>
+                    <td>
+                        {$room->room->price * $nights|number} Kč<br>
+                        <h6>({$room->room->price|number} Kč)</h6>
+                    </td>
+                </tr>
+                {php $price_total += $room->room->price * $nights}
+            {/foreach}
+            <tr>
+                <td></td>
+                <td style="text-align:right; font-weight: bold;">Cena celkem:</td>
+                <td><strong>{$price_total|number} Kč</strong></td>
+            </tr>
+
+            </tbody>
+        </table>
+
+        {control reservationConfirmForm}
+
+    {/if}
+{else}
+    Momentálně nemáte rozpracovanou žádnou rezervaci.
+{/if}

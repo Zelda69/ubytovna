@@ -27,6 +27,8 @@ class AccommodationManager extends BaseManager {
     private $operator;
     /** @var  string */
     private $homepage;
+    /** @var integer */
+    private $dph;
 
     const TABLE_NAME = 'service_information';
     const TRANSFER_DIRECTION_TO_DTB = 0, TRANSFER_DIRECTION_FROM_DTB = 1;
@@ -46,6 +48,7 @@ class AccommodationManager extends BaseManager {
         $this->reception_hours = $this->transferOfficeHour($result->reception_hours);
         $this->operator = $this->transferAddress($result->operator);
         $this->homepage = $result->homepage;
+        $this->dph = $result->DPH;
     }
 
     private function transferAddress($address, $direction = self::TRANSFER_DIRECTION_FROM_DTB) {
@@ -127,8 +130,15 @@ class AccommodationManager extends BaseManager {
         return $this->homepage;
     }
 
+    /**
+     * @return int
+     */
+    public function getDPH(): int {
+        return $this->dph;
+    }
+
     public function getAllInformation() {
-        return array('name' => $this->getName(), 'adress' => $this->getAdress(), 'about' => $this->getAbout(), 'phone' => $this->getPhone(), 'reception_hours' => $this->getReceptionHours(), 'operator' => $this->getOperator(), 'email' => $this->getEmail(), 'homepage' => $this->getHomepage());
+        return array('name' => $this->getName(), 'adress' => $this->getAdress(), 'about' => $this->getAbout(), 'phone' => $this->getPhone(), 'reception_hours' => $this->getReceptionHours(), 'operator' => $this->getOperator(), 'email' => $this->getEmail(), 'homepage' => $this->getHomepage(), 'DPH' => $this->getDPH());
     }
 
     public function updateInformation($information) {

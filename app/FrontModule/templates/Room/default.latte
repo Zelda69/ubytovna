@@ -6,42 +6,53 @@
     {control vacancyFilterForm}
 {/snippetArea}
 {if count($rooms) == 0}
-    <div class="flash error">Je nám líto ale v zadaném období nemáme k dispozici žádné pokoje.</div>
+    <div class="flash error">Je nám líto ale zadanému filtru neodpovídájí žádné pokoje. Zkuste upravit podmínky filtru.</div>
 {/if}
 
 {if $filter}
     <div class="flash">Máte aktivní filtrování pokojů, v seznamu se tedy nenachází veškeré naše pokoje. Pro zrušení
-        filtru klikněte
-        <a n:href="noFilter!">zde</a>.
+        filtru klikněte <a n:href="noFilter!">zde</a>.
     </div>
 {/if}
 
 {foreach $rooms as $room}
     <br/><br/><br/>
-    {* Fotka *}
-    {if !is_null($room->image_id)}
-        <a href="{$basePath}/images/{$room->image->path}" data-lightbox="room-{$room->id}">
-            <img src="{$basePath}/images/thumbs/{$room->image->path}" alt="{$room->image->description}"
-                 title="{$room->image->description}"></a>
-    {else}
-        <img src="{$basePath}/images/noimage.png" alt="Obrázek" title="Obrázek je momentálně nedostupný.">
-    {/if}
-    {* Popis *}
-    <h3>{$room->name}</h3>
-    <h6>{$room->type->name}</h6>
-    <h5>Cena: {$room->price|number} Kč</h5>
-    <div class="room-service"> Služby:
-        {foreach $services[$room->id] as $service}
-            <span title="{$service->service->name}">{$service->service->image|noescape} {$service->service->name}</span>
-        {/foreach}
+    <div id="obsah">
+        {* Fotka *}
+        <div class="img-nahled">
+            {if !is_null($room->image_id)}
+                <a href="{$basePath}/images/{$room->image->path}" data-lightbox="room-{$room->id}">
+                    <img src="{$basePath}/images/thumbs/{$room->image->path}" alt="{$room->image->description}"
+                         title="{$room->image->description}"></a>
+
+            {else}
+                <img src="{$basePath}/images/noimage.png" alt="Obrázek" title="Obrázek je momentálně nedostupný.">
+            {/if}
+        </div>
+        {* Popis *}
+        <div class="popis">
+            <a n:href=":Front:Room:detail $room->id"><h3>{$room->name}</h3></a>
+            <h6>{$room->type->name}</h6>
+            <div class="room-service"> Služby:
+                {foreach $services[$room->id] as $service}
+                    <span title="{$service->service->name}">{$service->service->image|noescape} {$service->service->name}</span>
+                {/foreach}
+            </div>
+            {if !is_null($room->description)}
+                Popis: {$room->description}
+            {/if}
+        </div>
+        <div><h5>Cena za 1 noc: {$room->price|number} Kč</h5></div>
+        {* Akce *}
+        <div class="room-action">
+            <a n:href=":Front:Room:detail $room->id"><input type="button" value="Zobrazit detail"></a>
+            {if $filter}
+                {form multipleReservationForm-$room->id style => "float: left;"}
+                    {input reservate}
+                {/form}
+            {/if}
+        </div>
     </div>
-    {* Akce *}
-    <div class="room-action">
-        <a n:href=":Front:Room:detail $room->id"><input type="button" value="Zobrazit detail"></a>
-        <a n:href=":Front:Reservation:new $room->id,$from,$to"><input type="button" value="Rezervovat"></a>
-    </div>
-    <br/><br/><br/>
+    <br class="clear">
 {/foreach}
-
-
 

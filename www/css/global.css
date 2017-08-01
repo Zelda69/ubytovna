@@ -70,12 +70,12 @@ img {
 }
 
 .contact_left {
-	float: left;
-	border-right: 1px solid #d1d1d1;
-	padding-right: 10%;
+    float: left;
+    border-right: 1px solid #d1d1d1;
+    padding-right: 10%;
 }
 
 .contact_right {
-	float: left; 
-	margin-left: 10%;
+    float: left;
+    margin-left: 10%;
 }

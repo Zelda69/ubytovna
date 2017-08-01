@@ -38,7 +38,7 @@ class UserForms extends Object {
         $presenter = $form->getPresenter(); // Získej presenter ve kterém je formulář umístěn.
         try {
             // Extrakce hodnot z formuláře.
-            $username = $form->getValues()->email;
+            $username = $form->getValues()->username;
             $password = $form->getValues()->password;
 
             $this->user->login($username, $password); // Zkusíme se přihlásit.
@@ -47,7 +47,6 @@ class UserForms extends Object {
                 // Pokud instrukce obsahují zprávu, tak ji pošli do příslušného presenteru.
                 if (isset($instructions->message))
                     $presenter->flashMessage($instructions->message);
-
                 // Pokud instrukce obsahují přesměrování, tak ho proveď na příslušném presenteru.
                 if (isset($instructions->redirection))
                     $presenter->redirect($instructions->redirection);
@@ -151,7 +150,7 @@ class UserForms extends Object {
      */
     public function createLoginForm($instructions = NULL) {
         $form = new Form();
-        $form->addText('email', 'E-mail')->setRequired('Musíte zadat email!');
+        $form->addText('username', 'Uživatelské jméno')->setRequired('Musíte zadat uživatelské jméno!');
         $form->addPassword('password', 'Heslo')->setRequired('Zadejte heslo');
         $form->addSubmit('submit', 'Přihlásit');
         $form->onSuccess[] = function (Form $form) use ($instructions) {
