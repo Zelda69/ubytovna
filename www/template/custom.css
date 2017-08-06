@@ -1,0 +1,7 @@
+.mod-languages{
+  text-align:center;
+}
+
+.t3-megamenu .mega-nav > li a, .t3-megamenu .dropdown-menu .mega-nav > li a{
+  padding-left:5px 5px 5px 15px !important;
+}

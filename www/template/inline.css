@@ -1,0 +1,55 @@
+/** Created by Zbyněk Mlčák */
+.gm-style .gm-style-cc span, .gm-style .gm-style-cc a, .gm-style .gm-style-mtc div {
+    font-size: 10px
+}
+
+@media print {
+    .gm-style .gmnoprint, .gmnoprint {
+        display: none
+    }
+}
+
+@media screen {
+    .gm-style .gmnoscreen, .gmnoscreen {
+        display: none
+    }
+}
+
+.gm-style-pbc {
+    transition: opacity ease-in-out;
+    background-color: rgba(0, 0, 0, 0.45);
+    text-align: center
+}
+
+.gm-style-pbt {
+    font-size: 22px;
+    color: white;
+    font-family: Roboto, Arial, sans-serif;
+    position: relative;
+    margin: 0;
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%)
+}
+
+#system-message-container {
+    text-align: center;
+}
+
+.login-butt {
+    position: absolute;
+    right: -8em;
+}
+
+@media screen and (max-width: 767px) {
+    .login-butt {
+        right: 0;
+    }
+}
+
+@media screen and (max-width: 1024px) {
+    .login-butt {
+        right: -4em;
+    }
+}
