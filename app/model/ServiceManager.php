@@ -4,10 +4,8 @@
  * Date: 27.06.2017
  */
 
-namespace App\FrontModule\Model;
+namespace App\Model;
 
-
-use App\Model\BaseManager;
 use Nette\Database\Context;
 
 class ServiceManager extends BaseManager {
@@ -31,7 +29,7 @@ class ServiceManager extends BaseManager {
         $nbsp = html_entity_decode('&nbsp;');
         foreach ($result as $item) {
             if($onlyId)  $array[] = $item->id;
-            else $array[$item->id] =  \Nette\Utils\Html::el()->setHtml("&nbsp;&nbsp;".$item->image."&nbsp;&nbsp;".$item->name.' ');
+            else $array[$item->id] =  \Nette\Utils\Html::el()->setHtml("&nbsp;".$item->image."&nbsp;&nbsp;".$item->name.'&nbsp;&nbsp;');
         }
 
         return $array;

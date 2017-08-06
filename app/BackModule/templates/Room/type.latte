@@ -1,0 +1,44 @@
+{define title}Správa typů pokojů{/define}
+{define description}Description{/define}
+{block content}
+
+<a n:href="default">Správa pokojů</a> | <a n:href="type">Správa typů pokojů</a>
+
+
+<section id="newRoom">
+    <header>
+        <h3>Nový typ</h3>
+    </header>
+    {control newTypeForm}
+</section>
+
+<section id="existRooms">
+    <header>
+        <h3>Existující typy</h3>
+    </header>
+
+    <table class="default">
+        <thead>
+        <tr>
+            <th>Typ</th>
+            <th>Počet jednolůžek</th>
+            <th>Počet dvoulůžek</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        {foreach $types as $type}
+            <tr>
+                <td>{$type->name}</td>
+                <td>{$type->single_bed|number}</td>
+                <td>{$type->double_bed|number}</td>
+                <td>
+                    {if !in_array($type->id, $usedTypes)}
+                        <a n:href="DeleteType! $type->id">Smazat</a>
+                    {/if}
+                </td>
+            </tr>
+        {/foreach}
+        </tbody>
+    </table>
+</section>

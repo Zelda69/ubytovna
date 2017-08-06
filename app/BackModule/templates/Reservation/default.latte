@@ -2,49 +2,152 @@
 {define description}Description{/define}
 {block content}
 
-
-<table class="default">
-    <thead>
-    <tr>
-        <th>Datum rezervace</th>
-        <th>Období</th>
-        <th>Kdo</th>
-        <th>Pokoj</th>
-        <th>Cena</th>
-        <th>Stav</th>
-        <th>&nbsp;</th>
-    </tr>
-    </thead>
-    <tbody>
-
-    {foreach $reservations as $reservation}
-        {if $reservation->reservation->date_from > date('Y-m-j')}
-            {var $stav = 'Před příjezdem'}
-        {elseif $reservation->reservation->date_from >= date('Y-m-j') && $reservation->reservation->date_to > date('Y-m-j')}
-            {var $stav = 'Probíhající'}
-        {else}
-            {var $stav = 'Ukončená'}
+<a n:href="zobrazit! 0">Zobrazit list</a> | <a n:href="zobrazit! 1">Zobrazit tabulku všech</a>
+<br>
+{if $zobrazeni == 0}
+    {snippet table}
+        <a n:href="previousWeek!" class="ajax">Předchozí týden</a> |
+        {if $_SESSION['reservation_filter_date'] != 0}
+            <a n:href="todayWeek!" class="ajax">Aktuální týden</a> |
         {/if}
-
-        <tr>
-            <td>{$reservation->reservation->last_change|date:'H:i j. n. Y'}</td>
-            <td>{$reservation->reservation->date_from|date:'j. n. Y'} - {$reservation->reservation->date_to|date:'j. n. Y'}</td>
-            <td>{$reservation->reservation->guests->name}</td>
-            <td><a n:href=":Front:Room:detail $reservation->room->id">{$reservation->room->name}</a></td>
-            <td>{$reservation->room->price * date_diff($reservation->reservation->date_from, $reservation->reservation->date_to)->format('%d')|number} Kč</td>
-            <td>{$stav}</td>
-            <td></td>
-        </tr>
-        {if !is_null($reservation->reservation->note) && $reservation->reservation->note !== ''}
+        <a n:href="nextWeek!" class="ajax">Následující týden</a>
+        <table class="default">
             <tr>
-                <td colspan="7" style="text-align: center; font-size: 0.8em;">Poznámka {$reservation->reservation->note}</td>
+                <th>Pokoj</th>
+                {*        {for $i = 0; $i < 7; $i++}
+                        <th>{date("Y-m-d", $monday + $i * 86400)}</th>
+                        {/for}*}
+                {foreach $dates as $date}
+                    <th>{date('j.m.Y', $date)}</th>
+                {/foreach}
+            </tr>
+            {foreach $rooms as $room}
+                <tr>
+                    <th>{$room->name}</th>
+                    {var $colspan = 0}
+                    {foreach $dates as $date}
+                        {* Tady vyřeš snižení a přeskočení *}
+                        {php $colspan--;}
+                        {continueIf $colspan > 0}
+                        {if isset($reservationInDays[$date][$room->id])}
+                            {var $r = $reservationInDays[$date][$room->id]}
+                            {php $colspan = $reservationNights[$room->id][$r->reservation->id]}
+                            <td colspan="{$colspan}" style="text-align: center;">
+                                <a n:href="detail! $r->reservation->id" title="Zobrazit detail rezervace" class="ajax">
+                                    {$r->reservation->guests->name} (#{$r->reservation->id})</a>
+                                {else}
+                            <td  style="text-align: center;">-
+                        {/if}
+                        </td>
+                    {/foreach}
+                </tr>
+            {/foreach}
+        </table>
+    {/snippet}
+
+    {snippet reservation}
+        {if !is_null($reservationDetail)}
+            {var $pokoje = array()}
+            {foreach $reservationDetail as $detail}
+                {php $pokoje[] = $detail}
+            {/foreach}
+            {var $rezervace = $pokoje[0]->reservation;}
+
+            <section>
+                <header><h2>Detail rezervace č. {$rezervace->id}</h2></header>
+
+                <table class="default" width="40%" style="width: 40%">
+                    <tr>
+                        <th>Jméno</th>
+                        <td>{$rezervace->guests->name}</td>
+                    </tr>
+                    <tr>
+                        <th>Datum příjezdu</th>
+                        <td>{date('j.m.Y', strtotime($rezervace->date_from))}</td>
+                    </tr>
+                    <tr>
+                        <th>Datum odjezdu</th>
+                        <td>{date('j.m.Y', strtotime($rezervace->date_to))}</td>
+                    </tr>
+                    <tr>
+                        <th>Počet nocí</th>
+                        <td>{*{date_diff(date_create($rezervace->date_to), date_create($rezervace->date_from), TRUE)}*}</td>
+                    </tr>
+                    <tr>
+                        <th>Pokoje</th>
+                        <td>{foreach $pokoje as $p}{$p->room->name}<br />{/foreach}</td>
+                    </tr>
+                    <tr>
+                        <th>Poznámka</th>
+                        <td>{$rezervace->note}</td>
+                    </tr>
+                    <tr>
+                        <th>Zaplaceno</th>
+                        <td>Ano, ne? Zaplatit</td>
+                    </tr>
+                    <tr>
+                        <th>Vyúčtování</th>
+                        <td>PDF</td>
+                    </tr>
+
+                </table>
+            </section>
+
+
+        {/if}
+    {/snippet}
+{else}
+
+    <table class="default">
+        <thead>
+        <tr>
+            <th>Datum rezervace</th>
+            <th>Období</th>
+            <th>Kdo</th>
+            <th>Pokoj</th>
+            <th>Cena</th>
+            <th>Stav</th>
+            <th>&nbsp;</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        {foreach $reservations as $reservation}
+            {if $reservation->reservation->date_from > date('Y-m-j')}
+                {var $stav = 'Před příjezdem'}
+            {elseif $reservation->reservation->date_from >= date('Y-m-j') && $reservation->reservation->date_to > date('Y-m-j')}
+                {var $stav = 'Probíhající'}
+            {else}
+                {var $stav = 'Ukončená'}
+            {/if}
+
+            <tr>
+                <td>{$reservation->reservation->last_change|date:'H:i j. n. Y'}</td>
+                <td>{$reservation->reservation->date_from|date:'j. n. Y'}
+                    - {$reservation->reservation->date_to|date:'j. n. Y'}</td>
+                <td>{$reservation->reservation->guests->name}</td>
+                <td><a n:href=":Front:Room:detail $reservation->room->id">{$reservation->room->name}</a></td>
+                <td>{$reservation->room->price * date_diff($reservation->reservation->date_from, $reservation->reservation->date_to)->format('%d')|number}
+                    Kč
+                </td>
+                <td>{$stav}</td>
+                <td></td>
+            </tr>
+            {if !is_null($reservation->reservation->note) && $reservation->reservation->note !== ''}
+                <tr>
+                    <td colspan="7" style="text-align: center; font-size: 0.8em;">
+                        Poznámka {$reservation->reservation->note}</td>
+                </tr>
+            {/if}
+        {/foreach}
+
+        {if $reservations->count() == 0}
+            <tr>
+                <td colspan="7" style="text-align: center;">Nenalezeny žádné rezervace.</td>
             </tr>
         {/if}
-    {/foreach}
 
-    {if $reservations->count() == 0}
-        <tr><td colspan="7" style="text-align: center;">Nenalezeny žádné rezervace.</td></tr>
-    {/if}
+        </tbody>
+    </table>
 
-    </tbody>
-</table>
+{/if}

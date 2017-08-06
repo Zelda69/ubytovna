@@ -1,92 +1,139 @@
 {define title}Kontaktní informace{/define}
 {define description}Kontaktní informace.{/define}
 {block content}
-<!DOCTYPE html>
-<html>
-<head>
-    <script>
-        var address = {implode(',', $info['adress'])}
-    </script>
-</head>
-<body onload="initialize()">
-<br>
+<script>
+    var address = {implode(',', $info['adress'])}
+        window.onload = function() {
+            initialize();
+        };
+</script>
+
 Nenašli jste na našich webových stránkách informace, které potřebujete? Máte další dotazy? V tom případě nás neváhejte
 kontaktovat, jsme tu pro Vás a rádi Vám zodpovíme všechny Vaše dotazy, případně sjednáme schůzku, kde si náš hotel
-prohlédněte.<br><br>
+prohlédněte.
 
-<div id="map">
-    <script async defer
-            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBaJV2nMXgb33q-y4U6CbXhr_eGqc7de_s">
-    </script>
-</div>
+<div id="map" style=" width: 100%; height: 300px; margin-top: 30px;"></div>
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBaJV2nMXgb33q-y4U6CbXhr_eGqc7de_s">
+</script>
 
-<div class="contact_box">
-    <div class="contact_left">
-        <section>
-            <header><h2>Recepce</h2></header>
-            <table class="default">
-                <tr>
-                    <th colspan="2">Provozní doba</th>
-                </tr>
-                {var $days = array('Pondělí', 'Úterý', 'Středa', 'Čtvrtek', 'Pátek', 'Sobota', 'Neděle')}
-                {foreach $info['reception_hours'] as $op}
-                    <tr>
-                        <td>{$days[$iterator->counter - 1]}</td>
-                        <td>{$op[0]} - {$op[1]}</td>
-                    </tr>
-                {/foreach}
-            </table>
-        </section>
+<br class="clearfix"/>
+
+<section id="section-id-1481816334" class="sppb-section  contact-info">
+    <div class="sppb-row-container">
+        <div class="sppb-row">
+            <div class="sppb-col-sm-4">
+                <div id="column-id-1481816335" class="sppb-column ">
+                    <div class="sppb-column-addons">
+                        <div id="sppb-addon-1481816336" class="clearfix">
+                            <div class="sppb-addon sppb-addon-feature sppb-text-center ">
+                                <div class="sppb-addon-content"><div class="sppb-icon">
+                                        <span style="display:inline-block;text-align:center;"><i class="fa fa-home" style="font-size:40px;width:40px;height:40px;line-height:40px;"></i></span>
+                                    </div>
+                                    <h3 class="sppb-feature-box-title" style="font-size:16px;line-height:16px;font-weight:700;">Adresa</h3>
+                                    <div class="sppb-addon-text">
+                                        {foreach $info['adress'] as $adresa}
+                                            {$adresa} <br />
+                                        {/foreach}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sppb-col-sm-4">
+                <div id="column-id-1481816335" class="sppb-column ">
+                    <div class="sppb-column-addons">
+                        <div id="sppb-addon-1481816336" class="clearfix">
+                            <div class="sppb-addon sppb-addon-feature sppb-text-center ">
+                                <div class="sppb-addon-content"><div class="sppb-icon">
+                                        <span style="display:inline-block;text-align:center;"><i class="fa fa-envelope" style="font-size:40px;width:40px;height:40px;line-height:40px;"></i></span>
+                                    </div>
+                                    <h3 class="sppb-feature-box-title" style="font-size:16px;line-height:16px;font-weight:700;">Kontaktujte nás</h3>
+                                    <div class="sppb-addon-text">
+                                        {$info['phone']} <br />
+                                        <a href="mailto:{$info['email']}">{$info['email']}</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sppb-col-sm-4">
+                <div id="column-id-1481816335" class="sppb-column ">
+                    <div class="sppb-column-addons">
+                        <div id="sppb-addon-1481816336" class="clearfix">
+                            <div class="sppb-addon sppb-addon-feature sppb-text-center ">
+                                <div class="sppb-addon-content"><div class="sppb-icon">
+                                        <span style="display:inline-block;text-align:center;"><i class="fa fa-address-card-o" style="font-size:40px;width:40px;height:40px;line-height:40px;"></i></span>
+                                    </div>
+                                    <h3 class="sppb-feature-box-title" style="font-size:16px;line-height:16px;font-weight:700;">Provozovatel</h3>
+                                    <div class="sppb-addon-text">
+                                        {foreach $info['operator'] as $op}
+                                            {$op} <br />
+                                        {/foreach}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <div class="contact_right">
-        <section>
-            <header><h2>Adresa</h2></header>
-            <table class="default">
-                {foreach $info['adress'] as $adresa}
-                    <tr>
-                        <td>{$adresa}</td>
-                    </tr>
-                {/foreach}
-            </table>
-        </section>
-
-        <section>
-            <header><h2>Kontaktní informace</h2></header>
-            <table class="default">
-                <tr>
-                    <td>Telefon:</td>
-                    <td> {$info['phone']}</td>
-                </tr>
-                <tr>
-                    <td>Email:</td>
-                    <td><a href="mailto:{$info['email']}">{$info['email']}</a></td>
-                </tr>
-            </table>
-        </section>
-    </div>
-    <div class="contact_right">
-        <section>
-            <header><h2>Provozovatel</h2></header>
-            <table class="default">
-                {foreach $info['operator'] as $op}
-                    <tr>
-                        <td>{$op}</td>
-                    </tr>
-                {/foreach}
-            </table>
-        </section>
-    </div>
-    <br style="clear: both;">
-</div>
-
-<br style="clear: both;">
-
-<h1>Kontaktujte nás</h1>
-<p>Kontaktujte nás odesláním formuláře níže.</p>
+</section>
 
 {* Formulář pro kontakt. *}
 
-{control contactForm}
-</body>
-</html>
+<section id="section-id-1481816345" class="sppb-section ">
+    <div class="sppb-row-container">
+        <div class="sppb-row">
+            <div class="sppb-col-sm-12">
+                <div id="column-id-1481816346" class="sppb-column">
+                    <div class="sppb-column-addons">
+                        <div id="sppb-addon-1481816347" class="clearfix">
+                            <div class="sppb-addon sppb-addon-ajax-contact text-center">
+                                <h2 class="sppb-addon-title" style="margin-top:0px;margin-bottom:80px;">
+                                    Napište nám
+                                </h2>
+                                <div class="sppb-addon-content">
+
+                                    {form contactForm class => 'sppb-addon-ajax-contact form'}
+                                        <div class="col-md-6 col-sm-6 col-xs-12">
+                                            <div class="sppb-form-group">
+                                                {input name class => 'sppb-form-control'}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-sm-6 col-xs-12">
+                                            <div class="sppb-form-group">
+                                                {input email class => 'sppb-form-control'}
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-12">
+                                            <div class="sppb-form-group">
+                                                {input message class => 'sppb-form-control'}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-sm-6 col-xs-12">
+                                            <div class="sppb-form-group">
+                                                <div n:name="recaptcha"></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                            {input submit class => 'sppb-btn sppb-btn-default btn'}
+                                        </div>
+                                    {/form}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

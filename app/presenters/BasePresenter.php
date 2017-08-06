@@ -2,6 +2,7 @@
 
 namespace App\Presenters;
 
+use App\Model\AccommodationManager;
 use Nette\Application\UI\Presenter;
 use Nette\Application\BadRequestException;
 
@@ -12,6 +13,8 @@ abstract class BasePresenter extends Presenter {
 
     /** @var null|string Adresa presenteru pro logování uživatele. */
     protected $loginPresenter = ':Front:Administration:login';
+    /** @var AccommodationManager @inject */
+    public $serviceInformationManager;
 
     /**
      * Volá se na začátku každé akce a kontroluje uživatelská oprávnění k této akci.
@@ -20,7 +23,7 @@ abstract class BasePresenter extends Presenter {
     protected function startup() {
         parent::startup();
         if (!$this->getUser()->isAllowed($this->getName(), $this->getAction())) {
-            $this->flashMessage('Nejsi přihlášený nebo nemáš dostatečná oprávnění. Do této sekce aktuálně nemáš přístup.');
+            $this->flashMessage('Nejste přihlášený nebo nemáte dostatečná oprávnění. Do této sekce aktuálně nemáte přístup.');
             if ($this->loginPresenter)
                 $this->redirect($this->loginPresenter);
         }
@@ -31,4 +34,5 @@ abstract class BasePresenter extends Presenter {
         parent::beforeRender();
         $this->template->admin = $this->getUser()->isInRole('admin');
     }
+
 }

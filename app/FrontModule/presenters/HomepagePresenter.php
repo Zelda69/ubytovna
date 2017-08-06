@@ -7,7 +7,7 @@
 namespace App\FrontModule\Presenters;
 
 use App\Forms\Rules;
-use App\FrontModule\Model\AccommodationManager;
+use App\Model\AccommodationManager;
 use App\Model\ImageManager;
 use App\Presenters\BasePresenter;
 use Nette\Application\UI\Form;
@@ -29,19 +29,19 @@ class HomepagePresenter extends BasePresenter {
         $form->getRenderer()->wrappers['group']['container'] = "fieldset class='homepage-fieldset'";
         $form->getRenderer()->wrappers['controls']['container'] = "table class='homepage-table'";
         $form->addGroup('Ověřit dostupnost ubytování');
-        $form->addText('from', 'Datum příjezdu:')
+        $form->addText('from', 'Datum příjezdu')
             ->setDefaultValue(date('Y-m-d'))
             ->setHtmlAttribute('min', date('Y-m-d'))
             ->setType('date')
             ->setRequired('Musíte vyplnit datum příjezdu!');
-        $form->addText('to', 'Datum odjezdu:')
+        $form->addText('to', 'Datum odjezdu')
             ->setDefaultValue(date('Y-m-d', time() + 86400))
             ->setHtmlAttribute('min', date('Y-m-d'))
             ->setType('date')
             ->addRule(Rules::DATERANGE, 'Neplatné datum odjezdu!', [$form['from'], date('Y-m-d'), 2])
             ->setRequired('Musíte vyplnit datum odjezdu!');
         $form['from']->addRule(Rules::DATERANGE, 'Neplatné datum příjezdu!', [date('Y-m-d'), $form['to']]);
-        $form->addSubmit('a', 'Vyhledej volné pokoje');
+        $form->addSubmit('submit', 'Vyhledej volné pokoje');
         $form->onSuccess[] = [$this, 'vacancyFormSucceeded'];
         return $form;
     }

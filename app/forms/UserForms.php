@@ -7,9 +7,9 @@
 namespace App\Forms;
 
 
-use App\Model\Exception\DuplicateNameException;
 use Nette\Application\UI\Form;
 use Nette\Object;
+use Nette\Security\AuthenticationException;
 use Nette\Security\User;
 use Nette\Utils\ArrayHash;
 
@@ -38,7 +38,9 @@ class UserForms extends Object {
         $presenter = $form->getPresenter(); // Získej presenter ve kterém je formulář umístěn.
         try {
             // Extrakce hodnot z formuláře.
-            $username = $form->getValues()->username;
+            if (!isset($form->getValues()->username)) {
+                $username = $form->getValues()->email;
+            } else $username = $form->getValues()->username;
             $password = $form->getValues()->password;
 
             $this->user->login($username, $password); // Zkusíme se přihlásit.
@@ -109,6 +111,7 @@ class UserForms extends Object {
             unset($data['recaptcha']);
 
             $this->user->getAuthenticator()->register($data);
+            $data['username'] = $data['email'];
             $this->login($form, $instructions); // a hned přihlas
         } catch (AuthenticationException $e) {
             if ($presenter) { // Pokud je formulář v presenteru.
@@ -127,18 +130,18 @@ class UserForms extends Object {
      *                        formulář
      * @param null $instructions
      * @return Form formulář se společným základem
-
-    private function createBasicForm(Form $form = NULL, $instructions = NULL) {
-        $form = $form ? $form : new Form;
-        $form->addText('username', 'Jméno')->setRequired();
-        $form->addPassword('password', 'Heslo');
-        //$form->getRenderer()->wrappers['pair']['container'] = "table class='center'";
-        $form->getRenderer()->wrappers['label']['container'] = "th align='center'";
-        $form->onSuccess[] = function (Form $form) use ($instructions) {
-            $this->login($form, $instructions);
-        };
-        return $form;
-    }*/
+     *
+     * private function createBasicForm(Form $form = NULL, $instructions = NULL) {
+     * $form = $form ? $form : new Form;
+     * $form->addText('username', 'Jméno')->setRequired();
+     * $form->addPassword('password', 'Heslo');
+     * //$form->getRenderer()->wrappers['pair']['container'] = "table class='center'";
+     * $form->getRenderer()->wrappers['label']['container'] = "th align='center'";
+     * $form->onSuccess[] = function (Form $form) use ($instructions) {
+     * $this->login($form, $instructions);
+     * };
+     * return $form;
+     * }*/
 
     /**
      * Vrací komponentu formuláře s přihlašovacími prvky a zpracování přihlašování podle uživatelských instrukcí.
@@ -150,8 +153,11 @@ class UserForms extends Object {
      */
     public function createLoginForm($instructions = NULL) {
         $form = new Form();
-        $form->addText('username', 'Uživatelské jméno')->setRequired('Musíte zadat uživatelské jméno!');
-        $form->addPassword('password', 'Heslo')->setRequired('Zadejte heslo');
+        $form->addText('username', 'Email')
+            ->setHtmlAttribute('placeholder', 'Email')
+            ->setRequired('Musíte zadat přihlašovací!');
+        $form->addPassword('password', 'Heslo')
+            ->setHtmlAttribute('placeholder', 'Heslo')->setRequired('Zadejte heslo');
         $form->addSubmit('submit', 'Přihlásit');
         $form->onSuccess[] = function (Form $form) use ($instructions) {
             $this->login($form, $instructions);
@@ -178,7 +184,7 @@ class UserForms extends Object {
             ->setRequired('Zadejte prosím heslo ještě jednou pro kontrolu')
             ->addRule(Form::EQUAL, 'Hesla se neshodují!', $form['password']);
         $form->addText('name', 'Jméno a Příjmení')->setRequired('Musíte vyplnit jméno!');
-        $form->addText('phone', 'Telefonní číslo')->setRequired('Musíte vyplnit telefon!');
+        //$form->addText('phone', 'Telefonní číslo')->setRequired('Musíte vyplnit telefon!');
         //->setOption('description', 'Toto číslo zůstane skryté');
         $form->addReCaptcha('recaptcha', $label = 'Captcha')->setRequired('Proveďte prosím ověření proti spam botům.');
         $form->addSubmit('register', 'Registrovat');

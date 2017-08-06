@@ -8,13 +8,14 @@ namespace App\FrontModule\Presenters;
 
 
 use App\Forms\Rules;
-use App\FrontModule\Model\ReservationManager;
-use App\FrontModule\Model\RoomManager;
-use App\FrontModule\Model\ServiceManager;
+use App\Model\ReservationManager;
+use App\Model\RoomManager;
+use App\Model\ServiceManager;
 use App\Model\ImageManager;
 use App\Presenters\BasePresenter;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Multiplier;
+use Nette\Utils\Html;
 use Tracy\Debugger;
 
 class RoomPresenter extends BasePresenter {
@@ -70,6 +71,24 @@ class RoomPresenter extends BasePresenter {
         $this->filter_persons = $_SESSION['filter']['person_count'];
     }
 
+    public function handleRezervuj($id) {
+        if ($this->reservationManager->isRoomAvaible($id, $_SESSION['filter']['from'], $_SESSION['filter']['to'])) {
+            $reservation = $this->reservationManager->get_reservation();
+            if ($reservation) {
+                $this->reservationManager->update_reservation($reservation->id, ['last_change' => date('Y-m-d H:i:s')]);
+                $this->reservationManager->new_room_in_reservation($reservation->id, $id);
+            } else {
+                $this->reservationManager->new_reservation($_SESSION['filter']['from'], $_SESSION['filter']['to']);
+                $reservation = $this->reservationManager->get_reservation();
+                $this->reservationManager->new_room_in_reservation($reservation->id, $id);
+            }
+            $this->redirect('Reservation:default');
+        } else {
+            $this->flashMessage('Tento pokoj je v zadaném období již rezervován. Rezervace není možná.', 'error');
+            $this->redirect('this');
+        }
+    }
+
     public function handleNoFilter() {
         $_SESSION['filter']['use'] = FALSE;
         $this->storeFilter(date('Y-m-d'), date('Y-m-d', time() + 86400), $this->serviceManager->getServiceToList(true), 1);
@@ -106,6 +125,7 @@ class RoomPresenter extends BasePresenter {
         $this->template->from = $this->filter_from;
         $this->template->to = $this->filter_to;
         Debugger::barDump($_SESSION['filter'], 'filter use');
+        $this->template->dph = 1 + $this->serviceInformationManager->getDPH() / 100;
     }
 
     /**
@@ -118,7 +138,7 @@ class RoomPresenter extends BasePresenter {
         $form->getRenderer()->wrappers['group']['label'] = "legend id='room-filter-fieldset'";
         $form->getRenderer()->wrappers['controls']['container'] = "table id='room-filter-table'
         ".(isset($_REQUEST['from']) ? " style='display: block;'" : "")."";
-        $form->addGroup(\Nette\Utils\Html::el()->setHtml('Filtrovat pokoje podle požadavků ('.$a.')'));
+        $form->addGroup(Html::el()->setHtml('Filtrovat pokoje podle požadavků ('.$a.')'));
         $form->addText('from', 'Datum příjezdu:')
             ->setDefaultValue($this->filter_from)
             ->setHtmlAttribute('min', date('Y-m-d'))
@@ -131,7 +151,7 @@ class RoomPresenter extends BasePresenter {
             ->addRule(Rules::DATERANGE, 'Neplatné datum odjezdu!', [$form['from'], date('Y-m-d'), 2])
             ->setRequired('Musíte vyplnit datum odjezdu!');
         $form['from']->addRule(Rules::DATERANGE, 'Neplatné datum příjezdu!', [date('Y-m-d'), $form['to']]);
-        $form->addText('person', 'Počet osob')
+        $form->addText('person', 'Počet osob:')
             ->setType('number')
             ->setHtmlAttribute('min', 1)
             ->setHtmlAttribute('max', 10)
@@ -142,7 +162,7 @@ class RoomPresenter extends BasePresenter {
             ->getSeparatorPrototype()
             ->setName(NULL);
         $form->setDefaults(['services' => $_SESSION['filter']['services']]);
-        $form->addSubmit('a', 'Filtruj pokoje');
+        $form->addSubmit('submit', 'Filtruj pokoje');
         $form->onSuccess[] = [$this, 'vacancyFilterFormSucceeded'];
 
         return $form;
@@ -222,6 +242,7 @@ class RoomPresenter extends BasePresenter {
         } else $this->template->gallery = array();
 
         Debugger::barDump($this->template->isAvaible, 'Avaible');
+        $this->template->dph = 1 + $this->serviceInformationManager->getDPH() / 100;
     }
 
 

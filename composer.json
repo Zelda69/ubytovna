@@ -24,7 +24,8 @@
 		"minetro/recaptcha": "2.0.0",
 		"tinymce/tinymce": "^4.6",
 		"carrooi/images-manager": "^4.0",
-		"mpdf/mpdf": "^6.1"
+		"mpdf/mpdf": "^6.1",
+		"blitzik/calendar": "^1.2"
 	},
 	"require-dev": {
 		"nette/tester": "^1.6"

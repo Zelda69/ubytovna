@@ -2,5 +2,40 @@
 {define description}Přihlášení do uživatelského účtu.{/define}
 {block content}
 {* Formulář pro přihlášování. *}
-{control loginForm}
-<p>Pokud ještě nemáte účet, <a n:href=":Front:Administration:register">zaregistrujte se</a>.</p>
+<div class="row">
+    <div class="seagull-login">
+        <div class="col-sm-4 col-xs-hidden"></div>
+        <div class="col-sm-4 col-xs-12 text-center">
+            <div class="login">
+
+
+                {form loginForm class => 'form-validate'}
+                <div class="form-group">
+                    <div class="group-control">
+                        {input username}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="group-control">
+                        {input password}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    {input submit class => 'btn btn-primary btn-block'}
+                </div>
+                {/form}
+            </div>
+
+            <div class="form-links">
+                <ul>
+                    <li>
+                        Pokud ještě nemáte účet, <a n:href=":Front:Administration:register">zaregistrujte se</a>.
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+</div>

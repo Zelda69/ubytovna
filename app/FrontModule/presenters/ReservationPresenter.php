@@ -8,10 +8,13 @@ namespace App\FrontModule\Presenters;
 
 
 use App\Forms\UserForms;
-use App\FrontModule\Model\ReservationManager;
+use App\Model\ReservationManager;
+use App\Model\RoomManager;
 use App\Model\GuestManager;
+use App\Model\ReviewManager;
 use App\Presenters\BasePresenter;
 use Nette\Application\UI\Form;
+use Nette\Application\UI\Multiplier;
 use Nette\Database\UniqueConstraintViolationException;
 use Tracy\Debugger;
 
@@ -24,6 +27,10 @@ class ReservationPresenter extends BasePresenter {
     private $reservationManager;
     /** @var GuestManager */
     private $guestManager;
+    /** @var ReviewManager */
+    private $reviewManager;
+    /** @var RoomManager */
+    private $roomManager;
     /** @var array */
     private $instructions;
 
@@ -32,13 +39,31 @@ class ReservationPresenter extends BasePresenter {
      * @param UserForms $userFormsFactory
      * @param ReservationManager $reservationManager
      * @param GuestManager $guestManager
+     * @param ReviewManager $reviewManager
+     * @param RoomManager $roomManager
      */
-    public function __construct(UserForms $userFormsFactory, ReservationManager $reservationManager, GuestManager $guestManager) {
+    public function __construct(UserForms $userFormsFactory, ReservationManager $reservationManager, GuestManager $guestManager, ReviewManager $reviewManager, RoomManager $roomManager) {
         parent::__construct();
         $this->userFormsFactory = $userFormsFactory;
         $this->reservationManager = $reservationManager;
         $this->guestManager = $guestManager;
+        $this->reviewManager = $reviewManager;
+        $this->roomManager = $roomManager;
         $this->instructions = array('message' => NULL, 'redirection' => NULL);
+    }
+
+    public function handleStorno($reservation_id) {
+        $r = $this->reservationManager->getReservationById($reservation_id);
+        if ($r && $r->guests_id === $this->getUser()->getIdentity()->guests_id) {
+            if ($this->reservationManager->delete_reservation($reservation_id) === 1) {
+                $this->flashMessage('Rezervace byla úspěšně zrušena.');
+                $this->redirect('this');
+            } else {
+                $this->flashMessage('Neplatná rezervace! Nebylo provedeno zrušení.', 'error');
+                $this->redirect('this');
+            }
+        }
+
     }
 
     public function handleZrusit($room_id) {
@@ -58,7 +83,9 @@ class ReservationPresenter extends BasePresenter {
 
     public function handleNextStep() {
         if (isset($_SESSION['reservation_id'])) {
+            if(strtotime($_SESSION['reservation']) < time()) $this->redirect(':Front:Homepage:');
             $step = $this->reservationManager->get_reservation()->step;
+            if($step == 0) $this->reservationManager->store_room_info($_SESSION['reservation_id']);
             if ($step < 2) {
                 $step++;
                 $this->reservationManager->update_reservation($_SESSION['reservation_id'], ['step' => $step]);
@@ -68,6 +95,7 @@ class ReservationPresenter extends BasePresenter {
 
     public function handlePreviousStep() {
         if (isset($_SESSION['reservation_id'])) {
+            if(strtotime($_SESSION['reservation']) < time()) $this->redirect(':Front:Homepage:');
             $step = $this->reservationManager->get_reservation()->step;
             if ($step > 0) {
                 $step--;
@@ -93,7 +121,7 @@ class ReservationPresenter extends BasePresenter {
         // Je už zadaná nějaká rezervace? Pokračuj v ní pokud nevypršela.
         $this->template->reservation = $this->reservationManager->get_reservation();
         if ($this->template->reservation) {
-            $this->template->rooms = $this->reservationManager->get_room_in_reservation($this->template->reservation->id);
+            $this->template->rooms = $this->reservationManager->get_rooms_in_reservation($this->template->reservation->id);
             $this->template->nights = intval(date_diff(date_create($this->template->reservation->date_from), date_create($this->template->reservation->date_to))->format("%d"));
             $this->template->nights_word = $this->word_of_number_nights($this->template->nights);
             $this->template->step = $this->template->reservation->step;
@@ -106,6 +134,7 @@ class ReservationPresenter extends BasePresenter {
         Debugger::barDump($_SESSION['reservation_id'], 'Reservation ID');
         Debugger::barDump($this->template->rooms, 'Reservation');
         Debugger::barDump($this->template->reservation, 'Reservation');
+        $this->template->dph = 1 + $this->serviceInformationManager->getDPH() / 100;
     }
 
 
@@ -113,65 +142,134 @@ class ReservationPresenter extends BasePresenter {
      * Data pro my.latte
      */
     public function renderMy() {
-        $this->template->reservations = $this->reservationManager->getReservationFromUser($this->user->getIdentity()->guests_id);
+        $this->template->reservations = $this->reservationManager->getAllReservations($this->user->getIdentity()->guests_id);
+        $this->template->reviews = $this->reviewManager->getAllByGuest($this->user->getIdentity()->guests_id);
         Debugger::barDump($this->template->reservations, 'Reservation');
     }
 
+
+    protected function createComponentMultipleReviewForm() {
+        $control = new Multiplier(function ($reservation_id) {
+            $form = new Form(NULL, $reservation_id);
+            $form->addHidden('reservation_id')->setDefaultValue($reservation_id);
+            $form->addSelect('stars', 'Hodnocení:', [1, 2, 3, 4, 5])->setRequired('Musíte zvolit počet hvězdiček');
+            $form->addTextArea('text', '')
+                ->setHtmlAttribute('rows', 3)
+                ->setHtmlAttribute('placeholder', 'Vaše hodnocení');
+            $form->addSubmit('new_review', 'Ohodnotit');
+            $form->onSuccess[] = [$this, 'reviewFormSucceeded'];
+            return $form;
+        });
+
+        return $control;
+    }
+
+    public function reviewFormSucceeded($form, $values) {
+        $this->reviewManager->add($values);
+        $this->flashMessage('Hodnocení bylo úspěšně uloženo. Děkujeme.');
+        $this->redirect('this');
+    }
+
+    private function getCountOfPeople($max) {
+        $array = array();
+        for ($i = 1; $i <= $max; $i++) {
+            $array[$i] = $i;
+        }
+
+        return $array;
+    }
+
+    protected function createComponentMultipleSelectForm() {
+        $roomManager = $this->roomManager;
+        $reservationManager = $this->reservationManager;
+        $control = new Multiplier(function ($arg) use ($roomManager, $reservationManager) {
+            $arg = explode("_", $arg);
+            $reservation_id = $arg[0];
+            $room_id = $arg[1];
+            $form = new Form(NULL, $room_id);
+            Debugger::barDump($room_id, 'room_id');
+            Debugger::barDump($reservation_id, 'res_id');
+            $form->addHidden('reservation_id')->setDefaultValue($reservation_id);
+            $form->addHidden('room_id')->setDefaultValue($room_id);
+            $form->addSelect('people', 'Osob', $this->getCountOfPeople($roomManager->getPeopleInRoom($room_id)->pocet))
+                ->setRequired('Musíte zvolit počet osob!');
+            $osob = $reservationManager->get_room_in_reservation($reservation_id, $room_id)->people;
+            if($osob == 0) {
+                $form['people']->setDefaultValue($roomManager->getPeopleInRoom($room_id, FALSE)->pocet);
+            } else {
+                $form['people']->setDefaultValue($osob);
+            }
+
+            $form->addSubmit('submit', 'Ulož');
+            $form->onSuccess[] = [$this, 'selectFormSucceeded'];
+            return $form;
+        });
+
+        return $control;
+    }
+
+    public function selectFormSucceeded($form, $values) {
+        $this->reservationManager->update_room_in_reservation($values->reservation_id, $values->room_id, ['people' => $values->people]);
+        $this->redirect('this#table');
+    }
 
     /**
      * Vytváří formulář, který slouží pro zrušení celé rezervace
      * @return Form
      */
     protected function createComponentCancelAllForm() {
-        $form = new Form();
-        $form->addSubmit('cancel', 'Zrušit celou rezervaci');
-        $form->onSuccess[] = [$this, 'cancelAllFormSucceeded'];
+            $form = new Form();
+            $form->addSubmit('cancel', 'Zrušit celou rezervaci');
+            $form->onSuccess[] = [$this, 'cancelAllFormSucceeded'];
 
-        return $form;
-    }
+            return $form;
+        }
 
     public function cancelAllFormSucceeded($form, $values) {
-        $id = $this->reservationManager->get_reservation();
-        $this->reservationManager->delete_reservation($id);
-        $this->deleteReservationSessions();
-        $this->flashMessage('Rezervace byla úspěšně zrušena.');
-        $this->redirect('Room:default');
-    }
+            $id = $this->reservationManager->get_reservation();
+            $this->reservationManager->delete_reservation($id);
+            $this->deleteReservationSessions();
+            $this->flashMessage('Rezervace byla úspěšně zrušena.');
+            $this->redirect('Room:default');
+        }
 
     /**
      * Vytvoření formuláře na zadání osobních údajů (krok 2)
      * @return Form
      */
     protected function createComponentAboutUserForm() {
-        $form = new Form();
-        $form->addEmail('email', 'E-mail')->setRequired('Musíte vyplnit email!');
-        $form->addText('name', 'Jméno a příjmení')->setRequired('Musíte vyplnit jméno!');
-        $form->addText('birthday', 'Datum narození')->setHtmlType('date');
-        $form->addText('birthplace', 'Místo narození');
-        $form->addText('phone', 'Telefonní číslo')->setRequired('Musíte vyplnit telefon!');
-        $form->addText('street', 'Ulice, č.p.');
-        $form->addText('city', 'Město');
-        $form->addText('state', 'Stát');
-        $form->addSubmit('store', 'Pokračovat v rezervaci (krok 2 / 3)');
-        $form->onSuccess[] = [$this, 'aboutUserFormSucceeded'];
+            $form = new Form();
+            $form->addEmail('email', 'E-mail')->setRequired('Musíte vyplnit email!');
+            $form->addText('name', 'Jméno a příjmení')->setRequired('Musíte vyplnit jméno!');
+            $form->addText('birthday', 'Datum narození')->setHtmlType('date');
+            $form->addText('birthplace', 'Místo narození');
+            $form->addText('phone', 'Telefonní číslo')
+                ->setRequired('Musíte vyplnit telefon!')
+                ->addRule($form::PATTERN, 'Neplatné telefonní číslo. Zadejte pouze číslice. Pro mezinárodní formát předvolbu s 00 místo +.', '[0-9]{9,14}')
+                ->setHtmlAttribute('placeholder', '00420...');
+            $form->addText('street', 'Ulice, č.p.');
+            $form->addText('city', 'Město');
+            $form->addText('state', 'Stát');
+            $form->addSubmit('submit', 'Pokračovat v rezervaci (krok 2 / 3)');
+            $form->onSuccess[] = [$this, 'aboutUserFormSucceeded'];
 
-        if (isset($_SESSION['reservation_guest']) && $_SESSION['reservation_guest'] > 0) {
-            $form->setDefaults($this->guestManager->get($_SESSION['reservation_guest']));
+            if (isset($_SESSION['reservation_guest']) && $_SESSION['reservation_guest'] > 0) {
+                $form->setDefaults($this->guestManager->get($_SESSION['reservation_guest']));
+            }
+
+            return $form;
         }
-
-        return $form;
-    }
 
     public function aboutUserFormSucceeded($form, $values) {
-        if (isset($_SESSION['reservation_guest']) && $_SESSION['reservation_guest'] > 0) {
-            $this->guestManager->update($_SESSION['reservation_guest'], $values);
-        } else {
-            $_SESSION['reservation_guest'] = $this->guestManager->add($values);
+            if (isset($_SESSION['reservation_guest']) && $_SESSION['reservation_guest'] > 0) {
+                $this->guestManager->update($_SESSION['reservation_guest'], $values);
+            } else {
+                $_SESSION['reservation_guest'] = $this->guestManager->add($values);
+            }
+            $this->reservationManager->update_reservation($_SESSION['reservation_id'], ['guests_id' => $_SESSION['reservation_guest']]);
+            Debugger::barDump($_SESSION['reservation_guest'], 'GUEST_ID');
+            $this->redirect('NextStep!');
         }
-        $this->reservationManager->update_reservation($_SESSION['reservation_id'], ['guests_id' => $_SESSION['reservation_guest']]);
-        Debugger::barDump($_SESSION['reservation_guest'], 'GUEST_ID');
-        $this->redirect('NextStep!');
-    }
 
 
     /**
@@ -179,51 +277,51 @@ class ReservationPresenter extends BasePresenter {
      * @return Form
      */
     protected function createComponentReservationConfirmForm() {
-        $form = new Form();
-        $form->addTextArea('note', 'Vaše poznámka')
-            ->setHtmlAttribute('placeholder', 'Vaše přání, speciální požadavky či jiné upřesnění objednávky.');
-        $form->addCheckbox('agree', 'Souhlasím s podmínkami')
-            ->setRequired('Musíte souhlasit s podmínkami')
-            ->addRule(Form::FILLED, 'Musíte souhlasit s podmínkami');
-        $form->addSubmit('confirm', 'Závazně rezervovat');
-        $form->onSuccess[] = [$this, 'reservationConfirmFormSucceeded'];
-        return $form;
-    }
+            $form = new Form();
+            $form->addTextArea('note', 'Vaše poznámka')
+                ->setHtmlAttribute('placeholder', 'Vaše přání, speciální požadavky či jiné upřesnění objednávky.');
+            $form->addCheckbox('agree', ' Souhlasím s podmínkami')
+                ->setRequired('Musíte souhlasit s podmínkami')
+                ->addRule(Form::FILLED, 'Musíte souhlasit s podmínkami');
+            $form->addSubmit('submit', 'Závazně rezervovat');
+            $form->onSuccess[] = [$this, 'reservationConfirmFormSucceeded'];
+            return $form;
+        }
 
     public function reservationConfirmFormSucceeded($form, $values) {
-        try {
-            $data = array('step' => 3, 'note' => $values->note);
-            $id = $this->reservationManager->update_reservation($_SESSION['reservation_id'], $data);
-            $this->flashMessage('Rezervace byla úspěšně dokončena!');
-            $this->deleteReservationSessions();
-            $this->redirect('my');
-        } catch (UniqueConstraintViolationException $ex) {
-            Debugger::barDump($ex, 'chyba');
-            $this->flashMessage('Bohužel na zadaný termín je pokoj již obsazen. Můžete si vybrat jiný.', 'error');
-            $this->redirect('Room:');
+            try {
+                $data = array('step' => 3, 'note' => $values->note);
+                $id = $this->reservationManager->update_reservation($_SESSION['reservation_id'], $data);
+                $this->flashMessage('Rezervace byla úspěšně dokončena!');
+                $this->deleteReservationSessions();
+                $this->redirect('my');
+            } catch (UniqueConstraintViolationException $ex) {
+                Debugger::barDump($ex, 'chyba');
+                $this->flashMessage('Bohužel na zadaný termín je pokoj již obsazen. Můžete si vybrat jiný.', 'error');
+                $this->redirect('Room:');
+            }
         }
-    }
 
     // Pomocné funkce
 
     private function word_of_number_nights($nights) {
-        switch ($nights) {
-            case 1:
-                return "noc";
-            case 2:
-            case 3:
-            case 4:
-                return "noci";
-            default:
-                return "nocí";
+            switch ($nights) {
+                case 1:
+                    return "noc";
+                case 2:
+                case 3:
+                case 4:
+                    return "noci";
+                default:
+                    return "nocí";
+            }
         }
-    }
 
     private function deleteReservationSessions() {
-        unset($_SESSION['reservation']);
-        unset($_SESSION['reservation_guest']);
-        unset($_SESSION['reservation_id']);
-    }
+            unset($_SESSION['reservation']);
+            unset($_SESSION['reservation_guest']);
+            unset($_SESSION['reservation_id']);
+        }
 
 
 }

@@ -7,20 +7,20 @@
 namespace App\FrontModule\Presenters;
 
 
-use App\FrontModule\Model\AccommodationManager;
+use App\Model\AccommodationManager;
 use App\Model\ImageManager;
 use App\Presenters\BasePresenter;
 use Nette\Application\UI\Form;
 use Nette\InvalidStateException;
+use Nette\Mail\Message;
 use Nette\Mail\SendmailMailer;
 use Nette\Utils\ArrayHash;
-use Nette\Mail\Message;
 
 class AccommodationPresenter extends BasePresenter {
 
-    /** @var AccommodationManager  */
+    /** @var AccommodationManager */
     private $accommodationManager;
-    /** @var ImageManager  */
+    /** @var ImageManager */
     private $imageManager;
     /** Email administrátora, na který se budou posílat emaily z kontaktního formuláře. */
     const EMAIL = 'zbynek.mlcak@seznam.cz';
@@ -30,28 +30,23 @@ class AccommodationPresenter extends BasePresenter {
      * @param AccommodationManager $accommodationManager
      * @param ImageManager $imageManager
      */
-    public function __construct(AccommodationManager $accommodationManager, ImageManager $imageManager){
+    public function __construct(AccommodationManager $accommodationManager, ImageManager $imageManager) {
         parent::__construct();
         $this->accommodationManager = $accommodationManager;
         $this->imageManager = $imageManager;
     }
 
     public function renderDefault() {
-        $this->template->gallery = $this->imageManager->getGallery(1);
         $this->template->info = $this->accommodationManager->getAllInformation();
     }
 
-    public function createComponentTestForm() {
-        $form = new Form();
-        $form->elementPrototype->addAttributes(array('novalidate' => 'novalidate'));
-        $form->addEmail('email', 'émajl')->setRequired('Musíš zadat platný email!');
-        $form->addText('text', 'textík')->setRequired();
-        $form->addReCaptcha('recaptcha', $label = 'Captcha')->setRequired('Are you bot?');
-        $form->addSubmit('sub', 'submájnt');
-        return $form;
+    public function renderGallery() {
+        $this->template->gallery = $this->imageManager->getGallery(1);
     }
 
-
+    public function renderContact() {
+        $this->template->info = $this->accommodationManager->getAllInformation();
+    }
 
     /**
      * Vytváří a vrací komponentu kontaktního formuláře.
@@ -60,8 +55,14 @@ class AccommodationPresenter extends BasePresenter {
     protected function createComponentContactForm() {
         $form = new Form;
         $form->addProtection('Vypršel časový limit, odešlete formulář znovu');
-        $form->addText('email', 'Vaše emailová adresa')->setType('email')->setRequired();
-        $form->addTextArea('message', 'Zpráva')->setRequired()->addRule(Form::MIN_LENGTH, 'Zpráva musí být minimálně %d znaků dlouhá.', 10);
+        $form->addText('name', 'Jméno')->setRequired('Musíte vyplnit jméno!')->setHtmlAttribute('placeholder', 'Jméno');
+        $form->addEmail('email', 'Vaše emailová adresa')
+            ->setRequired('Musíte vyplnit email!')
+            ->setHtmlAttribute('placeholder', 'Email');;
+        $form->addTextArea('message', 'Zpráva')
+            ->setRequired()
+            ->addRule(Form::MIN_LENGTH, 'Zpráva musí být minimálně %d znaků dlouhá.', 10)
+            ->setHtmlAttribute('placeholder', 'Vaše zpráva.');;
         $form->addReCaptcha('recaptcha', 'Antispamová ochrana')->setRequired('Musíš potvrdit antispamovou kontrolu!');
         $form->addSubmit('submit', 'Odeslat');
         $form->onSuccess[] = [$this, 'contactFormSucceeded'];
@@ -70,7 +71,7 @@ class AccommodationPresenter extends BasePresenter {
 
     /**
      * Funkce se vykonaná při úspěsném odeslání kontaktního formuláře a odešle email.
-     * @param Form $form kontaktní formulář
+     * @param Form $form        kontaktní formulář
      * @param ArrayHash $values odeslané hodnoty formuláře
      */
     public function contactFormSucceeded($form, $values) {
@@ -86,7 +87,5 @@ class AccommodationPresenter extends BasePresenter {
         }
     }
 
-    public function renderContact() {
-        $this->template->info = $this->accommodationManager->getAllInformation();
-    }
+
 }

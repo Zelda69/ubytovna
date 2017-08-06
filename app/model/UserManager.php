@@ -31,9 +31,7 @@ class UserManager extends BaseManager implements IAuthenticator {
         list($username, $password) = $credentials; // Extrahuje potřebné parametry.
 
         // Vykoná dotaz nad databází a vrátí první řádek výsledku nebo false, pokud uživatel neexistuje.
-        $user = $this->database->table(self::TABLE_NAME)
-            ->where([self::COLUMN_NAME => $username])
-            ->fetch();
+        $user = $this->database->table(self::TABLE_NAME)->where([self::COLUMN_NAME => $username])->fetch();
 
         // Ověření uživatele.
         if (!$user) {
@@ -63,9 +61,21 @@ class UserManager extends BaseManager implements IAuthenticator {
      */
     public function register($data) {
         try {
-            $data['password'] = Passwords::hash($data['password']);
+            // Příprava pole, pro informace o účtu
+            $acc_data['password'] = Passwords::hash($data['password']);
+            unset($data['password']);
+            $acc_data['username'] = $data['email'];
+
+            // Založí informace o uživateli (pokud není v systém, jinak vybere ID informací)
+            $try_user = $this->database->table('guests')->where('email = ?', $data['email'])
+                                ->select('id')->fetch();
+            if ($try_user) {
+                $acc_data['guests_id'] = $try_user->id;
+                $this->database->table('guests')->update(['name' => $data['name']]);
+            } else $acc_data['guests_id'] = $this->database->table('guests')->insert($data);
+
             // Pokusí se vložit nového uživatele do databáze.
-            $this->database->table(self::TABLE_NAME)->insert($data);
+            $this->database->table(self::TABLE_NAME)->insert($acc_data)->id;
         } catch (UniqueConstraintViolationException $e) {
             // Vyhodí výjimku, pokud uživatel s daným jménem již existuje.
             throw new DuplicateNameException;

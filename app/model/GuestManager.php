@@ -25,14 +25,20 @@ class GuestManager extends BaseManager {
     }
 
     public function delete($id) {
-        $this->database->table(self::TABLE_NAME)->where('id = ?', intval($id))->delete();
+        return $this->database->table(self::TABLE_NAME)->where('id = ?', intval($id))->delete();
     }
 
     public function update($id, $data) {
-        $this->database->table(self::TABLE_NAME)->where('id = ?', $id)->update($data);
+        return $this->database->table(self::TABLE_NAME)->where('id = ?', $id)->update($data);
     }
 
     public function get_all() {
-        return $this->database->table(self::TABLE_NAME);
+        return $this->database->table(self::TABLE_NAME)->order('name');
+    }
+
+    public function search($what) {
+        return $this->database->table(self::TABLE_NAME)
+            ->where('name REGEXP ? || email REGEXP ?', $what, $what)
+            ->order('name');
     }
 }

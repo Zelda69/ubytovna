@@ -2,11 +2,11 @@ parameters:
 
 
 database:
-	dsn: 'mysql:host=127.0.0.1;dbname=bakalarka'
-	user: root
-	password:
+	dsn: 'mysql:host=127.0.0.1;dbname=nazev_databaze'
+	user: # zde je potřeba zadat uživatelské jméno k databázi
+	password: # zde je potřeba zadat heslo k databázi
 	options:
-		lazy: yes
+		lazy: yes # pokud yes, z DB se načítá až pokud je potřeba
 		options: [PDO::MYSQL_ATTR_COMPRESS = true]
-		debugger: true        # debugger bar panel
-		explain:      true        # explain queries in debugger bar
+		debugger: false        # debugger bar panel
+		explain: false        # explain queries in debugger bar

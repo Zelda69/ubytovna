@@ -1,0 +1,30 @@
+{block title}Tisk seznamu hostů{/block}
+{block content}
+<table class="default">
+    <thead>
+    <tr>
+        <th>Jméno</th>
+        <th>Email<br>Telefon</th>
+        <th>Datum narození<br>Místo narození</th>
+        <th>Adresa</th>
+        <th>Stát</th>
+        <th>Doklad</th>
+    </tr>
+    </thead>
+    <tbody>
+
+    {foreach $guests as $guest}
+        <tr>
+            <td>{$guest->name}</td>
+            <td>{$guest->email}<br>{$guest->phone}</td>
+            <td>{empty($guest->birthday) ? 'Nezadáno' : $guest->birthday}<br>
+                {empty($guest->birthplace) ? 'Nezadáno' : $guest->birthplace}</td>
+            <td>{empty($guest->street) ? 'Nezadáno' : $guest->street},
+                {empty($guest->city) ? 'Nezadáno' : $guest->city}</td>
+            <td>{empty($guest->state) ? 'Nezadáno' : $guest->state}</td>
+            <td>{empty($guest->document) ? 'Nezadáno' : $guest->document}</td>
+        </tr>
+    {/foreach}
+
+    </tbody>
+</table>

@@ -7,7 +7,7 @@
 namespace App\BackModule\Presenters;
 
 
-use App\FrontModule\Model\AccommodationManager;
+use App\Model\AccommodationManager;
 use App\Model\ImageManager;
 use App\Presenters\BasePresenter;
 use Nette\Application\UI\Form;

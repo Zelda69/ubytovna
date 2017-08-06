@@ -6,11 +6,12 @@
 
 namespace App\BackModule\Presenters;
 
-use App\FrontModule\Model\RoomManager;
-use App\FrontModule\Model\ServiceManager;
+use App\Model\RoomManager;
+use App\Model\ServiceManager;
 use App\Model\ImageManager;
 use App\Presenters\BasePresenter;
 use Nette\Application\UI\Form;
+use Nette\Database\UniqueConstraintViolationException;
 use Tracy\Debugger;
 
 class RoomPresenter extends BasePresenter {
@@ -37,8 +38,24 @@ class RoomPresenter extends BasePresenter {
         $this->selectedRoom = $id;
     }
 
+    public function handleDeleteType($id) {
+        $arrayUsed = $this->roomManager->getUsedRoomTypes(TRUE);
+        if (!in_array($id, $arrayUsed)) {
+            $this->roomManager->deleteRoomType($id);
+            $this->flashMessage('Typ byl úspěšně smazán.');
+        } else {
+            $this->flashMessage('Nemůžeme smazat typ, který se používá!', 'error');
+        }
+        $this->redirect('this');
+    }
+
     public function renderDefault() {
         $this->template->rooms = $this->roomManager->getRooms();
+    }
+
+    public function renderType() {
+        $this->template->types = $this->roomManager->getRoomTypes();
+        $this->template->usedTypes = $this->roomManager->getUsedRoomTypes(TRUE);
     }
 
     public function renderDetail($id) {
@@ -69,7 +86,6 @@ class RoomPresenter extends BasePresenter {
     }
 
     protected function createComponentRoomForm() {
-
         $form = new Form();
         $form->addText('name', 'Název pokoje')->setRequired('Musíš vyplnit název pokoje!');
         $form->addTextArea('description', 'Popis pokoje')->setRequired('Musíš vyplnit popis pokoje!');
@@ -78,14 +94,17 @@ class RoomPresenter extends BasePresenter {
         $form->addText('extra_beds', 'Počet přistýlek')
             ->setRequired('Musíš vyplnit počet přistýlke')
             ->addRule(Form::INTEGER, 'Počet přistýlek musí být číslo!');
-        $form->addText('price', 'Cena za noc')
+        $form->addText('price', 'Cena za noc (bez DPH)')
             ->setRequired('Musíš vyplnit cenu!')
             ->setHtmlType('number')
             ->addRule(Form::INTEGER, 'Cena musí být číslo!');
+        $form->addCheckboxList('services', 'Služby:', $this->serviceManager->getServiceToList())
+            ->getSeparatorPrototype()
+            ->setName(NULL);
 
         if (!is_null($this->selectedRoom)) {
             $room = $this->roomManager->getRooms($this->selectedRoom);
-            $values = array('description' => $room->description, 'name' => $room->name, 'type_id' => $room->type_id, 'extra_beds' => $room->extra_beds, 'price' => $room->price);
+            $values = array('description' => $room->description, 'name' => $room->name, 'type_id' => $room->type_id, 'extra_beds' => $room->extra_beds, 'price' => $room->price, 'services' => $this->roomManager->getRoomServices($this->selectedRoom, TRUE));
             $form->setDefaults($values);
             $form->addSubmit('edit', 'Upravit informace');
         } else $form->addSubmit('add', 'Přidat pokoj');
@@ -96,10 +115,20 @@ class RoomPresenter extends BasePresenter {
 
     public function roomFormSucceeded($form, $values) {
         if (!is_null($this->selectedRoom)) {
+            $this->roomManager->editRoomServices($this->selectedRoom, $values->services);
+            unset($values->services);
             $this->roomManager->editRoom($this->selectedRoom, $values);
             $this->flashMessage('Pokoj byl úspěšně editován.');
         } else {
-            $this->roomManager->addRoom($values);
+            $services = $values->services;
+            unset($values->services);
+            try {
+                $id = $this->roomManager->addRoom($values);
+            } catch (UniqueConstraintViolationException $e) {
+                $this->flashMessage('Pokoj se zadaným názvem již existuje!', 'error');
+                $this->redirect('this');
+            }
+            $this->roomManager->addRoomServices($id, $services);
             $this->flashMessage('Pokoj byl úspěšně přidán.');
         }
 
@@ -139,6 +168,44 @@ class RoomPresenter extends BasePresenter {
         } else {
             $this->flashMessage('Při nahrávání obrázku došlo k chybě.', 'error');
             $this->redirect('this');
+        }
+    }
+
+    protected function createComponentNewTypeForm() {
+        $form = new Form();
+        $form->addText('name', 'Název typu:')->setRequired('Musíte zvolit název!');
+        $form->addText('single_bed', 'Počet jednolůžek:')
+            ->setHtmlType('number')
+            ->addRule(Form::INTEGER, 'Počet postelí musí být číslo!')
+            ->setHtmlAttribute('min', 0)
+            ->setHtmlAttribute('max', 10)
+            ->setRequired('Musíte vyplnit počet postelí')
+            ->setDefaultValue(0);
+        $form->addText('double_bed', 'Počet dvoulůžek:')
+            ->setHtmlType('number')
+            ->addRule(Form::INTEGER, 'Počet postelí musí být číslo!')
+            ->setHtmlAttribute('min', 0)
+            ->setHtmlAttribute('max', 10)
+            ->setRequired('Musíte vyplnit počet postelí')
+            ->setDefaultValue(0);
+        $form->addSubmit('new_type', 'Přidat typ');
+        $form->onSuccess[] = [$this, 'newTypeFormSucceeded'];
+
+        return $form;
+    }
+
+    public function newTypeFormSucceeded($form, $values) {
+        if ($values->single_bed + $values->double_bed == 0) {
+            $this->flashMessage('Musíte vyplnit počet lůžek!', 'error');
+        } else {
+            try {
+                if ($this->roomManager->newRoomType($values)) {
+                    $this->flashMessage('Nový typ byl úspěšně přidán');
+                } else $this->flashMessage('Nový typ se nepodařilo přidat.');
+                $this->redirect('this');
+            } catch (UniqueConstraintViolationException $e) {
+                $this->flashMessage('Typ zadaného názvu již existuje!', 'error');
+            }
         }
     }
 }

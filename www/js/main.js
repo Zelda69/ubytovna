@@ -1,6 +1,6 @@
 $(function () {
     $.nette.init();
-    $('.example').barrating({
+    $('.review select').barrating({
         theme: 'fontawesome-stars',
         onSelect: function(value, text, event) {
             if (typeof(event) !== 'undefined') {
@@ -21,6 +21,10 @@ $(function () {
                 // by calling `set` method
             }
         }
+    });
+    $('.review-done select').barrating({
+        theme: 'fontawesome-stars',
+        readonly: true
     });
 
     Nette.validators.AppFormsRules_validateDateRange = function(elem, arg, value) {

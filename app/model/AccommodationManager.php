@@ -4,7 +4,7 @@
  * Date: 19.06.2017
  */
 
-namespace App\FrontModule\Model;
+namespace App\Model;
 
 use App\Model\BaseManager;
 use Nette\Database\Context;

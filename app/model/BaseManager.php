@@ -18,6 +18,8 @@ class BaseManager extends Object{
 
     /** @var Context Instance PDO databáze */
     protected $database;
+    /** @var bool|mixed|\Nette\Database\Table\IRow Základní servisní informace */
+    protected $service_information;
 
     /**
      * BaseManager constructor.

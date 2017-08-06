@@ -2,24 +2,191 @@
 {define description}Úvodní stránka webové aplikace{/define}
 {block content}
 
-<div id="homepage_wrapper">
-    <div class="homepage-api">
-        {* Ověření kapacity *}
-        {control vacancyForm}
+<div id="sp-page-builder" class="sp-page-builder  page-123">
+    <div class="page-content">
+        <section id="section-id-1480870498" class="sppb-section  seagull-search">
+            <div class="sppb-row-container">
+                <div class="sppb-row">
+                    <div class="sppb-col-sm-12">
+                        <div id="column-id-1480870499" class="sppb-column">
+                            <div class="sppb-column-addons">
+                                <div id="sppb-addon-1480870500" class="clearfix">
+                                    <div class="sppb-addon sppb-addon-module ">
+                                        <div class="sppb-addon-content">
+                                            <div class="container">
+                                                {form vacancyForm} {*class="form-stacked sr-validate"*}
+                                                    <h3 style="margin-top: -10px;">Ověřit dostupnost ubytování</h3>
+                                                    <fieldset>
+                                                        <div class="col-sm-2"></div>
+                                                        <div class="sr-chk-availablity-input-wrap">
+                                                            <div class="col-sm-5">
+                                                                <div class="check-in col-sm-6 col-xs-12">
+                                                                    {label from}
+                                                                    {input from class => 'checkin_module datefield'}
+                                                                    {inputError from}
+                                                                </div>
+                                                                <div class="check-out col-sm-6 col-xs-12">
+                                                                    {label to}
+                                                                    {input to class => 'checkin_module datefield'}
+                                                                    {inputError to}
+                                                                </div>
+                                                            </div>
+                                                        </div> <!-- /.sr-chk-availablity-input-wrap -->
+                                                        <div class="check-button col-sm-3">
+                                                            <div class="action">
+                                                                {input submit class => 'btn btn-block btn-primary'}
+                                                                {*<i class="icon-search uk-icon-search"></i>*}
+                                                            </div>
+                                                        </div>
+                                                    </fieldset>
+                                                {/form}
 
-        {* Facebook API *}
-        <iframe src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fstarastrelnice.hranice%2F&tabs=timeline%2Cevents%2Cmessages&width=340&height=500&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true&appId=273509183056698"
-                width="340" height="500" style="border:none;overflow:hidden;margin-top:10px;"></iframe>
 
-        {* Fotogalerie *}
-        <div id="PhotogalleryBanner" style="background-image: url({$basePath}/{$img['path']});">
-            <a n:href=":Front:Accommodation:#gallery" class="link">
-                <div class="heading">Fotogalerie</div>
-            </a>
-        </div>
-    </div>
-
-    <div id="lipsum">
-        {$info['homepage']|noescape}
+                                            </div> <!-- /.container -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section id="section-id-1480870507" class="sppb-section  seagull-c2a">
+            <div class="sppb-row-container">
+                <div class="sppb-row">
+                    <div class="sppb-col-sm-12">
+                        <div id="column-id-1480870508" class="sppb-column">
+                            <div class="sppb-column-addons">
+                                <div id="sppb-addon-1480870510" class="clearfix">
+                                    <div class="sppb-addon sppb-addon-cta " style="">
+                                        <div class="text-center">
+                                            {*                                        <h3 class="sppb-addon-call-title" style="margin-bottom:25px;font-size:45px;">
+                                                                                        Pár slov úvodem o
+                                                                                    </h3>*}
+                                            <p class="sppb-lead sppb-cta-subtitle"
+                                               style="color:rgba(191, 166, 114, 1);font-size:45px;;margin-bottom:28px;">
+                                                Pár slov úvodem</p>
+                                            <p class="sppb-cta-text">
+                                                {$info['homepage']|noescape}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section id="section-id-1480870528" class="sppb-section  footer-widget">
+            <div class="sppb-row-container">
+                <div class="sppb-row">
+                    <div class="sppb-col-md-3 sppb-col-sm-6 sppb-col-xs-12">
+                        <div id="column-id-1480870529" class="sppb-column ">
+                            <div class="sppb-column-addons">
+                                <div id="sppb-addon-1480870530" class="clearfix">
+                                    <div class="sppb-addon sppb-addon-feature sppb-text-left sp-contact-info">
+                                        <div class="sppb-addon-content">
+                                            <div class="sppb-icon"><span
+                                                        style="display:inline-block;text-align:center;margin-bottom:10px;"><i
+                                                            class="fa fa pe-7s-mail-open"
+                                                            style="font-size:36px;width:36px;height:36px;line-height:36px;"></i></span>
+                                            </div>
+                                            <h4 class="sppb-feature-box-title"
+                                                style="color:#ffffff;font-weight:700;">Napište nám</h4>
+                                            <div class="sppb-addon-text">{$info['email']}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="sppb-addon-1481134506425"
+                                     class="sppb-hidden-md sppb-hidden-lg sppb-hidden-sm clearfix">
+                                    <div class="sppb-empty-space  clearfix"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sppb-col-md-3 sppb-col-sm-6 sppb-col-xs-12">
+                        <div id="column-id-1480870531" class="sppb-column ">
+                            <div class="sppb-column-addons">
+                                <div id="sppb-addon-1480870532" class="clearfix">
+                                    <div class="sppb-addon sppb-addon-feature sppb-text-left sp-contact-info ">
+                                        <div class="sppb-addon-content">
+                                            <div class="sppb-icon"><span
+                                                        style="display:inline-block;text-align:center;margin-bottom:10px;"><i
+                                                            class="fa fa pe-7s-map-marker"
+                                                            style="font-size:40px;width:40px;height:40px;line-height:40px;"></i></span>
+                                            </div>
+                                            <h4 class="sppb-feature-box-title"
+                                                style="color:#ffffff;font-weight:700;">Navštivte nás</h4>
+                                            <div class="sppb-addon-text">
+                                                {foreach $info['adress'] as $adresa}
+                                                    {continueIf $iterator->first}
+                                                    {$adresa}<br/>
+                                                {/foreach}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="sppb-addon-1481134506422"
+                                     class="sppb-hidden-md sppb-hidden-lg clearfix">
+                                    <div class="sppb-empty-space  clearfix"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sppb-col-md-3 sppb-col-sm-6 sppb-col-xs-12">
+                        <div id="column-id-1480870533" class="sppb-column ">
+                            <div class="sppb-column-addons">
+                                <div id="sppb-addon-1480870534" class="clearfix">
+                                    <div class="sppb-addon sppb-addon-feature sppb-text-left sp-contact-info">
+                                        <div class="sppb-addon-content">
+                                            <div class="sppb-icon"><span
+                                                        style="display:inline-block;text-align:center;margin-bottom:10px;"><i
+                                                            class="fa fa pe-7s-credit"
+                                                            style="font-size:36px;width:36px;height:36px;line-height:36px;"></i></span>
+                                            </div>
+                                            <h4 class="sppb-feature-box-title"
+                                                style="color:#ffffff;font-weight:700;">Rezervujte si u nás</h4>
+                                            <div class="sppb-addon-text">Apartmány<br>Svatební pokoje
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="sppb-addon-1481134506431"
+                                     class="sppb-hidden-md sppb-hidden-lg sppb-hidden-sm clearfix">
+                                    <div class="sppb-empty-space  clearfix"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sppb-col-md-3 sppb-col-sm-6 sppb-col-xs-12">
+                        <div id="column-id-1481134506412" class="sppb-column ">
+                            <div class="sppb-column-addons">
+                                <div id="sppb-addon-1481134506415" class="clearfix">
+                                    <div class="sppb-addon sppb-addon-feature sppb-text-left sp-contact-info">
+                                        <div class="sppb-addon-content">
+                                            <div class="sppb-icon"><span
+                                                        style="display:inline-block;text-align:center;margin-bottom:10px;"><i
+                                                            class="fa fa pe-7s-call"
+                                                            style="font-size:36px;width:36px;height:36px;line-height:36px;"></i></span>
+                                            </div>
+                                            <h4 class="sppb-feature-box-title"
+                                                style="color:#ffffff;font-weight:700;">Zavolejte nám</h4>
+                                            <div class="sppb-addon-text"> {$info['phone']}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="sppb-addon-1481134506428"
+                                     class="sppb-hidden-md sppb-hidden-lg sppb-hidden-sm clearfix">
+                                    <div class="sppb-empty-space  clearfix"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
     </div>
 </div>

@@ -12,8 +12,9 @@ use App\Model\UserManager;
 use Nette\Application\UI\Form;
 use Nette\Security\Passwords;
 use Nette\Utils\ArrayHash;
-use Nette\Utils\DateTime;
-use Nette\Utils\Image;
+
+
+use Tracy\Debugger;
 
 /**
  * Class AdministrationPresenter
@@ -30,11 +31,8 @@ class AdministrationPresenter extends BaseFrontPresenter {
     /** @var array Společné instrukce pro přihlašovací a registrační formuláře. */
     private $instructions;
 
-    private $ahoj = array("P", "D", "C");
-
     /**
      * Konstruktor s injektovanou továrničkou na uživatelské formuláře.
-     *
      * @param UserForms $userForms automaticky injektovaná třída továrničky na uživatelské formuláře
      * @param UserManager $userManager
      * @param GuestManager $guestManager
@@ -49,13 +47,13 @@ class AdministrationPresenter extends BaseFrontPresenter {
     /** Volá se před každou akcí presenteru a inicializuje společné proměnné. */
     public function startup() {
         parent::startup();
-        $this->instructions = array('message' => NULL, 'redirection' => ':Front:Administration:');
+        $this->instructions = array('message' => NULL, 'redirection' => ':Front:Homepage:');
     }
 
     /** Přesměrování do administrace, pokud je uživatel již přihlášen. */
     public function actionLogin() {
-        if ($this->getUser()->isLoggedIn())
-            $this->redirect(':Front:Homepage:');
+        if ($this->getUser()->isLoggedIn() && $this->getUser()->isInRole('admin'))
+            $this->redirect(':Back:Homepage:');
     }
 
     /** Odhlášení uživatele. */
@@ -71,40 +69,17 @@ class AdministrationPresenter extends BaseFrontPresenter {
             $this->template->username = $identity->getData()['username'];
     }
 
-    private function getTheWholeList() {
-        return ['První', 'Druhý', 'Třetí'];
-    }
-
     public function renderProfil() {
-        if (!isset($this->template->list)) {
-            $this->template->list = $this->getTheWholeList();
+        if(is_null($this->getUser()->getIdentity()->guests_id)) {
+            $this->redirect(':Back:Homepage:');
         }
-        $httpRequest = $this->getHttpRequest();
-        $this->template->ip = $httpRequest->getRemoteAddress();
-        $this->template->dns = $httpRequest->getQuery();
-        $array = array(new DateTime(), new DateTime(), new DateTime());
-        $this->template->p = $array;
-        $this->template->testuj = file_exists('images/room/2/051.jpg');
-        $image = Image::fromFile('images/room/2/051.jpg');
-        $image->resize(250, 160, Image::EXACT);
-        if (!file_exists('images/thumbs/room/2/051.jpg'))
-            $image->save('images/thumbs/room/2/051.jpg');
-        $this->template->obrazek = 5;//$image->send();
+        $this->template->user_data = $this->guestManager->get($this->getUser()->getIdentity()->guests_id);
     }
 
-    public function handleUpdate($id) {
-        $this->template->list = $this->isAjax() ? [] : $this->getTheWholeList();
-        $this->template->list[$id] = 'Updated item';
-        $this->redrawControl('itemsContainer');
-    }
-
-    public function handleAdd() {
-        $this->ahoj[] = 'New one';
-        $this->template->list = $this->ahoj;
-        //$this->template->list[] = 'New one';
-        $this->redrawControl(); //'wholeList'
-    }
-
+    /**
+     * Formulář pro změnu hesla k profilu
+     * @return Form
+     */
     protected function createComponentEditPasswordForm() {
         $form = new Form();
         $form->addPassword('oldPassword', 'Aktuální heslo:')->setRequired('Musíte vyplnit staré heslo!');
@@ -132,15 +107,20 @@ class AdministrationPresenter extends BaseFrontPresenter {
         }
     }
 
+    /**
+     * Formulář pro editaci informací o profilu
+     * @return Form
+     */
     protected function createComponentEditProfilForm() {
-        $user_data = $this->guestManager->get($this->getUser()->getId());
+        $user_data = $this->guestManager->get($this->getUser()->getIdentity()->guests_id);
+        Debugger::barDump($user_data, 'data');
         $form = new Form();
         //$form->addEmail('email', 'E-mail')->setRequired('Musíte vyplnit email!')->setDefaultValue($user_data->email);
         $form->addText('name', 'Jméno a příjmení')
             ->setRequired('Musíte vyplnit jméno!')
             ->setDefaultValue($user_data->name);
         $form->addText('birthday', 'Datum narození')->setHtmlType('date')->setDefaultValue($user_data->birthday);
-        $form->addText('birthday_place', 'Místo narození')->setDefaultValue($user_data->birthplace);
+        $form->addText('birthplace', 'Místo narození')->setDefaultValue($user_data->birthplace);
         $form->addText('phone', 'Telefonní číslo')
             ->setRequired('Musíte vyplnit telefon!')
             ->setDefaultValue($user_data->phone);
@@ -155,7 +135,7 @@ class AdministrationPresenter extends BaseFrontPresenter {
     }
 
     public function editProfilFormSucceeded($form, $values) {
-        $this->guestManager->update($this->getUser()->getId(), $values);
+        $this->guestManager->update($this->getUser()->getIdentity()->guests_id, $values);
         $this->flashMessage('Změny byly úspěšně uloženy');
         $this->redirect('this');
     }

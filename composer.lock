@@ -4,8 +4,51 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "6b695e00defc50542ae491ec909ec5b6",
+    "content-hash": "482d1ffe027d5fb09c458281d96d5b13",
     "packages": [
+        {
+            "name": "blitzik/calendar",
+            "version": "1.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/blitzik/calendar.git",
+                "reference": "229e52f96d72b73cfbbb4d8220605ec4c6c205d8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/blitzik/calendar/zipball/229e52f96d72b73cfbbb4d8220605ec4c6c205d8",
+                "reference": "229e52f96d72b73cfbbb4d8220605ec4c6c205d8",
+                "shasum": ""
+            },
+            "require": {
+                "nette/application": ">=2.2.0",
+                "nette/component-model": ">=2.2.0",
+                "nette/utils": ">=2.2.0",
+                "php": ">=5.4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "src/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Aleš Tichava",
+                    "email": "ales.tichava@gmail.com"
+                }
+            ],
+            "description": "Blitzik Calendar is universal calendar component for awesome PHP framework called Nette",
+            "keywords": [
+                "calendar",
+                "nette"
+            ],
+            "time": "2016-03-15T21:41:26+00:00"
+        },
         {
             "name": "brabijan/images",
             "version": "dev-master",

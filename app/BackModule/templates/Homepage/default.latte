@@ -1,7 +1,120 @@
 {define title}Administrace - Úvod{/define}
-{define description}Popísek{/define}
+{define description}V úvodu jsou zobrazeny grafy.{/define}
+{block head}
+    {include parent}
+    <!--Load the AJAX API-->
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+        // Load the Visualization API and the corechart package.
+        google.charts.load('current', {'packages': ['corechart']});
+
+        // Set a callback to run when the Google Visualization API is loaded.
+        google.charts.setOnLoadCallback(drawChart1);
+        google.charts.setOnLoadCallback(drawChart2);
+        google.charts.setOnLoadCallback(drawChart3);
+        google.charts.setOnLoadCallback(drawChart4);
+
+        function drawChart1() {
+            // Load data from AJAX way
+            var jsonData = $.ajax({
+                url: "data/1",
+                dataType: "json",
+                async: false
+            }).responseText;
+
+            // Create the data table.
+            var data = new google.visualization.DataTable(jsonData);
+
+            // Set chart options
+            var options = {
+                'title': 'Návštěvnost za poslední rok',
+                hAxis: { title: 'Rok'},
+                vAxis: { title: 'Počet návštěvníků'},
+                legend: 'none'
+            };
+
+            // Instantiate and draw our chart, passing in some options.
+            var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+            chart.draw(data, options);
+        }
+
+        function drawChart2() {
+        var jsonData = $.ajax({
+            url: "data/2",
+            dataType: "json",
+            async: false
+        }).responseText;
+
+        var data = new google.visualization.DataTable(jsonData);
+        var options = {
+            'title': 'Obsazenost pokojů za tento měsíc'
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('chart_div2'));
+        chart.draw(data, options);
+        }
+
+        function drawChart3() {
+            var jsonData = $.ajax({
+                url: "data/3",
+                dataType: "json",
+                async: false
+            }).responseText;
+
+            var data = new google.visualization.DataTable(jsonData);
+            var options = {
+                'title': 'Obsazenost pokojů za poslední rok v měsících'
+            };
+
+            var chart = new google.visualization.PieChart(document.getElementById('chart_div3'));
+            chart.draw(data, options);
+        }
+
+        function drawChart4() {
+            var jsonData = $.ajax({
+                url: "data/4",
+                dataType: "json",
+                async: false
+            }).responseText;
+
+            var data = new google.visualization.DataTable(jsonData);
+            var options = {
+                'title': 'Zisky za poslední rok',
+                hAxis: { title: 'Měsíce',  titleTextStyle: { color: '#333'}},
+                vAxis: { title: 'Zisk v Kč', minValue: 0}
+            };
+
+            var chart = new google.visualization.AreaChart(document.getElementById('chart_div4'));
+            chart.draw(data, options);
+        }
+    </script>
+
+
+{/block}
+
 {block content}
 
-Vítejte v administraci. Pokračujte zvolením kategorie v menu.
-<br /> <br />
-!! TODO: Zde místo na nějaké GRAFY a přehledy !!
+    Vítejte v administraci. V této sekci se zobrazuje několik pomocných grafů pro přehledy. <br/>
+
+    <div class="clear">
+        <div id="chart_div" class="chart"></div>
+        <div id="chart_div2" class="chart"></div>
+        <div id="chart_div3" class="chart"></div>
+        <div id="chart_div4" class="chart"></div>
+    </div>
+
+    Veškeré grafy jsou vygenerovány pomocí <a href="https://developers.google.com/chart/" target="_blank">Google Graphs
+    API</a>.
+
+{/block}
+
+{block scripts}
+    {include parent}
+    <script>
+        $(window).resize(function () {
+            drawChart1();
+            drawChart2();
+            drawChart3();
+        });
+    </script>
+{/block}

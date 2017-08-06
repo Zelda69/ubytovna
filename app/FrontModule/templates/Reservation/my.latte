@@ -8,49 +8,89 @@
     <tr>
         <th>Datum rezervace</th>
         <th>Období</th>
-        <th>Pokoj</th>
-        <th>Cena</th>
+        <th>Pokoje</th>
+        <th>Cena vč. DPH</th>
         <th>Stav</th>
+        <th>Hodnocení</th>
         <th>&nbsp;</th>
     </tr>
     </thead>
     <tbody>
+    {var $seznam_stavu = ['Před příjezdem', 'Před příjezdem, nelze stornovat', 'Probíhající', 'Ukončená']}
 
     {foreach $reservations as $reservation}
-        {if $reservation->reservation->date_from > date('Y-m-j')}
-            {var $stav = 'Před příjezdem'}
-        {elseif $reservation->reservation->date_from >= date('Y-m-j') && $reservation->reservation->date_to > date('Y-m-j')}
-            {var $stav = 'Probíhající'}
+        {var $review = $reviews->get($reservation['info']->id)}
+        {if strtotime($reservation['info']->date_from) > strtotime(date('Y-m-j'))}
+            {if strtotime($reservation['info']->date_from) > strtotime(date('Y-m-j', time() + 7*86400))}
+                {var $stav = 0}
+            {else}
+                {var $stav = 1}
+            {/if}
+        {elseif strtotime($reservation['info']->date_from) >= strtotime(date('Y-m-j')) && strtotime($reservation['info']->date_to) > strtotime(date('Y-m-j'))}
+            {var $stav = 2}
         {else}
-            {var $stav = 'Ukončená'}
+            {var $stav = 3}
         {/if}
 
         <tr>
-            <td>{$reservation->reservation->last_change|date:'H:i j. n. Y'}</td>
-            <td>{$reservation->reservation->date_from|date:'j. n. Y'} - {$reservation->reservation->date_to|date:'j. n. Y'}</td>
-            <td><a n:href=":Front:Room:detail $reservation->room->id">{$reservation->room->name}</a></td>
-            <td>{$reservation->room->price|number} Kč</td>
-            <td>{$stav}</td>
-            <td><select class="example" id="ex-{$reservation->reservation->id}">
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                </select>
+            <td>{$reservation['info']->last_change|date:'H:i j. n. Y'}</td>
+            <td>{$reservation['info']->date_from|date:'j. n. Y'}
+                - {$reservation['info']->date_to|date:'j. n. Y'}</td>
+            <td>
+                {var $price = 0}
+                {foreach $reservation['rooms'] as $room}
+                    {php $price += $room->price}
+                    <a n:href=":Front:Room:detail $room->room->id">{$room->room->name}</a><br />
+                {/foreach}
             </td>
-            {* @TODO rezervace co patří do adminka | <a n:href="zrusit! $reservation->id" title="Zrušit rezervaci"><i class="fa fa-window-close" aria-hidden="true"></i></a> | *}
+            <td>{$price * (1 + $room->dph / 100)|number} Kč</td>
+            <td>{$seznam_stavu[$stav]}</td>
+            <td style="font-size: 0.8em;">
+                {if $stav === 3}
+                    {if $review}
+                        <div class="review-done">
+                            <select>
+                                {for $i = 1; $i < 6; $i++}
+                                    <option value="{$i}" {$i == $review->stars ? 'selected'}>{$i}</option>
+                                {/for}
+                            </select>
+                            <p title="{$review->text}">{$review->text|truncate:20}</p>
+                        </div>
+                    {else}
+                        {var $id = $reservation['info']->id}
+                        {form multipleReviewForm-$id class => 'review'}
+                            {input stars}
+                            {input text style => 'height: auto;', class => 'sppb-form-control'}
+                            {input new_review class => 'sppb-btn sppb-btn-default btn'}
+                        {/form}
+                    {/if}
+                {/if}
+            </td>
+
+            <td>
+                {if $stav === 0}
+                    <a n:href="storno! $reservation['info']->id" title="Zrušit rezervaci" onclick="confirm('Opravdu chcete rezervaci zrušit?')"><i
+                                class="fa fa-window-close"
+                                aria-hidden="true"></i></a>
+                {/if}
+            </td>
         </tr>
-        {if !is_null($reservation->reservation->note) && $reservation->reservation->note !== ''}
+        {if !is_null($reservation['info']->note) && $reservation['info']->note !== ''}
             <tr>
-                <td colspan="6" style="text-align: center; font-size: 0.8em;">Vlastní poznámka: {$reservation->reservation->note}</td>
+                <td colspan="7" style="text-align: center; font-size: 0.8em;">Vlastní
+                    poznámka: {$reservation['info']->note}</td>
             </tr>
         {/if}
+
+
     {/foreach}
 
-    {if $reservations->count() == 0}
-        <tr><td colspan="6" style="text-align: center;">Nenalezeny žádné rezervace.</td></tr>
+    {if count($reservations) == 0}
+        <tr>
+            <td colspan="6" style="text-align: center;">Nenalezeny žádné rezervace.</td>
+        </tr>
     {/if}
 
     </tbody>
 </table>
+

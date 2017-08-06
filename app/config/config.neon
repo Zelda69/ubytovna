@@ -21,14 +21,20 @@ application:
         *: App\*Module\Presenters\*Presenter
 
 session:
-	expiration: 30 minutes
+	expiration: 0 #30 minutes
 
 services:
+# Managers
+	- App\Model\AccommodationManager
+	- App\Model\RoomManager
+	- App\Model\ServiceManager
+	- App\Model\ReservationManager
 	authenticator: App\Model\UserManager # Nastavení přihlašování do aplikace.
 	router: App\RouterFactory::createRouter # router
 	- App\Forms\UserForms # Továrnička na uživatelské formuláře - login a register.
 	- App\Model\ImageManager
 	- App\Model\GuestManager
+	- App\Model\ReviewManager
 	security.authorizator: # Nastavení zdrojů a pravidel přístupu k nim v rámci celé aplikace pomocí statického ACL.
 	    setup:
 	        - addResource(%error%)

@@ -6,6 +6,8 @@ parameters:
     aroom: Back:Room
     areservation: Back:Reservation
     aguests: Back:Guests
+    adata: Back:Data
+    aprint: Back:Print
 
 # Nastavení služeb dále přístupných pomocí DI v rámci celé aplikace.
 services:
@@ -16,7 +18,13 @@ services:
                     - addResource(%aroom%)
                     - addResource(%areservation%)
                     - addResource(%aguests%)
+                    - addResource(%adata%)
+                    - addResource(%aprint%)
                     - allow(%admin%, %areservation%)
                     - allow(%admin%, %ahome%)
                     - allow(%admin%, %aroom%)
                     - allow(%admin%, %aguests%)
+                    - allow(%admin%, %adata%)
+                    - allow(%guest%, %adata%)
+                    - allow(%member%, %adata%)
+                    - allow(%admin%, %aprint%)

@@ -446,3 +446,10 @@ fieldset.homepage-fieldset {
     width: 100%;
     display: inline-block;
 }
+
+.chart {
+    width: 100%;
+    min-height: 450px;
+    float: left;
+    display: block;
+}

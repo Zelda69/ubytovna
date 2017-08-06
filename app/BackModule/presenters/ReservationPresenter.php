@@ -7,40 +7,124 @@
 namespace App\BackModule\Presenters;
 
 
-use App\FrontModule\Model\ReservationManager;
+use App\Model\ReservationManager;
+use App\Model\RoomManager;
 use App\Presenters\BasePresenter;
+use Tracy\Debugger;
 
-class ReservationPresenter extends  BasePresenter {
-    /** @var ReservationManager  */
+class ReservationPresenter extends BasePresenter {
+    /** @var ReservationManager */
     private $reservationManager;
+    /** @var RoomManager */
+    private $roomManager;
 
-    public function __construct(ReservationManager $reservationManager) {
+    public function __construct(ReservationManager $reservationManager, RoomManager $roomManager) {
         parent::__construct();
         $this->reservationManager = $reservationManager;
+        $this->roomManager = $roomManager;
     }
 
-    public function renderDefault(){
-        $this->template->reservations = $this->reservationManager->get_all_reservations();
+    public function handleZobrazit($id) {
+        if ($id == 0)
+            $_SESSION['admin_rezervace'] = 0; else $_SESSION['admin_rezervace'] = 1;
+    }
+
+    public function handlePreviousWeek() {
+        $_SESSION['reservation_filter_date'] -= 1;
+        $this->redrawControl('table');
+    }
+
+    public function handleNextWeek() {
+        $_SESSION['reservation_filter_date'] += 1;
+        $this->redrawControl('table');
+    }
+
+    public function handleTodayWeek() {
+        $_SESSION['reservation_filter_date'] = 0;
+        $this->redrawControl('table');
+    }
+
+    public function handleDetail($id) {
+        $this->template->reservationDetail = $this->reservationManager->get_rooms_in_reservation($id);
+        Debugger::barDump($this->template->reservationDetail, 'AJAX RES');
+        $this->redrawControl('reservation');
+    }
+
+    public function renderDefault() {
+        if (!isset($_SESSION['admin_rezervace']))
+            $_SESSION['admin_rezervace'] = 0;
+        $this->template->zobrazeni = $_SESSION['admin_rezervace'];
+        // Dle zobrazení
+        if ($_SESSION['admin_rezervace'] == 1) {
+            $this->template->reservations = $this->reservationManager->get_all_reservations();
+        } else {
+            $this->template->rooms = $this->roomManager->getRooms();
+            if (!isset($_SESSION['reservation_filter_date'])) {
+                $_SESSION['reservation_filter_date'] = 0;
+            }
+
+            $this->template->dates = $this->getWeekDays();
+            $this->template->reservationInDays = $this->getReservationInDays();
+            $this->template->reservationNights = $this->getNightsOfReservation();
+        }
+        if (!isset($this->template->reservationDetail))
+            $this->template->reservationDetail = NULL;
+        /*if = NULL;*/
+    }
+
+    private function isDateInRange($date, $from, $to) {
+        return $date >= $from && $date < $to;
+    }
+
+    private function getReservationInDays() {
+        $result = array();
+        $dates = $this->getWeekDays();
+        $reservation = $this->reservationManager->getReservationInRange($dates[0], $dates[count($dates) - 1]);
+
+        foreach ($reservation as $r) {
+            $from = strtotime($r->reservation->date_from);
+            $to = strtotime($r->reservation->date_to);
+
+            foreach ($dates as $d) {
+                if ($this->isDateInRange($d, $from, $to)) {
+                    $result[$d][$r->room_id] = $r;
+                }
+            }
+        }
+
+        Debugger::barDump($result, 'Res');
+        return $result;
+    }
+
+    private function getNightsOfReservation() {
+        $result = array();
+        foreach ($this->getReservationInDays() as $day) {
+            foreach ($day as $room => $reservation) {
+                if (isset($result[$room][$reservation->reservation->id])) {
+                    $result[$room][$reservation->reservation->id] += 1;
+                } else $result[$room][$reservation->reservation->id] = 1;
+            }
+        }
+
+        return $result;
+    }
+
+    private function getWeekDays() {
+        $todayWeekMonday = strtotime('monday this week') + $_SESSION['reservation_filter_date'] * 7 * 86400;
+        $days = array();
+        for ($i = 0; $i < 7; $i++) {
+            $days[] = $todayWeekMonday + 86400 * $i;
+        }
+
+        return $days;
     }
 
     public function generatePDF() {
-        $dodavatel=array(
-            "firma"=>"ITnetwork Pro Web design",
-            "adresa"=>"345 Park Ave, San Jose, CA 95110, United States",
-            "ico"=>"00112233"
-        );
-        $odberatel=array(
-            "firma"=>"Tuning ponorek, s.r.o.",
-            "adresa"=>"Mesto, ulice 1/3, 12345",
-            "ico"=>"12345678"
-        );
+        $dodavatel = array("firma" => "ITnetwork Pro Web design", "adresa" => "345 Park Ave, San Jose, CA 95110, United States", "ico" => "00112233");
+        $odberatel = array("firma" => "Tuning ponorek, s.r.o.", "adresa" => "Mesto, ulice 1/3, 12345", "ico" => "12345678");
 
-        $web=array(
-            "pocet"=>1,
-            "polozka"=>"Vytvoření webové prezentace",
-            "cena"=>12000
-        );
-        $polozky_k_fakturaci=array($web);
+        $web = array("pocet" => 1, "polozka" => "Vytvoření webové prezentace", "cena" => 12000);
+        $polozky_k_fakturaci = array($web);
 
         $css = "<style>
         body{
@@ -158,7 +242,7 @@ class ReservationPresenter extends  BasePresenter {
 
         $mpdf = new \mPDF();
         $stylesheet = file_get_contents('invoice/style.css');
-        $mpdf->WriteHTML($stylesheet,1);
+        $mpdf->WriteHTML($stylesheet, 1);
         $mpdf->WriteHTML('   <header class="clearfix">
       <div id="company">
         <h2 class="name">Company Name</h2>

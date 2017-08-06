@@ -1,31 +1,115 @@
 {block title}Můj profil{/block}
 {block description}Informace o mém profilu{/block}
 {block content}
-Tohle je profilová stránka
+<div class="sppb-col-sm-12">
 
-<h3>Změna hesla</h3>
-{control editPasswordForm}
+    <div class="col-sm-1 col-xs-hidden">
+    </div>
+    <div class="col-sm-4 col-xs-12 text-center">
+        <h3>Změna hesla</h3>
+        {form editPasswordForm}
+            <div class="form-group">
+                <div class="group-control">
+                    {label oldPassword}* {input oldPassword style => 'width: 100% !important;'}
+                    {inputError oldPassword}
+                </div>
+            </div>
 
-<h3>Změna ostatních údajů</h3>
-E-mail: {$user->getIdentity()->email} (nelze změnit)<br>
-{control editProfilForm}
-{*
+            <div class="form-group">
+                <div class="group-control">
+                    {label password}* {input password style => 'width: 100% !important;'}
+                    {inputError password}
+                </div>
+            </div>
 
-{snippet wholeList}
-    <ul n:snippet="itemsContainer">
-        {foreach $list as $id => $item}
-            <li n:snippet="item-$id">{$item} <a n:href="update! $id">update</a></li>
-        {/foreach}
-    </ul>
-{/snippet}
-<a class="ajax" n:href="add!">Add</a>
+            <div class="form-group">
+                <div class="group-control">
+                    {label passwordVerify}* {input passwordVerify style => 'width: 100% !important;'}
+                    {inputError passwordVerify}
+                </div>
+            </div>
 
+            <div class="form-group">
+                <div class="group-control">
+                    * Položka je povinná.
+                </div>
+            </div>
 
-{$ip}
-{foreach $p as $d}
-{$d}<br>
-{/foreach}
+            <div class="form-group">
+                <div class="group-control">
+                    {input changePassword class => 'sppb-btn sppb-btn-default btn'}
+                </div>
+            </div>
+        {/form}
+    </div>
+    <div class="col-sm-2 col-xs-hidden">
+    </div>
+    <div class="col-sm-4 col-xs-12 text-center">
+        <h3>Změna ostatních údajů</h3>
+        {form editProfilForm}
+            <div class="form-group">
+                <div class="group-control">
+                    E-mail: {$user_data->email} (nelze změnit)
+                </div>
+            </div>
 
-<a href="{$basePath}/images/room/1/051.jpg" data-lightbox="gallery"><img src="{$basePath}/images/thumbs/room/1/051.png" title="Popisek" alt="Alt"></a>
+            <div class="form-group">
+                <div class="group-control">
+                    {label name}* {input name style => 'width: 100% !important;'}
+                    {inputError name}
+                </div>
+            </div>
 
-<a href="{$basePath}/images/room/1/052.jpg" data-lightbox="gallery"><img src="{$basePath}/images/thumbs/room/1/052.png" title="Popisek" alt="Alt"></a>*}
+            <div class="form-group">
+                <div class="group-control">
+                    <div style="float: left;">
+                        {label birthday} {input birthday}
+                    </div>
+                    {label birthplace} {input birthplace style => 'width: 49% !important'}
+                    {inputError birthday}
+                    {inputError birthplace}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="group-control">
+                    {label phone}* {input phone style => 'width: 100% !important;'}
+                    {inputError phone}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="group-control">
+                    {label street} {input street style => 'width: 100% !important;'}
+                    {inputError street}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="group-control">
+                    {label city} {input street style => 'width: 100% !important;'}
+                    {inputError city}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="group-control">
+                    {label state} {input street style => 'width: 100% !important;'}
+                    {inputError state}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="group-control">
+                    * Položka je povinná.
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="group-control">
+                    {input changeProfil class => 'sppb-btn sppb-btn-default btn'}
+                </div>
+            </div>
+        {/form}
+    </div>
+</div>

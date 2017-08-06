@@ -17,6 +17,8 @@ class RouterFactory
 	public static function createRouter()
 	{
 		$router = new RouteList();
+        $router[] = new Route('data/<id>', 'Back:Data:default');
+        $router[] = new Route('tisk/[<search>]', 'Back:Print:default');
         $router[] = new Route('administrace/hoste/<action>', array(
             'presenter' => 'Back:Guests',
             'action' => array(
@@ -43,6 +45,7 @@ class RouterFactory
                 Route::FILTER_TABLE => array(
                     'vypis' => 'default',
                     'detail' => 'detail',
+                    'typy' => 'type',
                 ),
                 Route::FILTER_STRICT => true
             )
@@ -79,7 +82,8 @@ class RouterFactory
                 Route::FILTER_TABLE => array(
                     // řetězec v URL => akce presenteru
                     'informace' => 'info',
-                    'kontakt' => 'contact'
+                    'kontakt' => 'contact',
+                    'galerie' => 'gallery'
                 ),
                 Route::FILTER_STRICT => true
             )
@@ -107,20 +111,6 @@ class RouterFactory
                 ),
                 Route::FILTER_STRICT => true
             )
-        ));
-        $router[] = new Route('clanek/[<action>/][<url>]', array(
-            'presenter' => 'Front:Article',
-            'action' => array(
-                Route::VALUE => 'default',
-                Route::FILTER_TABLE => array(
-                    // řetězec v URL => akce presenteru
-                    'seznam-clanku' => 'list',
-                    'editor' => 'editor',
-                    'odstranit' => 'remove'
-                ),
-                Route::FILTER_STRICT => true
-            ),
-            'url' => null,
         ));
         $router[] = new Route('', 'Front:Homepage:default');
 		return $router;

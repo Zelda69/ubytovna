@@ -36,6 +36,14 @@
                     <a class="menu__odkaz" n:href=":Back:Reservation:">Rezervace</a>
                 </li>
 
+                <li n:class="$presenter->isLinkCurrent('Guests:*') ? 'menu__polozka menu__polozka--aktivni' : 'menu__polozka'">
+                    <a class="menu__odkaz" n:href=":Back:Guests:">Hosté</a>
+                </li>
+
+                <li n:class="$presenter->isLinkCurrent('Room:*') ? 'menu__polozka menu__polozka--aktivni' : 'menu__polozka'">
+                    <a class="menu__odkaz" n:href=":Back:Room:">Pokoje</a>
+                </li>
+
                 <li n:class="$presenter->isLinkCurrent('Homepage:edit') ? 'menu__polozka menu__polozka--aktivni' : 'menu__polozka'">
                     <a class="menu__odkaz" n:href=":Back:Homepage:edit">Základní informace</a>
                 </li>
@@ -44,22 +52,17 @@
                     <a class="menu__odkaz" n:href=":Back:Homepage:homeEdit">Úvodní stránka</a>
                 </li>
 
-                <li n:class="$presenter->isLinkCurrent('Room:*') ? 'menu__polozka menu__polozka--aktivni' : 'menu__polozka'">
-                    <a class="menu__odkaz" n:href=":Back:Room:">Pokoje</a>
+                <li n:class="$presenter->isLinkCurrent('Homepage:default') ? 'menu__polozka menu__polozka--aktivni' : 'menu__polozka'">
+                    <a class="menu__odkaz" n:href=":Back:Homepage:default">Grafy</a>
                 </li>
-
-                <li n:class="$presenter->isLinkCurrent('Guests:*') ? 'menu__polozka menu__polozka--aktivni' : 'menu__polozka'">
-                    <a class="menu__odkaz" n:href=":Back:Guests:">Hosté</a>
-                </li>
-
             </ul>
 
             <ul class="menu__ul menu__PrihlaseniMenu">
-                    <li class="menu__polozka">
-                        <a class="menu__odkaz" n:href=":Front:Homepage:">
-                            <i class="fa fa-sign-out fa-2x" aria-hidden="true"></i>
-                        </a>
-                    </li>
+                <li class="menu__polozka">
+                    <a class="menu__odkaz" n:href=":Front:Homepage:">
+                        <i class="fa fa-sign-out fa-2x" aria-hidden="true"></i>
+                    </a>
+                </li>
             </ul>
         </div>
     </div>

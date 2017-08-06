@@ -1,4 +1,56 @@
-{define title}Hosté{/define}
+{define title}Správa hostů{/define}
 {define description}Description{/define}
 {block content}
-Hosté
+
+<section id="newRoom">
+    <header>
+        <h3>Nový host</h3>
+    </header>
+    {control guestForm}
+</section>
+
+<section id="existRooms">
+    <header>
+        <h3>Seznam hostů</h3>
+    </header>
+
+    {form searchGuestForm class => 'ajax'}
+        Vyhledat podle jména nebo emailu: {input search} {input find}
+    {/form}
+    {snippet list}
+        <a n:href="Print:default $searchGuest" title="Vytisknout data" target="_blank"><i class="fa fa-print"
+                                                                                          aria-hidden="true"></i></a>
+        {if !is_null($searchGuest) && $searchGuest !== ''}
+            Budou vytištěna pouze data podle vyhledání.
+        {/if}
+
+        <table class="default">
+            <thead>
+            <tr>
+                <th>Jméno</th>
+                <th>Email<br>Telefon</th>
+                <th>Datum narození<br>Místo narození</th>
+                <th>Adresa</th>
+                <th>Stát</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+
+            {foreach $guests as $guest}
+                <tr>
+                    <td>{$guest->name}</td>
+                    <td>{$guest->email}<br>{$guest->phone}</td>
+                    <td>{empty($guest->birthday) ? 'Nezadáno' : $guest->birthday}<br>
+                        {empty($guest->birthplace) ? 'Nezadáno' : $guest->birthplace}</td>
+                    <td>{empty($guest->street) ? 'Nezadáno' : $guest->street},
+                        {empty($guest->city) ? 'Nezadáno' : $guest->city}</td>
+                    <td>{empty($guest->state) ? 'Nezadáno' : $guest->state}</td>
+                    <td><a n:href="Guests:detail $guest->id">Detail</a></td>
+                </tr>
+            {/foreach}
+
+            </tbody>
+        </table>
+    {/snippet}
+</section>

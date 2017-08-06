@@ -1,0 +1,37 @@
+{define title}Fotogalerie{/define}
+{define description}Fotogalerie{/define}
+{block content}
+
+<div class="page-content">
+    <section id="section-id-1481816230" class="sppb-section ">
+        <div class="sppb-row-container">
+            <div class="sppb-row">
+                {foreach $gallery as $g}
+                    {foreach $g['img'] as $img}
+                        {if ($iterator->counter - 1) % 4 == 0 && !$iterator->first}
+                            </div><div class="sppb-row" style="margin-top: 20px;">
+                        {/if}
+                            <div class="sppb-col-sm-3">
+                                <div class="sppb-column">
+                                    <div class="sppb-column-addons">
+                                        <div class="clearfix">
+                                            <div class="sppb-addon sppb-addon-single-image sppb-text-center">
+                                                <div class="sppb-addon-content">
+                                                    <a href="{$basePath}/{$img['path']}" data-lightbox="gallery">
+                                                        <div class="overlay">
+                                                            <i class="icon icon-attachment"></i>
+                                                            <img class="sppb-img-responsive" src="{$basePath}/{$img['thumb']}" title="{$img['desc']}" alt="{$img['desc']}">
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                    {/foreach}
+                {/foreach}
+            </div>
+        </div>
+    </section>
+</div>

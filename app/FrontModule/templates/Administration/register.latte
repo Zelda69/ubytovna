@@ -2,4 +2,59 @@
 {define description}Registrace nového uživatelského účtu.{/define}
 {block content}
 {* Formulář pro registraci. *}
-{control registerForm}
+<div class="sppb-col-sm-12">
+    <div class="col-sm-4 col-xs-hidden">
+    </div>
+    <div class="col-sm-4 col-xs-12 text-center">
+    {form registerForm}
+
+        <div class="form-group">
+            <div class="group-control">
+                {label email}* {input email style => 'width: 100% !important;'}
+                {inputError email}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="group-control">
+                {label password}* {input password style => 'width: 100% !important;'}
+                {inputError password}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="group-control">
+                {label passwordVerify}* {input passwordVerify style => 'width: 100% !important;'}
+                {inputError passwordVerify}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="group-control">
+                {label name}* {input name style => 'width: 100% !important;'}
+                {inputError name}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="group-control">
+                <div n:name="recaptcha"></div>
+                <span style="color: red;">{inputError recaptcha}</span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="group-control">
+                * Položka je povinná.
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="group-control">
+                {input register class => 'sppb-btn sppb-btn-default btn'}
+            </div>
+        </div>
+
+    {/form}
+    </div>
+</div>

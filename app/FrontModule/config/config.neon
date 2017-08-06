@@ -12,12 +12,6 @@ parameters:
 
 # Nastavení služeb dále přístupných pomocí DI v rámci celé aplikace.
 services:
-    # Managers
-    - App\FrontModule\Model\ArticleManager
-    - App\FrontModule\Model\AccommodationManager
-    - App\FrontModule\Model\RoomManager
-    - App\FrontModule\Model\ServiceManager
-    - App\FrontModule\Model\ReservationManager
     security.authorizator: # Nastavení zdrojů a pravidel přístupu k nim v rámci CoreModule pomocí statického ACL.
             setup:
                     - addResource(%administration%)

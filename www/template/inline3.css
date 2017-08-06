@@ -1,0 +1,15 @@
+/** Created by Zbyněk Mlčák*/
+
+.t3-megamenu.animate .animating > .mega-dropdown-menu, .t3-megamenu.animate.slide .animating > .mega-dropdown-menu > div {
+    transition-duration: 500ms !important;
+    -webkit-transition-duration: 500ms !important;
+}
+
+gm-style {
+    font: 400 11px Roboto, Arial, sans-serif;
+    text-decoration: none;
+}
+
+.gm-style img {
+    max-width: none;
+}
