@@ -76,6 +76,22 @@ class AdministrationPresenter extends BaseFrontPresenter {
         $this->template->user_data = $this->guestManager->get($this->getUser()->getIdentity()->guests_id);
     }
 
+    public function renderLogin() {
+        Debugger::barDump($this->getUser(), 'user');
+        if($this->getUser()->isLoggedIn()) {
+            $this->flashMessage('Jste přihlášený. Před dalším přihlášením se musíte odhlásit.');
+            $this->redirect('Homepage:');
+        }
+        $this->template->info = $this->serviceInformationManager->getAllInformation();
+    }
+
+    public function renderRegister() {
+        if($this->getUser()->isLoggedIn()) {
+            $this->flashMessage('Jste přihlášený. Před novou registrací se musíte odhlásit.');
+            $this->redirect('Homepage:');
+        }
+    }
+
     /**
      * Formulář pro změnu hesla k profilu
      * @return Form
@@ -135,9 +151,15 @@ class AdministrationPresenter extends BaseFrontPresenter {
     }
 
     public function editProfilFormSucceeded($form, $values) {
-        $this->guestManager->update($this->getUser()->getIdentity()->guests_id, $values);
-        $this->flashMessage('Změny byly úspěšně uloženy');
-        $this->redirect('this');
+        if (empty(trim($values->email)) || empty(trim($values->name)) || empty(trim($values->phone))) {
+            $this->flashMessage('Musíte vyplnit všechny povinné položky!', 'error');
+        } else if (!preg_match("/^0{2}[0-9]{12}$|^[0-9]{9}$/", $values->phone)) {
+            $this->flashMessage('Bylo zadáno neplatné číslo!', 'error');
+        } else {
+            $this->guestManager->update($this->getUser()->getIdentity()->guests_id, $values);
+            $this->flashMessage('Změny byly úspěšně uloženy');
+            $this->redirect('this');
+        }
     }
 
     /**

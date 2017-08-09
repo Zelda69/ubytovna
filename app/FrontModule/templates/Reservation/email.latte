@@ -1,0 +1,74 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Potvrzení objednávky</title>
+</head>
+<body>
+<p>Dobrý den,</p>
+
+<p>Vaše objednávka číslo {$reservation->id} byla úspěšně přijata do našeho systému.</p>
+
+<h1>Potvrzení rezervace</h1>
+<h2>Obecné informace</h2>
+Datum příjezdu: {date('j. n. Y', strtotime($reservation->date_from))}<br>
+Datum odjezdu: {date('j. n. Y', strtotime($reservation->date_to))}<br>
+Počet nocí: {$nights} {$nights_word}
+
+<h2>Osobní údaje</h2>
+{$reservation->guests->name}<br>
+{$reservation->guests->email}<br>
+{$reservation->guests->phone}<br>
+{if !empty($reservation->guests->street)}
+    {$reservation->guests->street}<br>
+{/if}
+{if !empty($reservation->guests->city)}
+    {$reservation->guests->street}<br>
+{/if}
+{if !empty($reservation->guests->state)}
+    {$reservation->guests->street}<br>
+{/if}
+
+<h2>Seznam rezervovaných pokojů</h2>
+<table border="1">
+    <tbody>
+    <tr>
+        <th>Pokoj<br><h6>(typ)</h6></th>
+        <th>Počet nocí</th>
+        <th>Počet osob</th>
+        <th>Cena<br><h6>(cena za 1 noc)</h6></th>
+    </tr>
+    {var $price_total = 0}
+    {var dph = 21}
+    {foreach $rooms as $room}
+        {var dph = (1 + $room->dph/100)}
+        <tr>
+            <td>
+                {$room->room->name}
+                <br>
+                <h6>{$room->room->type->name}</h6>
+            </td>
+            <td>{$nights} {$nights_word}</td>
+            <td>{$room->people}</td>
+            <td>
+                {$room->price * $dph * $nights|number:0:',':' '} Kč<br>
+                <h6>({$room->price * $dph|number:0:',':' '} Kč)</h6>
+            </td>
+        </tr>
+        {php $price_total += $room->price * $dph * $nights}
+    {/foreach}
+    <tr>
+        <td colspan="2"></td>
+        <td style="text-align:right; font-weight: bold;">Cena celkem:</td>
+        <td><strong>{$price_total|number:0:',':' '} Kč</strong></td>
+    </tr>
+
+    </tbody>
+</table>
+<p>Všechny ceny jsou uvedeny včetně {$dph}% DPH.</p>
+
+
+<p>S pozdravem<br />
+{$info['name']}
+</p>
+</body>
+</html>

@@ -15,6 +15,7 @@ use Nette\InvalidStateException;
 use Nette\Mail\Message;
 use Nette\Mail\SendmailMailer;
 use Nette\Utils\ArrayHash;
+use Tracy\Debugger;
 
 class AccommodationPresenter extends BasePresenter {
 
@@ -42,6 +43,7 @@ class AccommodationPresenter extends BasePresenter {
 
     public function renderGallery() {
         $this->template->gallery = $this->imageManager->getGallery(1);
+        $this->template->info = $this->accommodationManager->getAllInformation();
     }
 
     public function renderContact() {

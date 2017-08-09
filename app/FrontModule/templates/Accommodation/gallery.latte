@@ -2,36 +2,151 @@
 {define description}Fotogalerie{/define}
 {block content}
 
-<div class="page-content">
-    <section id="section-id-1481816230" class="sppb-section ">
-        <div class="sppb-row-container">
-            <div class="sppb-row">
-                {foreach $gallery as $g}
+
+<div id="sp-page-builder" class="sp-page-builder  page-123">
+    <div class="page-content">
+        <div class="sppb-section ">
+            <div class="sppb-row-container">
+                <div class="sppb-row">
+                    {foreach $gallery as $g}
                     {foreach $g['img'] as $img}
-                        {if ($iterator->counter - 1) % 4 == 0 && !$iterator->first}
-                            </div><div class="sppb-row" style="margin-top: 20px;">
-                        {/if}
-                            <div class="sppb-col-sm-3">
-                                <div class="sppb-column">
-                                    <div class="sppb-column-addons">
-                                        <div class="clearfix">
-                                            <div class="sppb-addon sppb-addon-single-image sppb-text-center">
-                                                <div class="sppb-addon-content">
-                                                    <a href="{$basePath}/{$img['path']}" data-lightbox="gallery">
-                                                        <div class="overlay">
-                                                            <i class="icon icon-attachment"></i>
-                                                            <img class="sppb-img-responsive" src="{$basePath}/{$img['thumb']}" title="{$img['desc']}" alt="{$img['desc']}">
-                                                        </div>
-                                                    </a>
+                    {if ($iterator->counter - 1) % 4 == 0 && !$iterator->first}
+                </div>
+                <div class="sppb-row" style="margin-top: 20px;">
+                    {/if}
+                    <div class="sppb-col-sm-3">
+                        <div class="sppb-column">
+                            <div class="sppb-column-addons">
+                                <div class="clearfix">
+                                    <div class="sppb-addon sppb-addon-single-image sppb-text-center">
+                                        <div class="sppb-addon-content">
+                                            <a href="{$basePath}/{$img['path']}" data-lightbox="gallery">
+                                                <div class="overlay">
+                                                    <i class="icon icon-attachment"></i>
+                                                    <img class="sppb-img-responsive" src="{$basePath}/{$img['thumb']}"
+                                                         title="{$img['desc']}" alt="{$img['desc']}">
                                                 </div>
-                                            </div>
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
                     {/foreach}
-                {/foreach}
+                    {/foreach}
+                </div>
             </div>
         </div>
-    </section>
+
+        <section id="section-id-1481815849266" class="sppb-section  footer-widget" style="margin-top: 50px !important;">
+            <div class="sppb-row-container">
+                <div class="sppb-row">
+                    <div class="sppb-col-md-3 sppb-col-sm-6 sppb-col-xs-12">
+                        <div class="sppb-column ">
+                            <div class="sppb-column-addons">
+                                <div class="clearfix">
+                                    <div class="sppb-addon sppb-addon-feature sppb-text-left sp-contact-info">
+                                        <div class="sppb-addon-content">
+                                            <div class="sppb-icon"><span
+                                                        style="display:inline-block;text-align:center;margin-bottom:10px;"><i
+                                                            class="fa fa pe-7s-mail-open"
+                                                            style="font-size:36px;width:36px;height:36px;line-height:36px;"></i></span>
+                                            </div>
+                                            <h4 class="sppb-feature-box-title"
+                                                style="color:#ffffff;font-weight:700;">Napište nám</h4>
+                                            <div class="sppb-addon-text">{$info['email']}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div
+                                        class="sppb-hidden-md sppb-hidden-lg sppb-hidden-sm clearfix">
+                                    <div class="sppb-empty-space  clearfix"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sppb-col-md-3 sppb-col-sm-6 sppb-col-xs-12">
+                        <div class="sppb-column ">
+                            <div class="sppb-column-addons">
+                                <div class="clearfix">
+                                    <div class="sppb-addon sppb-addon-feature sppb-text-left sp-contact-info ">
+                                        <div class="sppb-addon-content">
+                                            <div class="sppb-icon"><span
+                                                        style="display:inline-block;text-align:center;margin-bottom:10px;"><i
+                                                            class="fa fa pe-7s-map-marker"
+                                                            style="font-size:40px;width:40px;height:40px;line-height:40px;"></i></span>
+                                            </div>
+                                            <h4 class="sppb-feature-box-title"
+                                                style="color:#ffffff;font-weight:700;">Navštivte nás</h4>
+                                            <div class="sppb-addon-text">
+                                                {foreach $info['adress'] as $adresa}
+                                                    {continueIf $iterator->first}
+                                                    {$adresa}<br/>
+                                                {/foreach}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div
+                                        class="sppb-hidden-md sppb-hidden-lg clearfix">
+                                    <div class="sppb-empty-space  clearfix"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sppb-col-md-3 sppb-col-sm-6 sppb-col-xs-12">
+                        <div class="sppb-column ">
+                            <div class="sppb-column-addons">
+                                <div class="clearfix">
+                                    <div class="sppb-addon sppb-addon-feature sppb-text-left sp-contact-info">
+                                        <div class="sppb-addon-content">
+                                            <div class="sppb-icon"><span
+                                                        style="display:inline-block;text-align:center;margin-bottom:10px;"><i
+                                                            class="fa fa pe-7s-credit"
+                                                            style="font-size:36px;width:36px;height:36px;line-height:36px;"></i></span>
+                                            </div>
+                                            <h4 class="sppb-feature-box-title"
+                                                style="color:#ffffff;font-weight:700;">Rezervujte si u nás</h4>
+                                            <div class="sppb-addon-text">Apartmány<br>Svatební pokoje
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div
+                                        class="sppb-hidden-md sppb-hidden-lg sppb-hidden-sm clearfix">
+                                    <div class="sppb-empty-space  clearfix"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sppb-col-md-3 sppb-col-sm-6 sppb-col-xs-12">
+                        <div class="sppb-column ">
+                            <div class="sppb-column-addons">
+                                <div class="clearfix">
+                                    <div class="sppb-addon sppb-addon-feature sppb-text-left sp-contact-info">
+                                        <div class="sppb-addon-content">
+                                            <div class="sppb-icon"><span
+                                                        style="display:inline-block;text-align:center;margin-bottom:10px;"><i
+                                                            class="fa fa pe-7s-call"
+                                                            style="font-size:36px;width:36px;height:36px;line-height:36px;"></i></span>
+                                            </div>
+                                            <h4 class="sppb-feature-box-title"
+                                                style="color:#ffffff;font-weight:700;">Zavolejte nám</h4>
+                                            <div class="sppb-addon-text"> {$info['phone']}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div
+                                        class="sppb-hidden-md sppb-hidden-lg sppb-hidden-sm clearfix">
+                                    <div class="sppb-empty-space  clearfix"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
 </div>

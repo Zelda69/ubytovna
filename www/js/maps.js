@@ -8,8 +8,9 @@ function initialize() {
     var latlng = new google.maps.LatLng(50.054519, 14.492397);
     var mapOptions = {
         zoom: 17,
-        center: latlng,
-        styles: [{"featureType":"all","elementType":"all","stylers":[{"invert_lightness":true},{"saturation":10},{"lightness":30},{"gamma":0.5},{"hue":"#435158"}]}]
+        center: latlng
+/*        ,
+        styles: [{"featureType":"all","elementType":"all","stylers":[{"invert_lightness":true},{"saturation":10},{"lightness":30},{"gamma":0.5},{"hue":"#435158"}]}]*/
     };
     map = new google.maps.Map(document.getElementById('map'), mapOptions);
     codeAddress();

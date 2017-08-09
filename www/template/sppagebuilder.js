@@ -1839,7 +1839,7 @@ jQuery(function($){
           var start = parseInt($this.text().replace(/,/g, ""));
     commas = (commas === undefined) ? true : commas;
           $({value: start}).animate({value: stop}, {
-            duration: duration == undefined ? 1000 : duration,
+            duration: duration == undefined ? 100 : duration,
             easing: ease == undefined ? "swing" : ease,
             step: function() {
               $this.text(Math.floor(this.value));

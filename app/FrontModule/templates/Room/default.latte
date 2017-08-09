@@ -6,119 +6,68 @@
     <div class="page-content">
 
         {if $filter}
-        <div class="clearfix">
-            <div class="sppb-col-sm-12 sppb-alert sppb-alert-warning sppb-fade in" style="margin-bottom: 5px;">
-                <button type="button" class="close" data-dismiss="sppb-alert"><span aria-hidden="true">×</span></button>
-                <strong>Upozornění!</strong> Máte aktivní filtrování pokojů, v seznamu se tedy nenachází veškeré naše
-                pokoje. Pro zrušení filtru klikněte <a n:href="noFilter!">zde</a>.
-            </div>
-        </div>
-        {/if}
-
-        {snippetArea vacancyForm}
-            <div class="clearfix" style="margin-bottom: 20px;">
-            <div class="sppb-col-sm-12 ">
-                <div id="column-id-1481816583" class="sppb-column  sppb-wow fadeInLeft sppb-animated" data-sppb-wow-delay="200ms" style="visibility: visible; animation-delay: 200ms; animation-name: fadeInLeft; background-color: #f2eade; padding: 20px;">
-                    <div class="sppb-column-addons">
-                        <div id="sppb-addon-1481816584" class="clearfix">
-                            <div class="sppb-addon sppb-addon-accordion ">
-                                <div class="sppb-addon-content">
-                                    <div class="sppb-panel-group ">
-                                        <div class="sppb-panel sppb-panel-{$filter ? 'success' : 'default'}"><div class="sppb-panel-heading"><span class="sppb-panel-title">Filtrovat pokoje podle požadavků</span></div>
-                                            <div class="sppb-panel-collapse" style="display: none;">
-                                                <div class="sppb-panel-body">
-                                                    {*{control vacancyFilterForm}*}
-                                                    {form vacancyFilterForm}
-
-                                                        <div class="col-sm-5">
-                                                            <div class="check-in col-sm-6 col-xs-12">
-                                                                {label from}
-                                                                {input from class => 'checkin_module datefield'}
-                                                                {inputError from}
-                                                            </div>
-                                                            <div class="check-out col-sm-6 col-xs-12">
-                                                                {label to}
-                                                                {input to class => 'checkin_module datefield'}
-                                                                {inputError to}
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-sm-4">
-                                                            {label person}
-                                                            {input person class => 'checkin_module datefield'}
-                                                            {inputError person}
-                                                        </div>
-                                                    <div class="col-sm-3"></div>
-
-                                                <div class="col-sm-12">
-                                                    {label services}<br />
-                                                    {foreach $form[services]->items as $key => $label}
-                                                        <label n:name="services:$key" style="font-weight: normal; white-space: nowrap;">
-                                                            <input n:name="services:$key"> {$label}</label>
-                                                    {/foreach}
-                                                </div>
-                                                </div>
-                                                        <div class="check-button col-sm-3">
-                                                            <div class="action">
-                                                               {input submit class => 'btn btn-block btn-primary'}
-                                                            </div>
-                                                        </div>
-
-                                                    {/form}
-                                                </div></div></div></div></div></div></div></div></div></div>
-
-            </div>
-        {/snippetArea}
-
-        {if count($rooms) == 0}
-            <div class="clearfix">
-                <div class="sppb-col-sm-12 sppb-alert sppb-alert-error sppb-fade in" style="margin-bottom: 5px;">
-                    <button type="button" class="close" data-dismiss="sppb-alert"><span aria-hidden="true">×</span></button>
-                    <strong>Žádné výsledky!</strong> Je nám líto ale zadanému filtru neodpovídájí žádné pokoje. Zkuste
-                    upravit podmínky filtru.
+            <div class="clearfix container">
+                <div class="sppb-col-sm-12 sppb-alert sppb-alert-warning sppb-fade in" style="margin-bottom: 5px;">
+                    <button type="button" class="close" data-dismiss="sppb-alert"><span aria-hidden="true">×</span>
+                    </button>
+                    <strong>Upozornění!</strong> Máte aktivní filtrování pokojů, v seznamu se tedy nenachází veškeré
+                    naše
+                    pokoje. Pro zrušení filtru klikněte <a n:href="noFilter!">zde</a>.
                 </div>
             </div>
         {/if}
 
-            <section id="section-id-1481816707" class="sppb-section  pricing-table">
-                <div class="sppb-row-container">
-                    <div class="sppb-row">
+        {snippetArea vacancyForm}
+            <div class="clearfix container" style="margin-bottom: 20px;">
+                <div class="sppb-col-sm-12 ">
+                    <div class="sppb-column  sppb-wow fadeInLeft sppb-animated" data-sppb-wow-delay="200ms"
+                         style="visibility: visible; animation-delay: 200ms; animation-name: fadeInLeft; background-color: #f2eade; padding: 20px; margin: 5px -15px;">
+                        <div class="sppb-column-addons">
+                            <div class="clearfix">
+                                <div class="sppb-addon sppb-addon-accordion ">
+                                    <div class="sppb-addon-content">
+                                        <div class="sppb-panel-group ">
+                                            <div class="sppb-panel sppb-panel-{$filter ? 'success' : 'default'}">
+                                                <div class="sppb-panel-heading"><span class="sppb-panel-title">Filtrovat pokoje podle požadavků</span>
+                                                </div>
+                                                <div class="sppb-panel-collapse" style="display: none;">
+                                                    <div class="sppb-panel-body">
+                                                        {*{control vacancyFilterForm}*}
+                                                        {form vacancyFilterForm}
 
-                        {foreach $rooms as $room}
-                            <div class="sppb-col-sm-4">
-                                <div id="column-id-1481816708" class="sppb-column one">
-                                    <div class="sppb-column-addons">
-                                        <div id="sppb-addon-1481816709" class="clearfix">
-                                            <div class="sppb-addon sppb-addon-pricing-table sppb-text-center ">
-                                                <div style="background-image: url({$basePath}/images/{$room->image->path}); background-repeat: no-repeat;"
-                                                     class="sppb-image-holder">
-                                                    <div style="min-height: 450px;" class="sppb-pricing-box ">
-                                                        <div class="sppb-pricing-header">
-                                                            <div class="sppb-pricing-title">
-                                                                <a n:href=":Front:Room:detail $room->id">{$room->name|upper}</a>
+                                                            <div class="col-sm-5">
+                                                                <div class="check-in col-sm-6 col-xs-12">
+                                                                    {label from}
+                                                                    {input from class => 'checkin_module datefield'}
+                                                                    {inputError from}
+                                                                </div>
+                                                                <div class="check-out col-sm-6 col-xs-12">
+                                                                    {label to}
+                                                                    {input to class => 'checkin_module datefield'}
+                                                                    {inputError to}
+                                                                </div>
                                                             </div>
-                                                            <span class="sppb-currency-sign"
-                                                                  style="margin-top: 20px;">{$room->price * $dph|number}
-                                                                Kč</span>
-                                                            {*                                                <span class="sppb-pricing-price">99</span>*}
-                                                        </div>
-                                                        <div class="sppb-pricing-features" style="min-height: 180px;">
-                                                            <ul>
-                                                                {foreach $services[$room->id] as $service}
-                                                                    <li>
-                                                                        <span title="{$service->service->name}">{$service->service->image|noescape} {$service->service->name}</span>
-                                                                    </li>
+                                                            <div class="col-sm-4">
+                                                                {label person}
+                                                                {input person class => 'checkin_module datefield'}
+                                                                {inputError person}
+                                                            </div>
+                                                            <div class="col-sm-3"></div>
+
+                                                            <div class="col-sm-12">
+                                                                {label services}<br/>
+                                                                {foreach $form[services]->items as $key => $label}
+                                                                    <label n:name="services:$key"
+                                                                            style="font-weight: normal; white-space: nowrap;">
+                                                                        <input n:name="services:$key"> {$label}</label>
                                                                 {/foreach}
-                                                            </ul>
-                                                        </div>
-                                                        <div class="sppb-pricing-footer">
-                                                            {if $filter}
-                                                                <a n:href="Rezervuj! $room->id"
-                                                                        class="sppb-btn sppb-btn-primary sppb-btn- ">Rezervovat</a>
-                                                            {else}
-                                                                <a n:href=":Front:Room:detail $room->id"
-                                                                        class="sppb-btn sppb-btn-primary sppb-btn- ">Zobrazit detail</a>
-                                                            {/if}
-                                                        </div>
+                                                            </div>
+                                                            <div class="check-button col-sm-3">
+                                                                <div class="action">
+                                                                    {input submit class => 'btn btn-block btn-primary'}
+                                                                </div>
+                                                            </div>
+                                                        {/form}
                                                     </div>
                                                 </div>
                                             </div>
@@ -126,10 +75,71 @@
                                     </div>
                                 </div>
                             </div>
-                        {/foreach}
-
+                        </div>
                     </div>
                 </div>
-            </section>
+            </div>
+        {/snippetArea}
+
+        {if count($rooms) == 0}
+            <div class="clearfix container">
+                <div class="sppb-col-sm-12 sppb-alert sppb-alert-error sppb-fade in" style="margin-bottom: 5px;">
+                    <button type="button" class="close" data-dismiss="sppb-alert"><span aria-hidden="true">×</span>
+                    </button>
+                    <strong>Žádné výsledky!</strong> Je nám líto ale zadanému filtru neodpovídájí žádné pokoje. Zkuste
+                    upravit podmínky filtru.
+                </div>
+            </div>
+        {/if}
+
+        <div class="sppb-section  pricing-table">
+            <div class="sppb-row-container">
+                <div class="sppb-row">
+                    {foreach $rooms as $room}
+                        <div class="sppb-col-sm-4">
+                            <div class="sppb-column one">
+                                <div class="sppb-column-addons">
+                                    <div class="clearfix">
+                                        <div class="sppb-addon sppb-addon-pricing-table sppb-text-center ">
+                                            <div style="background: url({$basePath}/images/{$room->image->path}) no-repeat;"
+                                                 class="sppb-image-holder">
+                                                <div style="min-height: 450px;" class="sppb-pricing-box ">
+                                                    <div class="sppb-pricing-header">
+                                                        <div class="sppb-pricing-title">
+                                                            <a n:href=":Front:Room:detail $room->id">{$room->name|upper}</a>
+                                                        </div>
+                                                        <span class="sppb-currency-sign"
+                                                              style="margin-top: 20px;">{$room->price * $dph|number:0:',':' '}
+                                                            Kč</span>
+                                                        {*                                                <span class="sppb-pricing-price">99</span>*}
+                                                    </div>
+                                                    <div class="sppb-pricing-features" style="min-height: 180px;">
+                                                        <ul>
+                                                            {foreach $services[$room->id] as $service}
+                                                                <li>
+                                                                    <span title="{$service->service->name}">{$service->service->image|noescape} {$service->service->name}</span>
+                                                                </li>
+                                                            {/foreach}
+                                                        </ul>
+                                                    </div>
+                                                    <div class="sppb-pricing-footer">
+                                                        {if $filter}
+                                                            <a n:href="Rezervuj! $room->id"
+                                                                    class="sppb-btn sppb-btn-primary sppb-btn- ">Rezervovat</a>
+                                                        {else}
+                                                            <a n:href=":Front:Room:detail $room->id" class="sppb-btn sppb-btn-primary sppb-btn- ">Zobrazit detail</a>
+                                                        {/if}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {/foreach}
+                </div>
+            </div>
         </div>
+    </div>
 </div>

@@ -7,8 +7,8 @@
 
     <title>Ubytovna - {include title|striptags}</title>
     <meta name="description" content="{include description|striptags}"/>
-   {*  favicon ICO *}
-     {*Block CSS *}
+    {*  favicon ICO *}
+    {*Block CSS *}
     <link rel="stylesheet" type="text/css" href="{$basePath}/lightbox/css/lightbox.css">
     <link rel="stylesheet" href="{$basePath}/css/rating/themes/fontawesome-stars.css" type="text/css"/>
     <link href="{$basePath}/template/bootstrap.css" rel="stylesheet" type="text/css">
@@ -40,7 +40,7 @@
     <link type="text/css" rel="stylesheet" href="{$basePath}/css/table.css">
 
 
-     {*JAVASCRIPT*}
+    {*JAVASCRIPT*}
     <script src="{$basePath}/template/jquery.min.js" type="text/javascript"></script>
     <script src="{$basePath}/template/jquery-noconflict.js" type="text/javascript"></script>
     <script src="{$basePath}/template/jquery-migrate.min.js" type="text/javascript"></script>
@@ -80,7 +80,6 @@
     </script>
 
     <!-- META FOR IOS & HANDHELD -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <script type="text/javascript">
         //<![CDATA[
         if (navigator.userAgent.match(/IEMobile\/10\.0/)) {
@@ -104,7 +103,7 @@
 
 <div class="t3-wrapper fullwidth">
 
-    <div id="navbar-relative">
+    <div id="navbar-relative" style="background-color: black !important;">
         <div id="header-wrap" class="header-wrap">
             <header>
                 <div class="container top-header">
@@ -117,8 +116,8 @@
                                            target="_blank"><i class="fa fa-facebook"></i></a></li>
                                     <li><a href="https://twitter.com/?lang=cs"
                                            target="_blank"><i class="fa fa-twitter"></i></a></li>
-{*                                    <li><a href="#"
-                                           target="_blank"><i class="fa fa-youtube"></i></a></li>*}
+                                    {*                                    <li><a href="#"
+                                                                               target="_blank"><i class="fa fa-youtube"></i></a></li>*}
                                     <li><a href="https://cz.pinterest.com/"
                                            target="_blank"><i class="fa fa-pinterest"></i></a></li>
                                 </ul>
@@ -164,20 +163,25 @@
 
 
                         <div class="t3-navbar navbar-collapse collapse">
-                            <div class="t3-megamenu animate slide" data-duration="500" data-responsive="true">
+                            <div class="t3-megamenu animate slide" data-duration="1" data-responsive="true">
                                 <ul itemscope="" itemtype="http://www.schema.org/SiteNavigationElement"
                                     class="nav navbar-nav level0">
 
-                                    <li itemprop="name" n:class="$presenter->isLinkCurrent('Homepage:*') ? 'active dropdown mega' : 'dropdown mega'" data-id="435" data-level="1">
+                                    <li itemprop="name" n:class="$presenter->isLinkCurrent(':Front:Homepage:*') ? 'active dropdown mega' : 'dropdown mega'"
+                                        data-id="435" data-level="1">
                                         <a itemprop="url" n:href=":Front:Homepage:">Úvod <em class="caret"></em></a>
                                     </li>
 
-                                    <li itemprop="name" n:class="$presenter->isLinkCurrent('Room:*') ? 'active dropdown mega' : 'dropdown mega'" data-id="810" data-level="1">
-                                        <a itemprop="url" n:href=":Front:Room:">Vyhledat pokoj <em class="caret"></em></a>
+                                    <li itemprop="name" n:class="$presenter->isLinkCurrent(':Front:Room:*') ? 'active dropdown mega' : 'dropdown mega'"
+                                        data-id="810" data-level="1">
+                                        <a itemprop="url" n:href=":Front:Room:">Vyhledat pokoj <em
+                                                    class="caret"></em></a>
                                     </li>
 
-                                    <li itemprop="name" n:class="$presenter->isLinkCurrent('Accommodation:default') ? 'active dropdown mega' : 'dropdown mega'" data-id="625" data-level="1">
-                                        <a itemprop="url" n:href=":Front:Accommodation:default" data-target="#" data-toggle="dropdown">Informace o zařízení <em class="caret"></em></a>
+                                    <li itemprop="name" n:class="$presenter->isLinkCurrent(':Front:Accommodation:default') ? 'active dropdown mega' : 'dropdown mega'"
+                                        data-id="625" data-level="1">
+                                        <a itemprop="url" n:href=":Front:Accommodation:default" data-target="#"
+                                           data-toggle="dropdown">Informace o zařízení <em class="caret"></em></a>
 
 
                                         <div class="nav-child dropdown-menu mega-dropdown-menu" style="width: 180px;"
@@ -201,16 +205,21 @@
                                         </div>
                                     </li>
 
-                                    <li itemprop="name" n:class="$presenter->isLinkCurrent('Accommodation:contact') ? 'active dropdown mega' : 'dropdown mega'" data-id="625" data-level="1">
-                                        <a itemprop="url" n:href=":Front:Accommodation:contact">Kontakt <em class="caret"></em></a>
+                                    <li itemprop="name" n:class="$presenter->isLinkCurrent(':Front:Accommodation:contact') ? 'active dropdown mega' : 'dropdown mega'"
+                                        data-id="625" data-level="1">
+                                        <a itemprop="url" n:href=":Front:Accommodation:contact">Kontakt <em
+                                                    class="caret"></em></a>
                                     </li>
 
                                     {* Rezervace pokud je přihlášený *}
                                     {if $user->isLoggedIn() && !is_null($user->getIdentity()->guests_id)}
-                                        <li itemprop="name" n:class="$presenter->isLinkCurrent('Reservation:*') ? 'active dropdown mega' : 'dropdown mega'" data-id="625" data-level="1">
+                                        <li itemprop="name" n:class="$presenter->isLinkCurrent(':Front:Reservation:*') ? 'active dropdown mega' : 'dropdown mega'"
+                                            data-id="625" data-level="1">
                                             {if (isset($_SESSION['reservation']) && strtotime($_SESSION['reservation']) > time())}
-                                                <a itemprop="url" n:href=":Front:Reservation:" data-toggle="dropdown">Nová rezervace <i class="fa fa-shopping-cart" aria-hidden="true"></i></a>
-                                                <div class="nav-child dropdown-menu mega-dropdown-menu" style="width: 180px;"
+                                                <a itemprop="url" n:href=":Front:Reservation:" data-toggle="dropdown">Nová
+                                                    rezervace <i class="fa fa-shopping-cart" aria-hidden="true"></i></a>
+                                                <div class="nav-child dropdown-menu mega-dropdown-menu"
+                                                     style="width: 180px;"
                                                      data-width="180">
                                                     <div class="mega-dropdown-inner">
                                                         <div class="row">
@@ -219,7 +228,8 @@
                                                                     <ul itemscope=""
                                                                         itemtype="http://www.schema.org/SiteNavigationElement"
                                                                         class="mega-nav level1">
-                                                                        <li itemprop="name" data-id="813" data-level="2">
+                                                                        <li itemprop="name" data-id="813"
+                                                                            data-level="2">
                                                                             <a itemprop="url" n:href=":Front:Reservation:my"
                                                                                data-target="#">Moje rezervace</a>
                                                                         </li>
@@ -231,20 +241,24 @@
                                                 </div>
 
                                             {else}
-                                            <a itemprop="url" n:href=":Front:Reservation:my">Moje rezervace <em class="caret"></em></a>
+                                                <a itemprop="url" n:href=":Front:Reservation:my">Moje rezervace <em
+                                                            class="caret"></em></a>
                                             {/if}
                                         </li>
 
                                         {* Pokud není přihlášený *}
                                     {else}
                                         {if (isset($_SESSION['reservation']) && strtotime($_SESSION['reservation']) > time())}
-                                        <li itemprop="name" n:class="$presenter->isLinkCurrent('Reservation:*') ? 'active dropdown mega' : 'dropdown mega'" data-id="625" data-level="1">
-                                            <a itemprop="url" n:href=":Front:Reservation:">Nová rezervace <i class="fa fa-shopping-cart" aria-hidden="true"></i></a>
-                                        </li>
+                                            <li itemprop="name" n:class="$presenter->isLinkCurrent(':Front:Reservation:*') ? 'active dropdown mega' : 'dropdown mega'"
+                                                data-id="625" data-level="1">
+                                                <a itemprop="url" n:href=":Front:Reservation:">Nová rezervace <i
+                                                            class="fa fa-shopping-cart" aria-hidden="true"></i></a>
+                                            </li>
                                         {/if}
                                     {/if}
 
-                                    <li itemprop="name" n:class="$presenter->isLinkCurrent('Administration:*') ? 'active login-butt dropdown mega' : 'login-butt dropdown mega'" data-id="675"
+                                    <li itemprop="name" n:class="$presenter->isLinkCurrent(':Front:Administration:*') ? 'active login-butt dropdown mega' : 'login-butt dropdown mega'"
+                                        data-id="675"
                                         data-level="1"
                                         data-alignsub="center">
 
@@ -278,16 +292,17 @@
 
                                         {else}
                                             {if $user->isInRole('admin')}
-                                                <a itemprop="url" n:class="$presenter->isLinkCurrent('Administration:*') ? 'active dropdown-toggle' : 'dropdown-toggle'" n:href=":Back:Homepage:"
+                                                <a itemprop="url" n:class="$presenter->isLinkCurrent(':Front:Administration:*') ? 'active dropdown-toggle' : 'dropdown-toggle'" n:href=":Back:Homepage:"
                                                    data-target="#"
                                                    data-toggle="dropdown">Administrace <em
                                                             class="caret"></em></a>
                                             {else}
 
-                                            <a itemprop="url" n:class="$presenter->isLinkCurrent('Administration:*') ? 'active dropdown-toggle' : 'dropdown-toggle'" n:href=":Front:Administration:profil"
-                                               data-target="#"
-                                               data-toggle="dropdown">{$user->getIdentity()->getData()['username']} <em
-                                                        class="caret"></em></a>
+                                                <a itemprop="url" n:class="$presenter->isLinkCurrent(':Front:Administration:*') ? 'active dropdown-toggle' : 'dropdown-toggle'" n:href=":Front:Administration:profil"
+                                                   data-target="#"
+                                                   data-toggle="dropdown">{$user->getIdentity()->getData()['username']}
+                                                    <em
+                                                            class="caret"></em></a>
 
                                             {/if}
                                             <div class="nav-child dropdown-menu mega-dropdown-menu"
@@ -301,11 +316,12 @@
                                                                     itemtype="http://www.schema.org/SiteNavigationElement"
                                                                     class="mega-nav level1">
                                                                     {if !$user->isInRole('admin')}
-                                                                    <li itemprop="name" data-id="813" data-level="2">
-                                                                        <a itemprop="url"
-                                                                           class="" n:href=":Front:Administration:profil"
-                                                                           data-target="#">Nastavení profilu</a>
-                                                                    </li>
+                                                                        <li itemprop="name" data-id="813"
+                                                                            data-level="2">
+                                                                            <a itemprop="url"
+                                                                               class="" n:href=":Front:Administration:profil"
+                                                                               data-target="#">Nastavení profilu</a>
+                                                                        </li>
                                                                     {/if}
 
                                                                     <li itemprop="name" data-id="813" data-level="2">
@@ -313,7 +329,6 @@
                                                                            class="" n:href=":Front:Administration:logout"
                                                                            data-target="#">Odhlásit se</a>
                                                                     </li>
-
 
 
                                                                 </ul>
@@ -358,29 +373,23 @@
     <!-- //NAV HELPER -->
 
 
-    <div id="t3-mainbody" class="container t3-mainbody">
+    <div id="t3-mainbody" class="no-container"> {*container t3-mainbody*}
         <div class="row">
-
             <!-- MAIN CONTENT -->
             <div id="t3-content" class="t3-content col-xs-12">
-                <div id="system-message-container">
+                <div id="system-message-container" class="container">
                     {foreach $flashes as $flash}
                         <div class="sppb-addon-content">
                             <div class="sppb-alert sppb-alert-{$flash->type} sppb-fade in">
-                                {$flash->message}
+                                {$flash->message|noescape}
                             </div>
                         </div>
                     {/foreach}
                 </div>
-
                 {include content}
-
-
             </div>
-
         </div>
         <!-- //MAIN CONTENT -->
-
     </div>
 </div>
 
@@ -399,7 +408,6 @@
             </div>
         </div>
     </div>
-
 </footer>
 <!-- //FOOTER -->
 
@@ -416,7 +424,7 @@
     <script src="{$basePath}/js/main.js"></script>
     <script src="{$basePath}/lightbox/js/lightbox.js"></script>
     <script src="{$basePath}/js/jquery.barrating.min.js"></script>
-{if $presenter->isLinkCurrent('Accommodation:contact')}
+{if $presenter->isLinkCurrent(':Front:Accommodation:contact')}
     <script src="{$basePath}/js/maps.js"></script>
 {/if}
 {if (isset($_SESSION['reservation']) && strtotime($_SESSION['reservation']) > time())}

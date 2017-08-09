@@ -10,13 +10,15 @@ parameters:
 
         # Presentery
         error: Error
+        error404: Error4xx
 
 php:
     date.timezone: Europe/Prague
 
 application:
+    catchExceptions: false
     debugger: enable
-    errorPresenter: Error
+    errorPresenter: %error404% #Error
     mapping:
         *: App\*Module\Presenters\*Presenter
 
@@ -38,6 +40,8 @@ services:
 	security.authorizator: # Nastavení zdrojů a pravidel přístupu k nim v rámci celé aplikace pomocí statického ACL.
 	    setup:
 	        - addResource(%error%)
+	        - addResource(%error404%)
+	        - allow(%guest%, %error404%)
 	        - allow(%guest%, %error%)
 	        - allow(%admin%)
 

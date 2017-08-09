@@ -1,11 +1,11 @@
 /** Created by Zbyněk Mlčák*/
 
 .sp-page-builder .page-content #section-id-1480870498 {
-    margin: 0px;
+    margin: 0;
 }
 
 .sp-page-builder .page-content #section-id-1480870507 {
-    margin: 0px;
+    margin: 0;
     padding: 50px 0;
 }
 
@@ -17,7 +17,6 @@
 
 .sp-page-builder .page-content #section-id-1481388705687 {
     padding: 100px 0;
-    background-image: url(/seagull/images/demo_img/background/bg8.jpg);
     background-repeat: no-repeat;
     background-size: cover;
     background-attachment: fixed;
@@ -29,7 +28,7 @@
 }
 
 .sp-page-builder .page-content #section-id-1480870515 {
-    margin: 0px;
+    margin: 0;
     padding: 100px 0;
 }
 
@@ -52,9 +51,8 @@
 }
 
 .sp-page-builder .page-content #section-id-1480870522 {
-    margin: 0px;
+    margin: 0;
     padding: 80px 0 80px 0;
-    background-image: url(/seagull/images/demo_img/background/bg1.jpg);
     background-repeat: no-repeat;
     background-size: cover;
     background-attachment: fixed;
@@ -62,7 +60,7 @@
 }
 
 #sppb-addon-1480870524 .sppb-addon-title {
-    margin-top: 0px;
+    margin-top: 0;
     margin-bottom: 20px;
     color: #dddddd;
     font-size: 22px;
@@ -70,12 +68,12 @@
 }
 
 .sp-page-builder .page-content #section-id-1481711516740 {
-    margin: 0px 0px 0px 0px;
-    padding: 100px 0px 100px 0px;
+    margin: 0 0 0 0;
+    padding: 100px 0 100px 0;
 }
 
 #sppb-addon-1481711516743 .sppb-addon-title {
-    margin-top: 0px;
+    margin-top: 0;
     margin-bottom: 20px;
     color: rgba(17, 17, 17, 1);
     font-size: 35px;
@@ -87,7 +85,7 @@
 }
 
 .sp-page-builder .page-content #section-id-1480870535 {
-    margin: 0px;
+    margin: 0;
 }
 
 .sppb-progress-20 .sppb-progress-bar {
@@ -95,10 +93,11 @@
     transition: 2s ease 1s;
 }
 
-.sp-page-builder .page-content #section-id-1480870528 {
-    margin: 0px;
+.sp-page-builder .page-content #section-id-1481815849266 {
+    /*section-id-1480870528*/
     padding: 100px 0;
     background-color: #222222;
+    margin: 0 0 -22px;
 }
 
 #sppb-addon-1480870530 .sppb-addon-title {
@@ -112,8 +111,8 @@
 
 #sppb-addon-1480870532 .sppb-addon-title {
     color: #ffffff;
-    font-size: -1px;
-    line-height: -1px;
+    font-size: 0;
+    line-height: 0;
     font-weight: 700;
 }
 

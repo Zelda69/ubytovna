@@ -3,13 +3,13 @@
 {block content}
 
 
-<section id="section-id-1481815847" class="sppb-section  room-3" style="margin-bottom: 20px;">
+<div class="sppb-section room-3" style="margin-bottom: 20px;">
     <div class="sppb-row-container">
         <div class="sppb-row">
             <div class="sppb-col-sm-5">
-                <div id="column-id-1481815848" class="sppb-column">
+                <div class="sppb-column">
                     <div class="sppb-column-addons">
-                        <div id="sppb-addon-1481815849" class="clearfix">
+                        <div class="clearfix">
                             <div class="sppb-addon sppb-addon-single-image sppb-text-left">
                                 <div class="sppb-addon-content">
                                     <a href="{$basePath}/images/{$room->image->path}" data-lightbox="room-gallery">
@@ -23,14 +23,14 @@
                 </div>
             </div>
             <div class="sppb-col-sm-7">
-                <div id="column-id-1481815850" class="sppb-column ">
+                <div class="sppb-column ">
                     <div class="sppb-column-addons">
-                        <div id="sppb-addon-1481815851" class="sppb-hidden-md sppb-hidden-lg sppb-hidden-sm clearfix">
+                        <div class="sppb-hidden-md sppb-hidden-lg sppb-hidden-sm clearfix">
                             <div class="sppb-empty-space  clearfix"></div></div>
-                        <div id="sppb-addon-1481815852" class="clearfix">
+                        <div class="clearfix">
                             <div class="sppb-addon sppb-addon-text-block sppb-text-left ">
                                 <h3 class="sppb-addon-title" style="margin:5px 0;">{$room->type->name}</h3>
-                                <h5  style="margin-bottom:20px;">Cena za noc je {$room->price * $dph|number} Kč</h5>
+                                <h5  style="margin-bottom:20px;">Cena za noc je {$room->price * $dph|number:0:',':' '} Kč</h5>
                                 <div class="sppb-addon-content">
                                     <p style="margin-bottom: 5px;">{$room->description}</p>
                                     <ul class="arrow-list">
@@ -42,34 +42,36 @@
                                         {/foreach}</li>
                                     </ul>
                                 </div></div></div>
-                        <div id="sppb-addon-1481815853" class="clearfix">
+                        <div class="clearfix">
                             {snippet room-detail-reservation}
                                 <h5>Ověření termínu:</h5>
                                 <div n:class="!is_null($isAvaible) ? room-detail-res-but : room-detail-res-but-no" style="margin-bottom: 15px;">
                 {if $isAvaible}
                     <div class="sppb-col-sm-8">
-                        Pokoj je v období {date('j. n. Y', strtotime($from))} - {date('j. n. Y', strtotime($to))} možné rezervovat.</div><div class="sppb-col-sm-4">                    {form multipleReservationForm-$room->id}
+                        Pokoj je v období {date('j. n. Y', strtotime($from))} - {date('j. n. Y', strtotime($to))} možné rezervovat.</div><div class="sppb-col-sm-4">
+                    {form multipleReservationForm-$room->id}
                         {input reservate class => 'btn btn-block btn-primary'}
                     {/form}</div>
                 {else}
-                    <div class="sppb-col-sm-8">Pokoj je bohužel v zadaném období již obsazen. Zkuste jiné období.</div>
+                    <div class="sppb-col-sm-8">Pokoj je bohužel v období {date('j. n. Y', strtotime($from))} - {date('j. n. Y', strtotime($to))} již obsazen. Zkuste jiné období.</div>
                 {/if}
             </div>
-
+                {if $controlVacancy}
                                 {form vacancyConfirmForm class => 'ajax'}
                                     <ul class="errors" n:if="$form->hasErrors()">
                                         <li n:foreach="$form->errors as $error">{$error}</li>
                                     </ul>
-                                    <div class="sppb-col-sm-4">{input from}</div>
-                                    <div class="sppb-col-sm-4">{input to}</div>
+                                    <div class="sppb-col-sm-4">{input from}{inputError from}</div>
+                                    <div class="sppb-col-sm-4">{input to}{inputError to}</div>
                                     <div class="sppb-col-sm-4">{input submit class => 'btn btn-block btn-primary', style => 'padding: 12px 12px;'}</div>
                                 {/form}
+                {/if}
                             {/snippet}
                         </div></div></div>
-            </div></div></div></section>
+            </div></div></div></div>
 
 
-<section id="section-id-1481816230" class="sppb-section ">
+<div class="sppb-section ">
     <div class="sppb-row-container">
         <div class="sppb-row">
             {foreach $gallery as $g}
@@ -100,4 +102,4 @@
             {/foreach}
         </div>
     </div>
-</section>
+</div>

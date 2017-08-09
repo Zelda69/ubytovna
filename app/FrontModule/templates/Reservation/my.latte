@@ -2,95 +2,236 @@
 {define description}Správa mých rezervací{/define}
 {block content}
 
+<div id="sp-page-builder" class="sp-page-builder  page-123">
+    <div class="page-content">
+        <div class="clearfix container">
+            <div class="sppb-col-sm-12">
+                <table class="default">
+                    <thead>
+                    <tr>
+                        <th>Datum rezervace</th>
+                        <th>Období</th>
+                        <th>Pokoje</th>
+                        <th>Cena vč. DPH</th>
+                        <th>Stav</th>
+                        <th>Hodnocení</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {var $seznam_stavu = ['Před příjezdem', 'Před příjezdem, nelze stornovat', 'Probíhající', 'Ukončená']}
 
-<table class="default">
-    <thead>
-    <tr>
-        <th>Datum rezervace</th>
-        <th>Období</th>
-        <th>Pokoje</th>
-        <th>Cena vč. DPH</th>
-        <th>Stav</th>
-        <th>Hodnocení</th>
-        <th>&nbsp;</th>
-    </tr>
-    </thead>
-    <tbody>
-    {var $seznam_stavu = ['Před příjezdem', 'Před příjezdem, nelze stornovat', 'Probíhající', 'Ukončená']}
+                    {foreach $reservations as $reservation}
+                        {var $potvrzeno = false}
+                        {var $stavv = 0}
+                        {if $reservation->reservation->paid == 1}
+                            {var $stav[0] = 'Zaplacená rezervace'}
+                            {var $potvrzeno = true}
+                            {var $stavv = 1}
+                        {elseif $reservation->reservation->confirm == 1}
+                            {var $stav[0] = 'Potvrzená rezervace'}
+                            {var $potvrzeno = true}
+                        {else}
+                            {var $stav[0] = 'Nepotvrzená rezervace'}
+                        {/if}
+                        {if $potvrzeno}
+                            {if strtotime($reservation->reservation->date_from) < time() && strtotime($reservation->reservation->date_to) > time()}
+                                {var $stav[1] = 'Probíhající'}
+                            {elseif strtotime($reservation->reservation->date_from) < time() && strtotime($reservation->reservation->date_to) < time()}
+                                {var $stav[1] = 'Ukončená'}
+                            {else}
+                                {var $stav[1] = 'Nezahájená'}
+                            {/if}
+                        {/if}
 
-    {foreach $reservations as $reservation}
-        {var $review = $reviews->get($reservation['info']->id)}
-        {if strtotime($reservation['info']->date_from) > strtotime(date('Y-m-j'))}
-            {if strtotime($reservation['info']->date_from) > strtotime(date('Y-m-j', time() + 7*86400))}
-                {var $stav = 0}
-            {else}
-                {var $stav = 1}
-            {/if}
-        {elseif strtotime($reservation['info']->date_from) >= strtotime(date('Y-m-j')) && strtotime($reservation['info']->date_to) > strtotime(date('Y-m-j'))}
-            {var $stav = 2}
-        {else}
-            {var $stav = 3}
-        {/if}
+                        {var $review = $reviews->get($reservation['info']->id)}
+                        {if strtotime($reservation['info']->date_from) > strtotime(date('Y-m-j'))}
+                            {if strtotime($reservation['info']->date_from) > strtotime(date('Y-m-j', time() + 7*86400))}
+                                {var $stav = 0}
+                            {else}
+                                {var $stav = 1}
+                            {/if}
+                        {elseif strtotime($reservation['info']->date_from) >= strtotime(date('Y-m-j')) && strtotime($reservation['info']->date_to) > strtotime(date('Y-m-j'))}
+                            {var $stav = 2}
+                        {else}
+                            {var $stav = 3}
+                        {/if}
 
-        <tr>
-            <td>{$reservation['info']->last_change|date:'H:i j. n. Y'}</td>
-            <td>{$reservation['info']->date_from|date:'j. n. Y'}
-                - {$reservation['info']->date_to|date:'j. n. Y'}</td>
-            <td>
-                {var $price = 0}
-                {foreach $reservation['rooms'] as $room}
-                    {php $price += $room->price}
-                    <a n:href=":Front:Room:detail $room->room->id">{$room->room->name}</a><br />
-                {/foreach}
-            </td>
-            <td>{$price * (1 + $room->dph / 100)|number} Kč</td>
-            <td>{$seznam_stavu[$stav]}</td>
-            <td style="font-size: 0.8em;">
-                {if $stav === 3}
-                    {if $review}
-                        <div class="review-done">
-                            <select>
-                                {for $i = 1; $i < 6; $i++}
-                                    <option value="{$i}" {$i == $review->stars ? 'selected'}>{$i}</option>
-                                {/for}
-                            </select>
-                            <p title="{$review->text}">{$review->text|truncate:20}</p>
-                        </div>
-                    {else}
-                        {var $id = $reservation['info']->id}
-                        {form multipleReviewForm-$id class => 'review'}
-                            {input stars}
-                            {input text style => 'height: auto;', class => 'sppb-form-control'}
-                            {input new_review class => 'sppb-btn sppb-btn-default btn'}
-                        {/form}
+                        <tr>
+                            <td>{$reservation['info']->last_change|date:'H:i j. n. Y'}</td>
+                            <td>{$reservation['info']->date_from|date:'j. n. Y'}
+                                - {$reservation['info']->date_to|date:'j. n. Y'}</td>
+                            <td>
+                                {var $price = 0}
+                                {foreach $reservation['rooms'] as $room}
+                                    {php $price += $room->price}
+                                    <a n:href=":Front:Room:detail $room->room->id">{$room->room->name}</a><br/>
+                                {/foreach}
+                            </td>
+                            <td>{$price * (1 + $room->dph / 100)|number:0:',':' '} Kč</td>
+                            <td>{foreach $stav as $s}{$s}<br/>{/foreach}</td>
+                            <td style="font-size: 0.8em;">
+                                {if $stavv === 1}
+                                    {if $review}
+                                        <div class="review-done">
+                                            <select>
+                                                {for $i = 1; $i < 6; $i++}
+                                                    <option value="{$i}" {$i == $review->stars ? 'selected'}>{$i}</option>
+                                                {/for}
+                                            </select>
+                                            <p title="{$review->text}">{$review->text|truncate:20}</p>
+                                        </div>
+                                    {else}
+                                        {var $id = $reservation['info']->id}
+                                        {form multipleReviewForm-$id class => 'review'}
+                                            {input stars}
+                                            {input text style => 'height: auto;', class => 'sppb-form-control'}
+                                            {input new_review class => 'sppb-btn sppb-btn-default btn'}
+                                        {/form}
+                                    {/if}
+                                {/if}
+                            </td>
+
+                            <td>
+                                {if strtotime($reservation['info']->last_change)+15*60 > time()}
+                                    <a n:href="storno! $reservation['info']->id" title="Zrušit rezervaci"
+                                                                                 onclick="return confirm('Opravdu chcete rezervaci zrušit?')"><i
+                                                class="fa fa-window-close"
+                                                aria-hidden="true"></i></a>
+                                {/if}
+                            </td>
+                        </tr>
+                        {if !is_null($reservation['info']->note) && $reservation['info']->note !== ''}
+                            <tr>
+                                <td colspan="7" style="text-align: center; font-size: 0.8em;">Vlastní
+                                    poznámka: {$reservation['info']->note}</td>
+                            </tr>
+                        {/if}
+
+
+                    {/foreach}
+
+                    {if count($reservations) == 0}
+                        <tr>
+                            <td colspan="6" style="text-align: center;">Nenalezeny žádné rezervace.</td>
+                        </tr>
                     {/if}
-                {/if}
-            </td>
 
-            <td>
-                {if $stav === 0}
-                    <a n:href="storno! $reservation['info']->id" title="Zrušit rezervaci" onclick="confirm('Opravdu chcete rezervaci zrušit?')"><i
-                                class="fa fa-window-close"
-                                aria-hidden="true"></i></a>
-                {/if}
-            </td>
-        </tr>
-        {if !is_null($reservation['info']->note) && $reservation['info']->note !== ''}
-            <tr>
-                <td colspan="7" style="text-align: center; font-size: 0.8em;">Vlastní
-                    poznámka: {$reservation['info']->note}</td>
-            </tr>
-        {/if}
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
 
-    {/foreach}
 
-    {if count($reservations) == 0}
-        <tr>
-            <td colspan="6" style="text-align: center;">Nenalezeny žádné rezervace.</td>
-        </tr>
-    {/if}
-
-    </tbody>
-</table>
-
+        <section id="section-id-1481815849266" class="sppb-section  footer-widget" style="margin-top: 50px !important;">
+            <div class="sppb-row-container">
+                <div class="sppb-row">
+                    <div class="sppb-col-md-3 sppb-col-sm-6 sppb-col-xs-12">
+                        <div class="sppb-column ">
+                            <div class="sppb-column-addons">
+                                <div class="clearfix">
+                                    <div class="sppb-addon sppb-addon-feature sppb-text-left sp-contact-info">
+                                        <div class="sppb-addon-content">
+                                            <div class="sppb-icon"><span
+                                                        style="display:inline-block;text-align:center;margin-bottom:10px;"><i
+                                                            class="fa fa pe-7s-mail-open"
+                                                            style="font-size:36px;width:36px;height:36px;line-height:36px;"></i></span>
+                                            </div>
+                                            <h4 class="sppb-feature-box-title"
+                                                style="color:#ffffff;font-weight:700;">Napište nám</h4>
+                                            <div class="sppb-addon-text">{$info['email']}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div
+                                        class="sppb-hidden-md sppb-hidden-lg sppb-hidden-sm clearfix">
+                                    <div class="sppb-empty-space  clearfix"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sppb-col-md-3 sppb-col-sm-6 sppb-col-xs-12">
+                        <div class="sppb-column ">
+                            <div class="sppb-column-addons">
+                                <div class="clearfix">
+                                    <div class="sppb-addon sppb-addon-feature sppb-text-left sp-contact-info ">
+                                        <div class="sppb-addon-content">
+                                            <div class="sppb-icon"><span
+                                                        style="display:inline-block;text-align:center;margin-bottom:10px;"><i
+                                                            class="fa fa pe-7s-map-marker"
+                                                            style="font-size:40px;width:40px;height:40px;line-height:40px;"></i></span>
+                                            </div>
+                                            <h4 class="sppb-feature-box-title"
+                                                style="color:#ffffff;font-weight:700;">Navštivte nás</h4>
+                                            <div class="sppb-addon-text">
+                                                {foreach $info['adress'] as $adresa}
+                                                    {continueIf $iterator->first}
+                                                    {$adresa}<br/>
+                                                {/foreach}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div
+                                        class="sppb-hidden-md sppb-hidden-lg clearfix">
+                                    <div class="sppb-empty-space  clearfix"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sppb-col-md-3 sppb-col-sm-6 sppb-col-xs-12">
+                        <div class="sppb-column ">
+                            <div class="sppb-column-addons">
+                                <div class="clearfix">
+                                    <div class="sppb-addon sppb-addon-feature sppb-text-left sp-contact-info">
+                                        <div class="sppb-addon-content">
+                                            <div class="sppb-icon"><span
+                                                        style="display:inline-block;text-align:center;margin-bottom:10px;"><i
+                                                            class="fa fa pe-7s-credit"
+                                                            style="font-size:36px;width:36px;height:36px;line-height:36px;"></i></span>
+                                            </div>
+                                            <h4 class="sppb-feature-box-title"
+                                                style="color:#ffffff;font-weight:700;">Rezervujte si u nás</h4>
+                                            <div class="sppb-addon-text">Apartmány<br>Svatební pokoje
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div
+                                        class="sppb-hidden-md sppb-hidden-lg sppb-hidden-sm clearfix">
+                                    <div class="sppb-empty-space  clearfix"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sppb-col-md-3 sppb-col-sm-6 sppb-col-xs-12">
+                        <div class="sppb-column ">
+                            <div class="sppb-column-addons">
+                                <div class="clearfix">
+                                    <div class="sppb-addon sppb-addon-feature sppb-text-left sp-contact-info">
+                                        <div class="sppb-addon-content">
+                                            <div class="sppb-icon"><span
+                                                        style="display:inline-block;text-align:center;margin-bottom:10px;"><i
+                                                            class="fa fa pe-7s-call"
+                                                            style="font-size:36px;width:36px;height:36px;line-height:36px;"></i></span>
+                                            </div>
+                                            <h4 class="sppb-feature-box-title"
+                                                style="color:#ffffff;font-weight:700;">Zavolejte nám</h4>
+                                            <div class="sppb-addon-text"> {$info['phone']}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div
+                                        class="sppb-hidden-md sppb-hidden-lg sppb-hidden-sm clearfix">
+                                    <div class="sppb-empty-space  clearfix"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>

@@ -1,23 +1,123 @@
 {define title}Editace základních údajů{/define}
 {define description}Description{/define}
 {block content}
+<div id="sp-page-builder" class="sp-page-builder  page-123">
+    <div class="page-content">
+        <div class="clearfix container">
+            <div class="sppb-col-sm-12">
+                <div class="clearfix">
+                    <div class="sppb-col-sm-6 col-xs-12">
+                        {form infoEditForm}
+                            <div class="form-group">
+                                <div class="group-control">
+                                    {label name} {input name style => 'width: 100% !important;'}
+                                    {inputError name}
+                                </div>
+                            </div>
 
-{control infoEditForm}
+                            <div class="form-group">
+                                <div class="group-control">
+                                    {label email} {input email style => 'width: 100% !important;'}
+                                    {inputError email}
+                                </div>
+                            </div>
 
-<h2>Fotogalerie</h2>
+                            <div class="form-group">
+                                <div class="group-control">
+                                    {label phone} {input phone style => 'width: 100% !important;'}
+                                    {inputError phone}
+                                </div>
+                            </div>
 
-<h3>Nahrání nového obrázku</h3>
-{control galleryForm}
+                            <div class="form-group">
+                                <div class="group-control">
+                                    {label adress} {input adress style => 'width: 100% !important; min-height: 90px;'}
+                                    {inputError adress}
+                                </div>
+                            </div>
 
-<h3>Aktuální obrázky</h3>
-<div class="room-gallery">
-    {foreach $gallery as $g}
-        <section id="gallery">
-            <header><h1>Fotogalerie - {$g['name']}</h1></header>
-            {foreach $g['img'] as $img}
-                <a href="{$basePath}/{$img['path']}" data-lightbox="room-gallery">
-                    <img class="gallery" src="{$basePath}/{$img['thumb']}" title="{$img['desc']}" alt="{$img['desc']}"></a>
-            {/foreach}
-        </section>
-    {/foreach}
+                            <div class="form-group">
+                                <div class="group-control">
+                                    {label operator} {input operator style => 'width: 100% !important; min-height: 90px;'}
+                                    {inputError operator}
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="group-control">
+                                    {label content} {input content style => 'width: 100% !important;'}
+                                    {inputError content}
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="group-control">
+                                    {label DPH} {input DPH}
+                                    {inputError DPH}
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="group-control">
+                                    {input save class => 'sppb-btn sppb-btn-default btn'}
+                                </div>
+                            </div>
+                        {/form}
+                    </div>
+                </div>
+
+                <section class="sppb-col-sm-12">
+                    <h2>Fotogalerie</h2>
+
+                    <h3>Nahrání nového obrázku</h3>
+                    {form galleryForm}
+                        <div class="form-group">
+                            <div class="group-control">
+                                {label image} {input image}
+                                {inputError image}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="group-control">
+                                {input save class => 'sppb-btn sppb-btn-default btn'}
+                            </div>
+                        </div>
+                    {/form}
+
+
+                    <h3>Aktuální obrázky</h3>
+                    <div class="sppb-row-container">
+                        <div class="sppb-row">
+                            {foreach $gallery as $g}
+                            {foreach $g['img'] as $img}
+                            {if ($iterator->counter - 1) % 4 == 0 && !$iterator->first}
+                        </div><div class="sppb-row" style="margin-top: 20px;">
+                            {/if}
+                            <div class="sppb-col-sm-3">
+                                <div class="sppb-column">
+                                    <div class="sppb-column-addons">
+                                        <div class="clearfix">
+                                            <div class="sppb-addon sppb-addon-single-image sppb-text-center">
+                                                <div class="sppb-addon-content">
+                                                    <a href="{$basePath}/{$img['path']}" data-lightbox="gallery">
+                                                        <div class="overlay">
+                                                            <i class="icon icon-attachment"></i>
+                                                            <img class="sppb-img-responsive" src="{$basePath}/{$img['thumb']}" title="{$img['desc']}" alt="{$img['desc']}">
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {/foreach}
+                            {/foreach}
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
 </div>

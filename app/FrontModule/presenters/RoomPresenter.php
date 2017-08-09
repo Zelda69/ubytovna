@@ -28,10 +28,7 @@ class RoomPresenter extends BasePresenter {
     private $serviceManager;
     /** @var ReservationManager */
     private $reservationManager;
-    /** @var null */
-    private $avaibleRooms = NULL;
-    /** @var true|false */
-    private $isRoomAvaible = NULL;
+    // Filter
     /** @var  int */
     private $filter_from;
     /** @var  int */
@@ -40,6 +37,8 @@ class RoomPresenter extends BasePresenter {
     private $filter_persons;
     /** @var  array */
     private $filter_services;
+    /** @var int */
+    private $selected_room = 0;
 
     /**
      * RoomPresenter constructor.
@@ -54,23 +53,18 @@ class RoomPresenter extends BasePresenter {
         $this->imageManager = $imageManager;
         $this->serviceManager = $serviceManager;
         $this->reservationManager = $reservationManager;
-        if (!isset($_SESSION['filter']['use']))
-            $_SESSION['filter']['use'] = FALSE;
-        if (!isset($_SESSION['filter']['from']))
-            $_SESSION['filter']['from'] = date('Y-m-d');
-        if (!isset($_SESSION['filter']['to']))
-            $_SESSION['filter']['to'] = date('Y-m-d', time() + 86400);
-        if (!isset($_SESSION['filter']['services']))
-            $_SESSION['filter']['services'] = $this->serviceManager->getServiceToList(true);
-        if (!isset($_SESSION['filter']['person_count']))
-            $_SESSION['filter']['person_count'] = 1;
 
+        $this->defaultFilterSetup();
         $this->filter_from = $_SESSION['filter']['from'];
         $this->filter_to = $_SESSION['filter']['to'];
         $this->filter_services = $_SESSION['filter']['services'];
         $this->filter_persons = $_SESSION['filter']['person_count'];
     }
 
+    /**
+     * Rezervace pokoje o daném ID
+     * @param $id
+     */
     public function handleRezervuj($id) {
         if ($this->reservationManager->isRoomAvaible($id, $_SESSION['filter']['from'], $_SESSION['filter']['to'])) {
             $reservation = $this->reservationManager->get_reservation();
@@ -89,18 +83,24 @@ class RoomPresenter extends BasePresenter {
         }
     }
 
+    /**
+     * Zrušení filtru
+     */
     public function handleNoFilter() {
         $_SESSION['filter']['use'] = FALSE;
         $this->storeFilter(date('Y-m-d'), date('Y-m-d', time() + 86400), $this->serviceManager->getServiceToList(true), 1);
         $this->redirect('this');
     }
 
-    public function actionFilter($from, $to) {
-        $this->avaibleRooms = $this->roomManager->getAvaibleRooms($from, $to);
-        $this->storeFilter($from, $to);
-        $this->setView('default');
-    }
 
+    /**
+     * Vrací dostupné pokoje podle filtru
+     * @param $from
+     * @param $to
+     * @param $people
+     * @param $services
+     * @return array
+     */
     private function getAvaibleRooms($from, $to, $people, $services) {
         $results = array();
         $in_date = $this->reservationManager->getAvaibleRoomsId($from, $to);
@@ -115,30 +115,37 @@ class RoomPresenter extends BasePresenter {
         return $results;
     }
 
+    private function isRoomAvaibleInDates($room, $from, $to) {
+        $avaibleInDate = $this->reservationManager->getAvaibleRoomsId($from, $to);
+        return in_array($room, $avaibleInDate);
+    }
+
+    /**
+     * Vykreslení default.latte
+     */
     public function renderDefault() {
         if ($_SESSION['filter']['use']) {
             $this->template->rooms = $this->getAvaibleRooms($this->filter_from, $this->filter_to, $this->filter_persons, $this->filter_services);
         } else $this->template->rooms = $this->roomManager->getRooms();
+        // Smazání prošlých rezervací
         $this->reservationManager->get_reservation();
+        // Informace o filtru
         $this->template->filter = $_SESSION['filter']['use'];
         $this->template->services = $this->roomManager->getRoomsServices();
         $this->template->from = $this->filter_from;
         $this->template->to = $this->filter_to;
-        Debugger::barDump($_SESSION['filter'], 'filter use');
         $this->template->dph = 1 + $this->serviceInformationManager->getDPH() / 100;
     }
 
     /**
+     * Formulář pro filtr
      * @return Form
      */
     public function createComponentVacancyFilterForm() {
         $form = new Form();
-        if ($_SESSION['filter']['use'])
-            $a = '<span style="color:green;">aktivní</span>'; else $a = '<span style="color:red;">neaktivní</span>';
         $form->getRenderer()->wrappers['group']['label'] = "legend id='room-filter-fieldset'";
         $form->getRenderer()->wrappers['controls']['container'] = "table id='room-filter-table'
         ".(isset($_REQUEST['from']) ? " style='display: block;'" : "")."";
-        $form->addGroup(Html::el()->setHtml('Filtrovat pokoje podle požadavků ('.$a.')'));
         $form->addText('from', 'Datum příjezdu:')
             ->setDefaultValue($this->filter_from)
             ->setHtmlAttribute('min', date('Y-m-d'))
@@ -170,12 +177,33 @@ class RoomPresenter extends BasePresenter {
 
     public function vacancyFilterFormSucceeded($form, $values) {
         $this->storeFilter($values->from, $values->to, $values->services, $values->person);
-        Debugger::barDump($this->filter_services, 'služby');
         $_SESSION['filter']['use'] = TRUE;
         $this->redirect('this');
-        //$this->redrawControl('vacancyFilterForm');
     }
 
+    /**
+     * Základní nastavení filtru uložené do sessions pokud neexistuje
+     */
+    private function defaultFilterSetup() {
+        if (!isset($_SESSION['filter']['use']))
+            $_SESSION['filter']['use'] = FALSE;
+        if (!isset($_SESSION['filter']['from']))
+            $_SESSION['filter']['from'] = date('Y-m-d');
+        if (!isset($_SESSION['filter']['to']))
+            $_SESSION['filter']['to'] = date('Y-m-d', time() + 86400);
+        if (!isset($_SESSION['filter']['services']))
+            $_SESSION['filter']['services'] = $this->serviceManager->getServiceToList(true);
+        if (!isset($_SESSION['filter']['person_count']))
+            $_SESSION['filter']['person_count'] = 1;
+    }
+
+    /**
+     * Uložení hodnot do $_SESSION filtru a zároveň do třídy
+     * @param null $from
+     * @param null $to
+     * @param null $services
+     * @param null $person_numbs
+     */
     private function storeFilter($from = NULL, $to = NULL, $services = NULL, $person_numbs = NULL) {
         if (!is_null($from))
             $_SESSION['filter']['from'] = $from;
@@ -193,9 +221,53 @@ class RoomPresenter extends BasePresenter {
         $this->filter_persons = $_SESSION['filter']['person_count'];
     }
 
-    public function createComponentVacancyConfirmForm($id) {
+    /**
+     * Vykreslení DETAILU pokoje detail.latte
+     * @param $id id pokoje
+     */
+    public function renderDetail($id) {
+        $this->template->room = $this->roomManager->getRooms($id);
+        if (!isset($this->template->room['name'])) {
+            $this->flashMessage('Zadaný pokoj neexistuje!', 'error');
+            $this->redirect('Room:');
+        }
+        $this->selected_room = $id;
+
+        // Přenesení filtru z vyhledávání
+        if (isset($this->template->isAvaible)) Debugger::barDump($this->template->isAvaible, 'Avaible before');
+        Debugger::barDump($_SESSION['filter']['use'], 'Filter USE');
+        if ($_SESSION['filter']['use'] && !isset($this->template->isAvaible)) {
+            $this->template->isAvaible = $this->isRoomAvaibleInDates($id, $this->filter_from, $this->filter_to);
+            if($this->template->isAvaible) $this->template->controlVacancy = false;
+        }
+        // jE POKOJ DOSTUPNÝ
+        if(!isset($this->template->isAvaible)) $this->template->isAvaible = NULL;
+        Debugger::barDump($this->template->isAvaible, 'Avaible after');
+
+        // Služby
+        $this->template->services = $this->roomManager->getRoomServices($id); //služby
+        $this->template->dph = 1 + $this->serviceInformationManager->getDPH() / 100; //DPH
+        // Přenesení filtru do výchozích hodnot
+        $this->template->from = $this->filter_from;
+        $this->template->to = $this->filter_to;
+
+        // Pokud nemá galerii, musíš vložit prázdné pole
+        if (!is_null($this->template->room->photogallery_id)) {
+            $this->template->gallery = $this->imageManager->getGallery($this->template->room->photogallery_id);
+        } else $this->template->gallery = array();
+
+        // Zobrazit formulář na ověření
+        if(!isset($this->template->controlVacancy)) $this->template->controlVacancy = true;
+    }
+
+    /**
+     * Formulář, pro zjištění obsazenosti pokoje v datum
+     * @param $id
+     * @return Form
+     */
+    public function createComponentVacancyConfirmForm() {
         $form = new Form();
-        $form->addHidden('id', $id);
+        $form->addHidden('id', $this->selected_room);
         $form->addText('from', 'Datum příjezdu:')
             ->setDefaultValue($this->filter_from)
             ->setHtmlAttribute('min', date('Y-m-d'))
@@ -214,39 +286,21 @@ class RoomPresenter extends BasePresenter {
     }
 
     public function vacancyConfirmFormSucceeded($form, $values) {
-        Debugger::barDump($this->isRoomAvaible, 'Avaible');
-        $this->isRoomAvaible = $this->reservationManager->isRoomAvaible($values->id, $values->from, $values->to);
-        $this->redrawControl('room-detail-reservation');
-        $this->filter_from = $values->from;
-        $this->filter_to = $values->to;
-        $_SESSION['filter']['from'] = $values->from;
-        $_SESSION['filter']['to'] = $values->to;
-    }
-
-    public function renderDetail($id) {
-        $this->template->room = $this->roomManager->getRooms($id);
-        if (!isset($this->template->room['name'])) {
-            $this->flashMessage('Zadaný pokoj neexistuje!', 'error');
-            $this->redirect('Room:');
+        if(empty($values->from) || empty($values->to)) {
+            $this->flashMessage('Musíte zadat vyplnit datum!', 'error');
+            $this->redirect('this');
+        } else if (date_create($values->from) >= date_create($values->to)) {
+            $this->flashMessage('Neplatné datum příjezdu!', 'error');
+            $this->redirect('this');
+        } else {
+            Debugger::barDump($values->id, 'ID pokoje');
+            $this->template->isAvaible = $this->isRoomAvaibleInDates($values->id, $values->from, $values->to);
+            if($this->template->isAvaible == true) {$this->template->controlVacancy = false;}
+            else $this->template->controlVacancy = true;
+            $this->storeFilter($values->from, $values->to);
+            $this->redrawControl('room-detail-reservation');
         }
-        if ($_SESSION['filter']['use']) {
-            $this->isRoomAvaible = $this->reservationManager->isRoomAvaible($id, $this->filter_from, $this->filter_to);
-        }
-        $this->template->services = $this->roomManager->getRoomServices($id);
-        $this->template->isAvaible = $this->isRoomAvaible;
-        $this->template->from = $this->filter_from;
-        $this->template->to = $this->filter_to;
-        /* Pokud nemá galerii, musíš vložit prázdné pole */
-        if (!is_null($this->template->room->photogallery_id)) {
-            $this->template->gallery = $this->imageManager->getGallery($this->template->room->photogallery_id);
-        } else $this->template->gallery = array();
-
-        Debugger::barDump($this->template->isAvaible, 'Avaible');
-        $this->template->dph = 1 + $this->serviceInformationManager->getDPH() / 100;
     }
-
-
-// Rezervace
 
     /**
      * Multiple formulář pro rezervaci (multiple protože rezervování i na listu pokojů)
@@ -267,7 +321,7 @@ class RoomPresenter extends BasePresenter {
     }
 
     /**
-     * Rezervace pokoje
+     * Rezervace pokoje (odpoveď na formulář)
      * @param $form
      * @param $values
      */
@@ -288,5 +342,4 @@ class RoomPresenter extends BasePresenter {
             $this->redirect('this');
         }
     }
-
 }

@@ -36,7 +36,7 @@ class ReservationManager extends BaseManager {
     }
 
     public function get_all_reservations() {
-        return $this->database->table('reservation_rooms');
+        return $this->database->table('reservation_rooms')->where('reservation.step = 3');
     }
 
     public function getReservationInRange($from, $to) {
@@ -44,7 +44,7 @@ class ReservationManager extends BaseManager {
         $to = date('Y-m-j', $to);
 
         return $this->database->table('reservation_rooms')
-            ->where('(reservation.date_from BETWEEN ? AND ?) OR (reservation.date_to BETWEEN ? AND ?) OR (reservation.date_from <= ? AND reservation.date_to > ?)', $from, $to, $from, $to, $from, $to);
+            ->where('reservation.step = 3 AND ((reservation.date_from BETWEEN ? AND ?) OR (reservation.date_to BETWEEN ? AND ?) OR (reservation.date_from <= ? AND reservation.date_to > ?))', $from, $to, $from, $to, $from, $to);
     }
 
     public function new_reservation($from, $to) {
@@ -66,6 +66,10 @@ class ReservationManager extends BaseManager {
         return $this->database->table(self::TABLE_NAME)
             ->where('id = ? && DATE_SUB(date_from, INTERVAL '.$max_days.' DAY) > NOW()', $id)
             ->delete();
+    }
+
+    public function delete_rooms_in_reservation($id) {
+        return $this->database->table('reservation_rooms')->where('reservation_id = ?', $id)->delete();
     }
 
     public function update_reservation($id, $data) {
@@ -101,7 +105,9 @@ class ReservationManager extends BaseManager {
     }
 
     public function get_room_in_reservation($id, $room_id) {
-        return $this->database->table('reservation_rooms')->where('reservation_id = ? && room_id = ?', $id, $room_id)->fetch();
+        return $this->database->table('reservation_rooms')
+            ->where('reservation_id = ? && room_id = ?', $id, $room_id)
+            ->fetch();
     }
 
 
@@ -144,19 +150,6 @@ class ReservationManager extends BaseManager {
         return $this->database->table(self::TABLE_NAME)->insert($data)->id;
     }
 
-    public function getReservationFromUser($user) {
-        $guest = $this->database->table('user')->where('id = ?', $user)->fetch();
-        $reservations = $this->database->table(self::TABLE_NAME)->where('guests_id = ?', $guest->id)->group('id');
-        $array = array();
-        foreach ($reservations as $r) {
-            $array[] = $r->id;
-        }
-
-        if (count($array) == 0)
-            $array = 0;
-        return $this->database->table('reservation_rooms')->where('reservation_id IN (?)', $array);
-    }
-
     public function getAllReservations($user) {
         $guest = $this->database->table('user')->where('id = ?', $user)->fetch();
         $reservations = $this->database->table(self::TABLE_NAME)->where('guests_id = ?', $guest->id)->group('id');
@@ -170,9 +163,27 @@ class ReservationManager extends BaseManager {
         return $result;
     }
 
+    public function store_room_info($reservation_id) {
+        $query = $this->database->table('reservation_rooms')->where('reservation_id = ?', $reservation_id);
+        foreach ($query as $q) {
+            $data = array('price' => $q->room->price);
+            if ($q->people == 0) {
+                $data['people'] = $q->room->type->single_bed + 2 * $q->room->type->double_bed;
+            }
+            $this->database->table('reservation_rooms')
+                ->where('reservation_id = ? && room_id = ?', $reservation_id, $q->room_id)
+                ->update($data);
+        }
+    }
+
+    /**********************************
+     ** Funkce pro statistiky (grafy)**
+     **********************************/
+
     /**
      * Vrací počet klientů v zadaném měsíci
      * @param DateTime $month
+     * @return int
      */
     public function getCountOfPeopleInMonth($month) {
         $number_year = intval($month->format('Y'));
@@ -182,10 +193,13 @@ class ReservationManager extends BaseManager {
             ->where('YEAR(reservation.date_from) = ? && MONTH(reservation.date_from) = ?', $number_year, $number_month)
             ->group('room_id')
             ->sum('people');
-        /*            ->select('SUM(IF(date_to > LAST_DAY(date_from), DATEDIFF(LAST_DAY(date_from), date_from), DATEDIFF(date_to, date_from))) AS rozdil FROM `reservation` WHERE YEAR(date_from) = 2017 && MONTH(date_from) = 8')
-                    ->;*/
     }
 
+    /**
+     * Vrací počet zabookovaných dnů v měsíci
+     * @param $month
+     * @return mixed
+     */
     public function getSumOfBookedDaysInMonth($month) {
         $number_year = intval($month->format('Y'));
         $number_month = intval($month->format('m'));
@@ -194,9 +208,14 @@ class ReservationManager extends BaseManager {
             ->where('YEAR(date_from) = ? && MONTH(date_from) = ?', $number_year, $number_month)
             ->select('SUM(IF(date_to > LAST_DAY(date_from), DATEDIFF(LAST_DAY(date_from), date_from), DATEDIFF(date_to, date_from))) AS pocet')
             ->fetch()->pocet;
-/// DATEDIFF(DATE("'.$number_year.'-12-31"), DATE("'.$number_year.'-1-1"))
     }
 
+    /**
+     * Vrací počet zabokovaných dnů v měsíci daného pokoje
+     * @param $month
+     * @param $room
+     * @return int
+     */
     public function getOccupancyOfRoomInMonth($month, $room) {
         $number_year = intval($month->format('Y'));
         $number_month = intval($month->format('m'));
@@ -205,11 +224,16 @@ class ReservationManager extends BaseManager {
             ->where('YEAR(reservation.date_from) = ? && MONTH(reservation.date_from) = ? && room_id = ?', $number_year, $number_month, $room)
             ->select('SUM(IF(reservation.date_to > LAST_DAY(reservation.date_from), DATEDIFF(LAST_DAY(reservation.date_from), reservation.date_from), DATEDIFF(reservation.date_to, reservation.date_from))) AS pocet')
             ->fetch();
-//       / DATEDIFF(LAST_DAY(reservation.date_from), DATE("'.$number_year.'-'.$number_month.'-1"))
-        if ($query)
-            return $query->pocet; else return 0;
+        if ($query) {
+            return $query->pocet;
+        } else return 0;
     }
 
+    /**
+     * Vrací zisky za měsíc
+     * @param $month
+     * @return int
+     */
     public function getProfitsInMonths($month) {
         $number_year = intval($month->format('Y'));
         $number_month = intval($month->format('m'));
@@ -219,15 +243,21 @@ class ReservationManager extends BaseManager {
             ->sum('price * (1 + dph / 100)');
     }
 
-    public function store_room_info($reservation_id) {
-        $query = $this->database->table('reservation_rooms')->where('reservation_id = ?', $reservation_id);
-        foreach ($query as $q) {
-            $data = array('price' => $q->room->price);
-            if($q->people == 0) {
-                $data['people'] = $q->room->type->single_bed + 2 * $q->room->type->double_bed;
-            }
-            $this->database->table('reservation_rooms')->where('reservation_id = ? && room_id = ?', $reservation_id, $q->room_id)->update($data);
+    /**
+     * Pomocná funkce, která vrací vysklońované slovo podle počtu nocí
+     * @param $nights
+     * @return string
+     */
+    public function word_of_number_nights($nights) {
+        switch ($nights) {
+            case 1:
+                return "noc";
+            case 2:
+            case 3:
+            case 4:
+                return "noci";
+            default:
+                return "nocí";
         }
     }
-
 }

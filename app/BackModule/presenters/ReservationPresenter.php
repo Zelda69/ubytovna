@@ -7,26 +7,81 @@
 namespace App\BackModule\Presenters;
 
 
+use App\Model\GuestManager;
 use App\Model\ReservationManager;
 use App\Model\RoomManager;
 use App\Presenters\BasePresenter;
-use Tracy\Debugger;
+use Nette\Application\UI\Form;
 
 class ReservationPresenter extends BasePresenter {
     /** @var ReservationManager */
     private $reservationManager;
     /** @var RoomManager */
     private $roomManager;
+    /** @var GuestManager */
+    private $guestManager;
 
-    public function __construct(ReservationManager $reservationManager, RoomManager $roomManager) {
+    public function __construct(ReservationManager $reservationManager, RoomManager $roomManager, GuestManager $guestManager) {
         parent::__construct();
         $this->reservationManager = $reservationManager;
         $this->roomManager = $roomManager;
+        $this->guestManager = $guestManager;
     }
 
     public function handleZobrazit($id) {
         if ($id == 0)
             $_SESSION['admin_rezervace'] = 0; else $_SESSION['admin_rezervace'] = 1;
+    }
+
+    public function handleUdaje($id, $reservation) {
+        $this->template->guest = $this->guestManager->get($id);
+        $this->handleDetail($reservation);
+        $this->redrawControl('reservation');
+    }
+
+    public function handleZadneUdaje($reservation) {
+        $this->template->guest = NULL;
+        $this->handleDetail($reservation);
+        $this->redrawControl('reservation');
+    }
+
+    public function handlePotvrdit($id) {
+        $this->reservationManager->update_reservation($id, ['confirm' => 1]);
+        $this->redrawControl('table');
+        $this->redrawControl('reservation');
+        $this->handleDetail($id);
+    }
+
+    public function handleZrusit($id) {
+        $this->reservationManager->delete_reservation($id);
+        $this->reservationManager->delete_rooms_in_reservation($id);
+        $this->flashMessage('Rezervace č. '.$id.' byla úspěšně zrušena.');
+        $this->redirect('this');
+    }
+
+    public function handleZaplatit($id) {
+        $this->reservationManager->update_reservation($id, ['paid' => 1]);
+        $this->redrawControl('table');
+        $this->redrawControl('reservation');
+        $this->handleDetail($id);
+    }
+
+    public function handleZrusitPotvrdit($id) {
+        $this->reservationManager->update_reservation($id, ['confirm' => 0]);
+        $this->redrawControl('table');
+        $this->redrawControl('reservation');
+        $this->handleDetail($id);
+    }
+
+    public function handleZrusitZaplatit($id) {
+        $this->reservationManager->update_reservation($id, ['paid' => 0]);
+        $this->redrawControl('table');
+        $this->redrawControl('reservation');
+        $this->handleDetail($id);
+    }
+
+    public function handleFakturuj($id) {
+        $this->generatePDF($id);
     }
 
     public function handlePreviousWeek() {
@@ -45,9 +100,33 @@ class ReservationPresenter extends BasePresenter {
     }
 
     public function handleDetail($id) {
+        $reservation = $this->reservationManager->getReservationById($id);
+        if (is_null($reservation)) {
+            $this->flashMessage('Rezervace neexistuje!', 'error');
+            $this->redirect('this');
+        }
+
+        $this->template->reservations = $reservation;
         $this->template->reservationDetail = $this->reservationManager->get_rooms_in_reservation($id);
-        Debugger::barDump($this->template->reservationDetail, 'AJAX RES');
+        $this->template->nights = intval(date_diff(date_create($reservation->date_from), date_create($reservation->date_to))->format("%d"));
+        $this->template->nights_word = $this->reservationManager->word_of_number_nights($this->template->nights);
         $this->redrawControl('reservation');
+    }
+
+    protected function createComponentSelectDateForm() {
+        $dates = $this->getWeekDays();;
+        $form = new Form();
+        $form->addText('date')->setType('date')->setDefaultValue(date('Y-m-d', $dates[0]));
+        $form->addSubmit('submit');
+        $form->onSuccess[] = [$this, 'selectDateFormSucceeded'];
+
+        return $form;
+    }
+
+    public function selectDateFormSucceeded($form, $values) {
+        $rozdil = intval(date('W', strtotime($values->date))) - intval(date('W'));
+        $_SESSION['reservation_filter_date'] = $rozdil;
+        $this->redirect('this');
     }
 
     public function renderDefault() {
@@ -69,13 +148,26 @@ class ReservationPresenter extends BasePresenter {
         }
         if (!isset($this->template->reservationDetail))
             $this->template->reservationDetail = NULL;
-        /*if = NULL;*/
+        if (!isset($this->template->guest)) {
+            $this->template->guest = NULL;
+        }
     }
 
+    /**
+     * Pomocná funkce, určuje zda je datum v rozsahu
+     * @param $date
+     * @param $from
+     * @param $to
+     * @return bool
+     */
     private function isDateInRange($date, $from, $to) {
         return $date >= $from && $date < $to;
     }
 
+    /**
+     * Vrátí rezervace v zadaných termínech
+     * @return array
+     */
     private function getReservationInDays() {
         $result = array();
         $dates = $this->getWeekDays();
@@ -91,11 +183,13 @@ class ReservationPresenter extends BasePresenter {
                 }
             }
         }
-
-        Debugger::barDump($result, 'Res');
         return $result;
     }
 
+    /**
+     * Počet nocí rezervace
+     * @return array
+     */
     private function getNightsOfReservation() {
         $result = array();
         foreach ($this->getReservationInDays() as $day) {
@@ -105,10 +199,13 @@ class ReservationPresenter extends BasePresenter {
                 } else $result[$room][$reservation->reservation->id] = 1;
             }
         }
-
         return $result;
     }
 
+    /**
+     * Vrací pole datumů v týdnu
+     * @return array
+     */
     private function getWeekDays() {
         $todayWeekMonday = strtotime('monday this week') + $_SESSION['reservation_filter_date'] * 7 * 86400;
         $days = array();
@@ -119,216 +216,98 @@ class ReservationPresenter extends BasePresenter {
         return $days;
     }
 
-    public function generatePDF() {
-        $dodavatel = array("firma" => "ITnetwork Pro Web design", "adresa" => "345 Park Ave, San Jose, CA 95110, United States", "ico" => "00112233");
-        $odberatel = array("firma" => "Tuning ponorek, s.r.o.", "adresa" => "Mesto, ulice 1/3, 12345", "ico" => "12345678");
-
-        $web = array("pocet" => 1, "polozka" => "Vytvoření webové prezentace", "cena" => 12000);
-        $polozky_k_fakturaci = array($web);
-
-        $css = "<style>
-        body{
-                font-family:sans-serif;
+    /**
+     * Vygeneruje PDF dokument
+     */
+    public function generatePDF($id) {
+        $info = $this->serviceInformationManager->getAllInformation();
+        $reservation = $this->reservationManager->getReservationById($id);
+        $rooms = $this->reservationManager->get_rooms_in_reservation($id);
+        $nights = intval(date_diff(date_create($reservation->date_from), date_create($reservation->date_to))->format("%d"));
+        $noci = $this->reservationManager->word_of_number_nights($nights);
+        $cena = 0;
+        $cena_bez = 0;
+        foreach ($rooms as $room) {
+            $cena_bez += $room->price;
+            $cena += $room->price * (1 + $room->dph / 100);
         }
-        h1{
-                text-align:right;
-                margin:0px;
+        $adresa = '';
+        $first = true;
+        foreach ($info['adress'] as $a) {
+            if ($first) {
+                $first = false;
+                continue;
+            }
+            $adresa .= ''.($adresa == '' ? '' : ', ').''.$a;
         }
-        h2{
-                font-weight:normal;
-                font-size:23px;
-        }
-        .dodavatel{
-                float:left;
-                border:1px solid black;
-                width:300px;
-                height:300px;
-                padding:5px;
-        }
-        .odberatel{
-                float:right;
-                border:1px solid black;
-                width:300px;
-                height:300px;
-                padding:5px;
-        }
-        div p span{
-                font-weight:bold;
-        }
-        table{
-                width:100%;
-        }
-        th{
-                text-align:left;
-        }
-        h3{
-                text-align:right;
-                margin-top:50px;
-        }
-</style>";
-
-
-        /*
-                $mpdf=new \mPDF();
-                $mpdf->SetHeader('Hello');
-                $mpdf->WriteHTML($css); //Načtení CSS
-                $mpdf->WriteHTML("
-        <h1>Faktura číslo: 4647</h1>
-        <hr>
-        <div style='width:100%'>
-                <div class='dodavatel'>
-                        <h2>Dodavatel</h2>
-                        <p>
-                                <span>Obchodní název:</span>
-                                $dodavatel[firma]
-                        </p>
-                        <p>
-                                <span>Adresa:</span>
-                                $dodavatel[adresa]
-                        </p>
-                        <p>
-                                <span>IČO:</span>
-                                $dodavatel[ico]
-                        </p>
-                </div>
-                <div class='odberatel'>
-                        <h2>Odběratel</h2>
-                        <p>
-                                <span>Obchodní název:</span>
-                                $odberatel[firma]
-                        </p>
-                        <p>
-                                <span>Adresa:</span>
-                                $odberatel[adresa]
-                        </p>
-                        <p>
-                                <span>IČO:</span>
-                                $odberatel[ico]
-                        </p>
-                </div>
-        </div>
-        <hr>
-        <table>
-        <tr>
-                <td>Datum vystavení</td>
-                <td>11.11.2014</td>
-                <td>Datum splatnosti</td>
-                <td>12.12.2014</td>
-        </tr>
-        </table>
-        <hr>
-        <h2>Položky:</h2>
-        <table border='1' cellspacing='0' cellpadding='2'>
-                <tr>
-                        <th>Množství</th>
-                        <th>Název</th>
-                        <th>Cena</th>
-                </tr>
-        ");
-                $cena_celkem=0;
-                foreach($polozky_k_fakturaci AS $polozka){
-                    $mpdf->WriteHTML("
-                <tr>
-                        <td>$polozka[pocet] x</td>
-                        <td>$polozka[polozka]</td>
-                        <td>$polozka[cena],- CZK</td>
-                </tr>
-                ");
-                    $cena_celkem+=$polozka['cena'];
-                }
-                $mpdf->WriteHTML("</table>");
-                $mpdf->WriteHTML("<h3>Celkem $cena_celkem,- CZK</h3>");
-                $mpdf->Output();*/
 
         $mpdf = new \mPDF();
         $stylesheet = file_get_contents('invoice/style.css');
         $mpdf->WriteHTML($stylesheet, 1);
-        $mpdf->WriteHTML('   <header class="clearfix">
+        $mpdf->WriteHTML('<header class="clearfix">
       <div id="company">
-        <h2 class="name">Company Name</h2>
-        <div>455 Foggy Heights, AZ 85004, US</div>
-        <div>(602) 519-0450</div>
-        <div><a href="mailto:company@example.com">company@example.com</a></div>
+        <h2 class="name">'.$info['name'].'</h2>
+        <div>'.$adresa.'</div>
+        <div>'.$info['phone'].'</div>
+        <div><a href="mailto:'.$info['email'].'">'.$info['email'].'</a></div>
       </div>
       </div>
     </header>
     <main>
       <div id="details" class="clearfix">
         <div id="client">
-          <div class="to">INVOICE TO:</div>
-          <h2 class="name">John Doe</h2>
-          <div class="address">796 Silver Harbour, TX 79273, US</div>
-          <div class="email"><a href="mailto:john@example.com">john@example.com</a></div>
+          <div class="to">Zákazník:</div>
+          <h2 class="name">'.$reservation->guests->name.'</h2>
+          <div class="address">'.$reservation->guests->street.'<br />'.$reservation->guests->city.'<br />'.$reservation->guests->state.'</div>
+          <div class="email"><a href="mailto:'.$reservation->guests->email.'">'.$reservation->guests->email.'</a></div>
         </div>
         <div id="invoice">
-          <h1>INVOICE 3-2-1</h1>
-          <div class="date">Date of Invoice: 01/06/2014</div>
-          <div class="date">Due Date: 30/06/2014</div>
+          <h1>FAKTURA č. '.$reservation->id.'</h1>
+          <div class="date">Datum vystavení: '.date('j.m.Y').'</div>
+          <div class="date">Datum zdan. plnění: '.date('j.m.Y').'</div>
         </div>
       </div>
       <table border="0" cellspacing="0" cellpadding="0">
         <thead>
           <tr>
             <th class="no">#</th>
-            <th class="desc">DESCRIPTION</th>
-            <th class="unit">UNIT PRICE</th>
-            <th class="qty">QUANTITY</th>
-            <th class="total">TOTAL</th>
+            <th class="desc">POPIS</th>
+            <th class="unit">JEDNOT. CENA</th>
+            <th class="qty">POČET</th>
+            <th class="total">CELKEM</th>
           </tr>
         </thead>
         <tbody>
           <tr>
             <td class="no">01</td>
-            <td class="desc"><h3>Website Design</h3>Creating a recognizable design solution based on the company\'s existing visual identity</td>
-            <td class="unit">$40.00</td>
-            <td class="qty">30</td>
-            <td class="total">$1,200.00</td>
-          </tr>
-          <tr>
-            <td class="no">02</td>
-            <td class="desc"><h3>Website Development</h3>Developing a Content Management System-based Website</td>
-            <td class="unit">$40.00</td>
-            <td class="qty">80</td>
-            <td class="total">$3,200.00</td>
-          </tr>
-          <tr>
-            <td class="no">03</td>
-            <td class="desc"><h3>Search Engines Optimization</h3>Optimize the site for search engines (SEO)</td>
-            <td class="unit">$40.00</td>
-            <td class="qty">20</td>
-            <td class="total">$800.00</td>
-          </tr>
+            <td class="desc"><h3>Ubytování</h3>Ubytování v termínu '.date('j.m.Y', strtotime($reservation->date_from)).' - '.date('j.m.Y', strtotime($reservation->date_to)).'.</td>
+            <td class="unit">'.number_format($cena_bez, 0, ',', ' ').' Kč</td>
+            <td class="qty">1</td>
+            <td class="total">'.number_format($cena, 0, ',', ' ').' Kč</td>
+          </tr>        
         </tbody>
         <tfoot>
           <tr>
             <td colspan="2"></td>
-            <td colspan="2">SUBTOTAL</td>
-            <td>$5,200.00</td>
+            <td colspan="2">CELKEM bez DPH</td>
+            <td>'.number_format($cena_bez, 0, ',', ' ').' Kč</td>
           </tr>
           <tr>
             <td colspan="2"></td>
-            <td colspan="2">TAX 25%</td>
-            <td>$1,300.00</td>
+            <td colspan="2">DPH '.$info['DPH'].'%</td>
+            <td>'.number_format($cena - $cena_bez, 0, ',', ' ').' Kč</td>
           </tr>
           <tr>
             <td colspan="2"></td>
-            <td colspan="2">GRAND TOTAL</td>
-            <td>$6,500.00</td>
+            <td colspan="2">CELKEM s DPH</td>
+            <td>'.number_format($cena, 0, ',', ' ').' Kč</td>
           </tr>
         </tfoot>
       </table>
-      <div id="thanks">Thank you!</div>
-      <div id="notices">
-        <div>NOTICE:</div>
-        <div class="notice">A finance charge of 1.5% will be made on unpaid balances after 30 days.</div>
-      </div>
+      <div id="thanks">Děkujeme a těšíme se na Vaši příští návštěvu.</div>
     </main>
-<!--
-    <footer>
-      Invoice was created on a computer and is valid without the signature and seal.
-    </footer>-->
 ');
-        //$mpdf->Output();
+        $mpdf->Output();
     }
 
 }

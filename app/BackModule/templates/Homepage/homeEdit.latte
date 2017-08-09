@@ -1,6 +1,18 @@
 {define title}Editor úvodní stránky{/define}
-{define description}Description{/define}
+{define description}Zde se mění obsah úvodní stránky.{/define}
 {block content}
-    {control editorForm}
-    <input name="image" type="file" id="upload" class="hidden" onchange="">
+    <div id="sp-page-builder" class="sp-page-builder  page-123">
+        <div class="page-content">
+            <div class="clearfix container">
+                <div class="sppb-col-sm-2"></div>
+                <div class="sppb-col-sm-8">
+                    {form editorForm}
+                        {input content}
+                        {input submit class => 'sppb-btn sppb-btn-default btn'}
+                    {/form}
+                    <input name="image" type="file" id="upload" class="hidden" onchange="">
+                </div>
+            </div>
+        </div>
+    </div>
 {/block}

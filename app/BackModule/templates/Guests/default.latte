@@ -2,11 +2,76 @@
 {define description}Description{/define}
 {block content}
 
-<section id="newRoom">
+<div id="sp-page-builder" class="sp-page-builder  page-123">
+    <div class="page-content">
+        <div class="clearfix container">
+            <div class="sppb-col-sm-12">
+
+<section id="newRoom" class="col-sm-4 col-xs-12" style="margin-bottom: 20px; padding-left: 0;">
     <header>
         <h3>Nový host</h3>
     </header>
-    {control guestForm}
+        {form guestForm}
+            <div class="form-group">
+                <div class="group-control">
+                    {label email} {input email style => 'width: 100% !important;'}
+                    {inputError email}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="group-control">
+                    {label name} {input name style => 'width: 100% !important;'}
+                    {inputError name}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="group-control">
+                    <div style="float: left; margin-right: 5px;">
+                        {label birthday} {input birthday}
+                    </div>
+                    {label birthplace} {input birthplace style => 'width: 49% !important'}
+                    {inputError birthday}
+                    {inputError birthplace}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="group-control">
+                    {label phone} {input phone style => 'width: 100% !important;'}
+                    {inputError phone}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="group-control">
+                    {label street} {input street style => 'width: 100% !important;'}
+                    {inputError street}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="group-control">
+                    {label city} {input city style => 'width: 100% !important;'}
+                    {inputError city}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="group-control">
+                    {label state} {input state style => 'width: 100% !important;'}
+                    {inputError state}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="group-control">
+                    {input newGuest class => 'sppb-btn sppb-btn-default btn'}
+                </div>
+            </div>
+        {/form}
+    </div>
 </section>
 
 <section id="existRooms">
@@ -14,16 +79,18 @@
         <h3>Seznam hostů</h3>
     </header>
 
-    {form searchGuestForm class => 'ajax'}
-        Vyhledat podle jména nebo emailu: {input search} {input find}
-    {/form}
     {snippet list}
-        <a n:href="Print:default $searchGuest" title="Vytisknout data" target="_blank"><i class="fa fa-print"
+    <div class="sppb-col-sm-12 clearfix" style="padding-left: 0;">
+    {form searchGuestForm class => 'ajax clearfix', style => 'margin-bottom: 20px;'}
+        <div class="sppb-col-sm-8" style="padding-left: 0;">{input search  style => 'width: 100% !important;'}</div>
+        <div class="sppb-col-sm-2">{input find class => 'sppb-btn sppb-btn-default btn'}</div>
+    {/form}
+Export dat: <a n:href="Print:default $searchGuest" title="Vytisknout data" target="_blank"><i class="fa fa-print"
                                                                                           aria-hidden="true"></i></a>
         {if !is_null($searchGuest) && $searchGuest !== ''}
             Budou vytištěna pouze data podle vyhledání.
         {/if}
-
+    </div>
         <table class="default">
             <thead>
             <tr>
@@ -41,7 +108,7 @@
                 <tr>
                     <td>{$guest->name}</td>
                     <td>{$guest->email}<br>{$guest->phone}</td>
-                    <td>{empty($guest->birthday) ? 'Nezadáno' : $guest->birthday}<br>
+                    <td>{empty($guest->birthday) || $guest->birthday->getTimestamp() < 0 ? 'Nezadáno' : date('j.m.Y', $guest->birthday->getTimestamp())}<br>
                         {empty($guest->birthplace) ? 'Nezadáno' : $guest->birthplace}</td>
                     <td>{empty($guest->street) ? 'Nezadáno' : $guest->street},
                         {empty($guest->city) ? 'Nezadáno' : $guest->city}</td>
@@ -54,3 +121,8 @@
         </table>
     {/snippet}
 </section>
+
+            </div>
+        </div>
+    </div>
+</div>

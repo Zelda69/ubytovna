@@ -2,43 +2,78 @@
 {define description}Description{/define}
 {block content}
 
-<a n:href="default">Správa pokojů</a> | <a n:href="type">Správa typů pokojů</a>
+<div id="sp-page-builder" class="sp-page-builder  page-123">
+    <div class="page-content">
+        <div class="clearfix container">
+            <div class="sppb-col-sm-12">
 
+                <section id="newRoom" class="clearfix">
+                    <header>
+                        <h3>Nový typ</h3>
+                    </header>
+                    <div class="sppb-col-sm-4" style="padding-left: 0;">
+                    {form newTypeForm}
+                        <div class="form-group sppb-col-sm-12" style="padding-left: 0;">
+                            <div class="group-control">
+                                {label name} {input name}
+                                {inputError name}
+                            </div>
+                        </div>
 
-<section id="newRoom">
-    <header>
-        <h3>Nový typ</h3>
-    </header>
-    {control newTypeForm}
-</section>
+                        <div class="form-group sppb-col-sm-6" style="padding-left: 0;">
+                            <div class="group-control">
+                                {label single_bed} {input single_bed}
+                                {inputError single_bed}
+                            </div>
+                        </div>
 
-<section id="existRooms">
-    <header>
-        <h3>Existující typy</h3>
-    </header>
+                        <div class="form-group sppb-col-sm-6">
+                            <div class="group-control">
+                                {label double_bed} {input double_bed}
+                                {inputError double_bed}
+                            </div>
+                        </div>
 
-    <table class="default">
-        <thead>
-        <tr>
-            <th>Typ</th>
-            <th>Počet jednolůžek</th>
-            <th>Počet dvoulůžek</th>
-            <th></th>
-        </tr>
-        </thead>
-        <tbody>
-        {foreach $types as $type}
-            <tr>
-                <td>{$type->name}</td>
-                <td>{$type->single_bed|number}</td>
-                <td>{$type->double_bed|number}</td>
-                <td>
-                    {if !in_array($type->id, $usedTypes)}
-                        <a n:href="DeleteType! $type->id">Smazat</a>
-                    {/if}
-                </td>
-            </tr>
-        {/foreach}
-        </tbody>
-    </table>
-</section>
+                        <div class="form-group">
+                            <div class="group-control">
+                                {input new_type class => 'sppb-btn sppb-btn-default btn'}
+                            </div>
+                        </div>
+                    {/form}
+                    </div>
+                </section>
+
+                <section id="existRooms">
+                    <header>
+                        <h3>Existující typy</h3>
+                    </header>
+
+                    <table class="default">
+                        <thead>
+                        <tr>
+                            <th>Typ</th>
+                            <th>Počet jednolůžek</th>
+                            <th>Počet dvoulůžek</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {foreach $types as $type}
+                            <tr>
+                                <td>{$type->name}</td>
+                                <td>{$type->single_bed|number}</td>
+                                <td>{$type->double_bed|number}</td>
+                                <td>
+                                    {if !in_array($type->id, $usedTypes)}
+                                        <a n:href="DeleteType! $type->id">Smazat</a>
+                                    {/if}
+                                </td>
+                            </tr>
+                        {/foreach}
+                        </tbody>
+                    </table>
+                </section>
+            </div>
+        </div>
+    </div>
+</div>

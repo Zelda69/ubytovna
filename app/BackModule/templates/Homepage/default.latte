@@ -39,19 +39,19 @@
         }
 
         function drawChart2() {
-        var jsonData = $.ajax({
-            url: "data/2",
-            dataType: "json",
-            async: false
-        }).responseText;
+            var jsonData = $.ajax({
+                url: "data/2",
+                dataType: "json",
+                async: false
+            }).responseText;
 
-        var data = new google.visualization.DataTable(jsonData);
-        var options = {
-            'title': 'Obsazenost pokojů za tento měsíc'
-        };
+            var data = new google.visualization.DataTable(jsonData);
+            var options = {
+                'title': 'Obsazenost pokojů za tento měsíc'
+            };
 
-        var chart = new google.visualization.PieChart(document.getElementById('chart_div2'));
-        chart.draw(data, options);
+            var chart = new google.visualization.PieChart(document.getElementById('chart_div2'));
+            chart.draw(data, options);
         }
 
         function drawChart3() {
@@ -80,7 +80,7 @@
             var data = new google.visualization.DataTable(jsonData);
             var options = {
                 'title': 'Zisky za poslední rok',
-                hAxis: { title: 'Měsíce',  titleTextStyle: { color: '#333'}},
+                hAxis: { title: 'Měsíce', titleTextStyle: { color: '#333'}},
                 vAxis: { title: 'Zisk v Kč', minValue: 0}
             };
 
@@ -93,19 +93,31 @@
 {/block}
 
 {block content}
+    <div id="sp-page-builder" class="sp-page-builder  page-123">
+        <div class="page-content">
+            <div class="clearfix container">
+                <div class="sppb-col-sm-12">
+                    <div class="clearfix" style="margin-bottom: 20px;">
+                        <div class="sppb-col-sm-2"></div>
+                        <div class="sppb-col-sm-8">
+                            <strong>Vítejte v administraci!</strong> V této sekci se zobrazuje několik pomocných grafů pro přehledy.
+                        </div>
+                        <div class="sppb-col-sm-2"></div>
+                    </div>
 
-    Vítejte v administraci. V této sekci se zobrazuje několik pomocných grafů pro přehledy. <br/>
+                    <div class="clearfix">
+                        <div id="chart_div" class="chart"></div>
+                        <div id="chart_div2" class="chart"></div>
+                        <div id="chart_div3" class="chart"></div>
+                        <div id="chart_div4" class="chart"></div>
+                    </div>
 
-    <div class="clear">
-        <div id="chart_div" class="chart"></div>
-        <div id="chart_div2" class="chart"></div>
-        <div id="chart_div3" class="chart"></div>
-        <div id="chart_div4" class="chart"></div>
+                    Veškeré grafy jsou vygenerovány pomocí <a href="https://developers.google.com/chart/"
+                                                              target="_blank">Google Graphs API</a>.
+                </div>
+            </div>
+        </div>
     </div>
-
-    Veškeré grafy jsou vygenerovány pomocí <a href="https://developers.google.com/chart/" target="_blank">Google Graphs
-    API</a>.
-
 {/block}
 
 {block scripts}

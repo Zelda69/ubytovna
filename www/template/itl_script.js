@@ -33,7 +33,7 @@
 	$( window )
 		.on( 'scroll', function () {
 			if ( $( window )
-				.scrollTop() > 55 ) {
+				.scrollTop() > 150 ) {
 				$( '#t3-mainnav' )
 					.addClass( 'navbar-fixed-top bg1' );
 				$( '#header-wrap' )

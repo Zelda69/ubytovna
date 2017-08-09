@@ -144,7 +144,7 @@
 							function(e) {
 								clearTimeout(self.timer);
 								self.timer = setTimeout($.proxy(self.hide_alls,
-										self), e.type == 'tap' ? 500
+										self), e.type == 'tap' ? 10
 										: self.options.hidedelay);
 							});
 
@@ -595,7 +595,7 @@
 									.appendTo('head');
 						}
 
-						var mm_timeout = mm_duration ? 100 + mm_duration : 500, mm_rtl = $(
+						var mm_timeout = mm_duration ? 1 + mm_duration : 1, mm_rtl = $(
 								document.documentElement).attr('dir') == 'rtl', mm_trigger = $(
 								document.documentElement).hasClass('mm-hover'), sb_width = (function() {
 							var parent = $(

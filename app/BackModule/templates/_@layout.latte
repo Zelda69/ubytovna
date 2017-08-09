@@ -1,0 +1,112 @@
+{**
+ * @param string   $basePath cesta k webovému obsahu např. CSS souborům
+ * @param array    $flashes  pole zpráv
+ *}
+
+<!DOCTYPE html>
+<html lang="cs-cz">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Ubytovna Administrace - {include title|striptags}</title>
+    <meta name="description" content="{include description|striptags}"/>
+
+    {block css}
+        <link rel="stylesheet" type="text/css" href="{$basePath}/css/FontAwesome/css/font-awesome.min.css">
+        <link rel="stylesheet" type="text/css" href="{$basePath}/lightbox/css/lightbox.css">
+        <link rel="stylesheet" href="{$basePath}/css/style.css" type="text/css"/>
+        <link rel="stylesheet" href="{$basePath}/css/edit_style.css" type="text/css"/>
+        <link rel="stylesheet" href="{$basePath}/css/rating/themes/fontawesome-stars.css" type="text/css"/>
+    {/block}
+
+    {block head}
+
+    {/block}
+</head>
+
+<body>
+<nav>
+    <div class="menu__wrapper">
+        <h1 class="menu__nadpis"><a class="menu__nadpis--a" n:href=":Back:Homepage:">Administrace</a></h1>
+        <button id="tlacitko-telefon" class="menu__TelefonTlacitko"><i class="fa fa-bars"></i></button>
+        <div class="menu__pc-telefon--overeni"></div>
+        <div class="menu__telefon">
+            <ul class="menu__ul menu__hlavniMenu">
+
+                <li n:class="$presenter->isLinkCurrent('Reservation:*') ? 'menu__polozka menu__polozka--aktivni' : 'menu__polozka'">
+                    <a class="menu__odkaz" n:href=":Back:Reservation:">Rezervace</a>
+                </li>
+
+                <li n:class="$presenter->isLinkCurrent('Guests:*') ? 'menu__polozka menu__polozka--aktivni' : 'menu__polozka'">
+                    <a class="menu__odkaz" n:href=":Back:Guests:">Hosté</a>
+                </li>
+
+                <li n:class="$presenter->isLinkCurrent('Room:*') ? 'menu__polozka menu__polozka--aktivni' : 'menu__polozka'">
+                    <a class="menu__odkaz" n:href=":Back:Room:">Pokoje</a>
+                </li>
+
+                <li n:class="$presenter->isLinkCurrent('Homepage:edit') ? 'menu__polozka menu__polozka--aktivni' : 'menu__polozka'">
+                    <a class="menu__odkaz" n:href=":Back:Homepage:edit">Základní informace</a>
+                </li>
+
+                <li n:class="$presenter->isLinkCurrent('Homepage:homeEdit') ? 'menu__polozka menu__polozka--aktivni' : 'menu__polozka'">
+                    <a class="menu__odkaz" n:href=":Back:Homepage:homeEdit">Úvodní stránka</a>
+                </li>
+
+                <li n:class="$presenter->isLinkCurrent('Homepage:default') ? 'menu__polozka menu__polozka--aktivni' : 'menu__polozka'">
+                    <a class="menu__odkaz" n:href=":Back:Homepage:default">Grafy</a>
+                </li>
+            </ul>
+
+            <ul class="menu__ul menu__PrihlaseniMenu">
+                <li class="menu__polozka">
+                    <a class="menu__odkaz" n:href=":Front:Homepage:">
+                        <i class="fa fa-sign-out fa-2x" aria-hidden="true"></i>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<main>
+    {* Výpis zpráv. *}
+    {*<p n:foreach="$flashes as $flash" class="message">{$flash->message}</p>*}
+    {foreach $flashes as $flash}
+        <div class="flash {$flash->type}">{$flash->message}</div>
+    {/foreach}
+
+    <section>
+        <header>
+            <h1>{include title}</h1>
+        </header>
+        {include content} {* Vložení obsahu do šablony. *}
+    </section>
+
+</main>
+
+<div onclick="scrollUp();" id="scrollUp" style="display: none;"><i class="fa fa-arrow-up" aria-hidden="true"></i>
+</div>
+
+<footer>
+    <a href="https://nette.org/cs/"><img src="{$basePath}/images/loga/nette.png" alt="Nette logo"
+                                         title="Zobrazit stránky projektu nette"></a>
+    <br class="clear">
+    <div class="copyright">© 2017 Zbyněk Mlčák</div>
+</footer>
+
+{block scripts}
+    <script src="{$basePath}/js/jquery-3.2.1.min.js"></script>
+    <script src='https://www.google.com/recaptcha/api.js'></script>
+    <script src="{$basePath}/js/moment.min.js"></script>
+    <script src="{$basePath}/js/netteForms.min.js"></script>
+    <script src="{$basePath}/js/nette.ajax.js"></script>
+    <script src="{$basePath}/js/main.js"></script>
+    <script src="{$basePath}/js/menu.js"></script>
+    <script src="{$basePath}/js/scrollUp.js"></script>
+    <script src="{$basePath}/lightbox/js/lightbox.js"></script>
+    <script src="{$basePath}/js/jquery.barrating.min.js"></script>
+    <script src="{$basePath}/tinymce/tinymce/tinymce.min.js"></script>
+    <script src="{$basePath}/js/admin.js"></script>
+{/block}
+</body>
+</html>

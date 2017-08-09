@@ -88,7 +88,7 @@ class GuestsPresenter extends BasePresenter {
 
     protected function createComponentSearchGuestForm() {
         $form = new Form();
-        $form->addText('search', 'Vyhledat (dle jména či emailu)')->setDefaultValue($this->searchGuest);
+        $form->addText('search')->setDefaultValue($this->searchGuest)->setHtmlAttribute('placeholder', 'Vyhledat (dle jména či emailu)');
         $form->addSubmit('find', 'Hledat');
         $form->onSuccess[] = [$this, 'searchGuestFormSucceeded'];
         return $form;

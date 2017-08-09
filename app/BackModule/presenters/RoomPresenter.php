@@ -139,7 +139,7 @@ class RoomPresenter extends BasePresenter {
         $form = new Form();
         $form->addHidden('id', $this->selectedRoom);
         $form->addHidden('gallery_id', $this->roomManager->getRooms($this->selectedRoom)->photogallery_id);
-        $form->addUpload('image', 'Image')->addRule(Form::IMAGE)->setRequired('Zvol obrázek!');
+        $form->addUpload('image', 'Obrázek')->addRule(Form::IMAGE)->setRequired('Zvol obrázek!');
         $form->addSubmit('save', 'Upload');
         $form->onSuccess[] = [$this, 'roomGalleryFormSucceeded'];
 

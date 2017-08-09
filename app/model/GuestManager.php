@@ -19,6 +19,10 @@ class GuestManager extends BaseManager {
         return $this->database->table(self::TABLE_NAME)->where('id = ?', $id)->fetch();
     }
 
+    public function getByEmail($email) {
+        return $this->database->table(self::TABLE_NAME)->where('email = ?', $email)->fetch();
+    }
+
     public function add($data) {
         $res = $this->database->table(self::TABLE_NAME)->insert($data);
         return $res->id;
