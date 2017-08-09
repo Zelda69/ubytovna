@@ -24,20 +24,20 @@
                     {foreach $reservations as $reservation}
                         {var $potvrzeno = false}
                         {var $stavv = 0}
-                        {if $reservation->reservation->paid == 1}
+                        {if $reservation['info']->paid == 1}
                             {var $stav[0] = 'Zaplacená rezervace'}
                             {var $potvrzeno = true}
                             {var $stavv = 1}
-                        {elseif $reservation->reservation->confirm == 1}
+                        {elseif $reservation['info']->confirm == 1}
                             {var $stav[0] = 'Potvrzená rezervace'}
                             {var $potvrzeno = true}
                         {else}
                             {var $stav[0] = 'Nepotvrzená rezervace'}
                         {/if}
                         {if $potvrzeno}
-                            {if strtotime($reservation->reservation->date_from) < time() && strtotime($reservation->reservation->date_to) > time()}
+                            {if strtotime($reservation['info']->date_from) < time() && strtotime($reservation['info']->date_to) > time()}
                                 {var $stav[1] = 'Probíhající'}
-                            {elseif strtotime($reservation->reservation->date_from) < time() && strtotime($reservation->reservation->date_to) < time()}
+                            {elseif strtotime($reservation['info']->date_from) < time() && strtotime($reservation['info']->date_to) < time()}
                                 {var $stav[1] = 'Ukončená'}
                             {else}
                                 {var $stav[1] = 'Nezahájená'}
@@ -45,17 +45,6 @@
                         {/if}
 
                         {var $review = $reviews->get($reservation['info']->id)}
-                        {if strtotime($reservation['info']->date_from) > strtotime(date('Y-m-j'))}
-                            {if strtotime($reservation['info']->date_from) > strtotime(date('Y-m-j', time() + 7*86400))}
-                                {var $stav = 0}
-                            {else}
-                                {var $stav = 1}
-                            {/if}
-                        {elseif strtotime($reservation['info']->date_from) >= strtotime(date('Y-m-j')) && strtotime($reservation['info']->date_to) > strtotime(date('Y-m-j'))}
-                            {var $stav = 2}
-                        {else}
-                            {var $stav = 3}
-                        {/if}
 
                         <tr>
                             <td>{$reservation['info']->last_change|date:'H:i j. n. Y'}</td>

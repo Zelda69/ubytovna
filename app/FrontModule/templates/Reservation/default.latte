@@ -140,14 +140,14 @@
 
             <div class="form-group">
                 <div class="group-control">
-                    {label city} {input street style => 'width: 100% !important;'}
+                    {label city} {input city style => 'width: 100% !important;'}
                     {inputError city}
                 </div>
             </div>
 
             <div class="form-group">
                 <div class="group-control">
-                    {label state} {input street style => 'width: 100% !important;'}
+                    {label state} {input state style => 'width: 100% !important;'}
                     {inputError state}
                 </div>
             </div>
@@ -188,13 +188,13 @@
                 {$guest['name']}<br>
                 {$guest['email']}<br>
                 {$guest['phone']}<br>
-                {if isset($guest['street'])}
+                {if !empty($guest['street'])}
                     {$guest['street']}<br>
                 {/if}
-                {if isset($guest['city'])}
+                {if !empty($guest['city'])}
                     {$guest['city']}<br>
                 {/if}
-                {if isset($guest['state'])}
+                {if !empty($guest['state'])}
                     {$guest['state']}<br>
                 {/if}
             </div>

@@ -149,7 +149,10 @@ class ReservationPresenter extends BasePresenter {
      * Data pro my.latte
      */
     public function renderMy() {
-        $this->template->reservations = $this->reservationManager->getAllReservations($this->user->getIdentity()->guests_id);
+        if(!$this->getUser()->isLoggedIn() || is_null($this->getUser()->getIdentity()->guests_id)) {
+            $this->redirect('Homepage:');
+        }
+        $this->template->reservations = array_reverse($this->reservationManager->getAllReservations($this->user->getIdentity()->guests_id));
         $this->template->reviews = $this->reviewManager->getAllByGuest($this->user->getIdentity()->guests_id);
         Debugger::barDump($this->template->reservations, 'Reservation');
         $this->template->info = $this->serviceInformationManager->getAllInformation();
@@ -339,9 +342,9 @@ class ReservationPresenter extends BasePresenter {
 
             // Informační zpráva o konci.
             $this->flashMessage($message);
-
-            if ($this->getUser()->isLoggedIn())
-                $this->redirect('my'); else $this->redirect('Room:');
+            if ($this->getUser()->isLoggedIn() && !is_null($this->getUser()->getIdentity()->guests_id)) {
+                $this->redirect('my');
+            } else $this->redirect('Room:');
         } catch (UniqueConstraintViolationException $ex) {
             Debugger::barDump($ex, 'chyba');
             $this->flashMessage('Bohužel na zadaný termín je pokoj již obsazen. Můžete si vybrat jiný.', 'error');
