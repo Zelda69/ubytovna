@@ -56,7 +56,6 @@ class AccommodationPresenter extends BasePresenter {
      */
     protected function createComponentContactForm() {
         $form = new Form;
-        $form->addProtection('Vypršel časový limit, odešlete formulář znovu');
         $form->addText('name', 'Jméno')->setRequired('Musíte vyplnit jméno!')->setHtmlAttribute('placeholder', 'Jméno');
         $form->addEmail('email', 'Vaše emailová adresa')
             ->setRequired('Musíte vyplnit email!')
