@@ -60,7 +60,7 @@
                             <td>{$price * (1 + $room->dph / 100)|number:0:',':' '} Kč</td>
                             <td>{foreach $stav as $s}{$s}<br/>{/foreach}</td>
                             <td style="font-size: 0.8em;">
-                                {if $stavv === 1}
+                                {if $stavv === 1 && strtotime($reservation['info']->date_to) < time()}
                                     {if $review}
                                         <div class="review-done">
                                             <select>

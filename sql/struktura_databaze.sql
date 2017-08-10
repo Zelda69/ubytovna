@@ -3,8 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Počítač: 127.0.0.1
--- Vytvořeno: Stř 09. srp 2017, 19:30
--- Verze serveru: 10.1.22-MariaDB
+-- Vytvořeno: Stř 09. srp 2017, 10:30
 -- Verze PHP: 7.1.4
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
