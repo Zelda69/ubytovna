@@ -68,6 +68,9 @@
     <script src="{$basePath}/template/peicon.js" type="text/javascript"></script>
     <script src="{$basePath}/template/itl_script.js" type="text/javascript"></script>
     <script src="{$basePath}/template/nav-collapse.js" type="text/javascript"></script>
+    {if $presenter->isLinkCurrent(':Front:Accommodation:contact')}
+        <script src="{$basePath}/js/maps.js"></script>
+    {/if}
 
     <script type="text/javascript">
 
@@ -424,9 +427,6 @@
     <script src="{$basePath}/js/main.js"></script>
     <script src="{$basePath}/lightbox/js/lightbox.js"></script>
     <script src="{$basePath}/js/jquery.barrating.min.js"></script>
-{if $presenter->isLinkCurrent(':Front:Accommodation:contact')}
-    <script src="{$basePath}/js/maps.js"></script>
-{/if}
 {if (isset($_SESSION['reservation']) && strtotime($_SESSION['reservation']) > time())}
     <script>var reservation_expired = {$_SESSION['reservation']};</script>
     <script src="{$basePath}/js/reservation_counter.js"></script>
